@@ -75,10 +75,10 @@ Para os títulos das seções (`<h2>`, `<h3>`) vale o estilo do seu tema.
 
 ## 1. Publicar no GitHub Pages
 
-1. Crie um repositório no GitHub (ex.: `blog-studio`) e envie os arquivos desta pasta.
+1. Repositório: https://github.com/Lucianosmvm/BloggerPostCreator
 2. No repositório: **Settings → Pages → Build and deployment**.
    Em **Source** escolha **Deploy from a branch**, branch **main**, pasta **/docs**, e salve.
-3. Em 1–2 minutos o app fica em `https://SEU-USUARIO.github.io/blog-studio/`.
+3. Em 1–2 minutos o app fica em `https://lucianosmvm.github.io/BloggerPostCreator/`.
 
 ## 2. Chave do Gemini
 
@@ -86,7 +86,7 @@ No app: **Ajustes → Inteligência artificial**. Crie a chave em https://aistud
 cole e toque em **Salvar e testar**.
 
 Recomendado: no Google Cloud, em **APIs e serviços → Credenciais**, edite a chave e restrinja a
-**Sites** `https://SEU-USUARIO.github.io/*`.
+**Sites** `https://lucianosmvm.github.io/*`.
 
 ## 3. Login do Google (Blogger) — uma única vez
 
@@ -96,7 +96,7 @@ Recomendado: no Google Cloud, em **APIs e serviços → Credenciais**, edite a c
    nome do app, seu e-mail, público **Externo**.
 4. Em **Público-alvo**, adicione seu Gmail em **Usuários de teste**.
 5. Em **Clientes** (https://console.cloud.google.com/auth/clients): **Criar cliente** do tipo
-   **Aplicativo da Web**. Em **Origens JavaScript autorizadas** adicione `https://SEU-USUARIO.github.io`
+   **Aplicativo da Web**. Em **Origens JavaScript autorizadas** adicione `https://lucianosmvm.github.io`
    (sem barra e sem o nome do repositório).
 6. Copie o **ID do cliente** e cole em **Ajustes → Blogger** no app. Toque em **Conectar e escolher blog**.
 
