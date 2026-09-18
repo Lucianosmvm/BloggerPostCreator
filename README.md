@@ -125,6 +125,14 @@ Recomendado: no Google Cloud, em **APIs e serviços → Credenciais**, edite a c
 - **Android (Chrome):** menu ⋮ → **Instalar app** / **Adicionar à tela inicial**.
 - **iPhone (Safari):** Compartilhar → **Adicionar à Tela de Início**.
 
+## Posts excluídos no Blogger
+
+Ao abrir **Meus posts** com o login do Google ativo, o app confere (no máximo a cada 10 minutos)
+se os posts enviados ainda existem no Blogger e atualiza status e links. Os que foram excluídos lá
+aparecem num aviso **Ver e remover do app**. Também dá para conferir na hora pelo menu **⋯ →
+Sincronizar com o Blogger**, ou apagar vários de uma vez em **⋯ → Selecionar posts para excluir**.
+Nada é apagado no Blogger por essas opções.
+
 ## Backup
 
 Os posts ficam no navegador do aparelho. Use **Ajustes → Backup → Exportar** de vez em quando

@@ -457,3 +457,73 @@ async function criarPerfilAutomatico(tk, blog) {
     geradoEm: new Date().toISOString(),
   }, blog.id);
 }
+
+/* ---------------- Sincronizar com o Blogger ---------------- */
+
+/** Todos os posts do blog (publicados, rascunhos e agendados), sem o conteúdo. */
+async function listarPostsDoBlog(tk, blogId) {
+  const encontrados = new Map();
+  let pagina = "";
+  do {
+    const q = new URLSearchParams({ maxResults: "500", fetchBodies: "false", fetchImages: "false", view: "AUTHOR", fields: "items(id,status,url,published),nextPageToken" });
+    ["live", "draft", "scheduled"].forEach(st => q.append("status", st));
+    if (pagina) q.set("pageToken", pagina);
+    const r = await chamarBlogger(tk, "GET", `/blogs/${encodeURIComponent(blogId)}/posts?${q}`);
+    for (const post of r.items || []) encontrados.set(post.id, post);
+    pagina = r.nextPageToken || "";
+  } while (pagina);
+  return encontrados;
+}
+
+let ultimaSincronizacao = 0;
+/** Ids de posts do app que não existem mais no Blogger (fica só na memória). */
+let postsSumidos = new Set();
+
+/**
+ * Confere os posts enviados ao Blogger: atualiza status/link dos que mudaram lá
+ * e devolve os que foram excluídos no Blogger (não remove nada sozinho).
+ */
+async function sincronizarComBlogger(tk) {
+  const enviados = listarPosts().filter(p => p.bloggerId && p.blogId);
+  const excluidos = [];
+  let atualizados = 0;
+  for (const blogId of new Set(enviados.map(p => p.blogId))) {
+    let remotos;
+    try {
+      remotos = await listarPostsDoBlog(tk, blogId);
+    } catch (erro) {
+      if (erro.status === 403 || erro.status === 404) continue; // blog sem acesso nesta conta: não mexe
+      throw erro;
+    }
+    for (const post of enviados.filter(p => p.blogId === blogId)) {
+      const remoto = remotos.get(post.bloggerId);
+      if (!remoto) { excluidos.push(post); continue; }
+      const status = STATUS_BLOGGER[remoto.status] || post.status;
+      const url = remoto.url || post.url;
+      const agendadoPara = status === "agendado" ? (remoto.published || post.agendadoPara) : null;
+      if (status !== post.status || url !== post.url || agendadoPara !== (post.agendadoPara || null)) {
+        salvarPost({ ...post, status, url, agendadoPara });
+        atualizados++;
+      }
+    }
+  }
+  ultimaSincronizacao = Date.now();
+  postsSumidos = new Set(excluidos.map(p => p.id));
+  return { excluidos, atualizados, conferidos: enviados.length };
+}
+
+/** Mostra os posts que sumiram do Blogger e remove do app os que o usuário deixar marcados. */
+async function oferecerRemocao(excluidos) {
+  if (!excluidos.length) return 0;
+  const { valor, campos } = await abrirDialogo({
+    titulo: excluidos.length === 1 ? "1 post não existe mais no Blogger" : `${excluidos.length} posts não existem mais no Blogger`,
+    html: `<p class="pequeno suave">Foram excluídos direto no Blogger. Desmarque os que quiser manter no app.</p>
+      <div class="lista-checks">${excluidos.map(p => `
+        <label class="check"><input type="checkbox" name="rm-${esc(p.id)}" checked><span>${esc(p.titulo || "(sem título)")}</span></label>`).join("")}</div>`,
+    botoes: [{ rotulo: "Manter todos", valor: null }, { rotulo: "Remover do app", valor: "remover", primario: true }],
+  });
+  if (valor !== "remover") return 0;
+  const remover = new Set(Object.keys(campos).filter(k => k.startsWith("rm-")).map(k => k.slice(3)));
+  remover.forEach(id => { excluirPost(id); postsSumidos.delete(id); });
+  return remover.size;
+}

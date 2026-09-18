@@ -663,6 +663,8 @@ const ICONES = {
   copiar: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg>',
   lixo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
   relogio: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+  sync: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 01-14.3 4.9M4 12a8 8 0 0114.3-4.9"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>',
+  todos: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg>',
   lupa: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>',
   doc: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M9 11h7M9 15h7M9 7h4"/></svg>',
   blog: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h6M7 13h10M7 17h8"/></svg>',
@@ -702,16 +704,25 @@ function rota() {
 /* ---------------- Tela: Posts ---------------- */
 
 let filtroCategoria = "";
+let selecionando = false;
+let selecionados = new Set();
 
 function telaPosts() {
   const c = cfg();
   const posts = listarPosts().sort((a, b) => b.atualizadoEm.localeCompare(a.atualizadoEm));
+  selecionados = new Set([...selecionados].filter(id => posts.some(p => p.id === id)));
+  if (!posts.length) selecionando = false;
+  const sumidos = posts.filter(p => postsSumidos.has(p.id));
   const usadas = ORDEM_CATEGORIAS.filter(id => posts.some(p => (p.categoria || "geral") === id));
   if (!usadas.includes(filtroCategoria)) filtroCategoria = "";
   const avisos = [
     !c.geminiKey && `Para gerar posts com IA, cadastre a chave do Gemini em <a href="#/ajustes">Ajustes</a>.`,
     !c.blogId && `Para publicar, conecte o Blogger em <a href="#/ajustes">Ajustes</a>.`,
-  ].filter(Boolean).map(t => `<div class="aviso">${t}</div>`).join("");
+  ].filter(Boolean).map(t => `<div class="aviso">${t}</div>`).join("") + (sumidos.length && !selecionando ? `
+    <div class="aviso aviso-sumidos">
+      <p>⚠️ ${sumidos.length === 1 ? "1 post foi excluído" : `${sumidos.length} posts foram excluídos`} direto no Blogger.</p>
+      <button type="button" class="btn largo" id="ver-sumidos">Ver e remover do app</button>
+    </div>` : "");
 
   const lista = posts.length ? `
     ${posts.length > 5 ? `<input type="search" class="busca" id="busca" placeholder="Buscar posts…" aria-label="Buscar posts">` : ""}
@@ -721,11 +732,13 @@ function telaPosts() {
     </div>` : ""}
     <ul class="lista" id="lista">
       ${posts.map(p => `
-        <li data-busca="${esc((p.titulo + " " + p.tema).toLowerCase())}" data-categoria="${esc(p.categoria || "geral")}">
+        <li data-busca="${esc((p.titulo + " " + p.tema).toLowerCase())}" data-categoria="${esc(p.categoria || "geral")}" data-id="${esc(p.id)}"
+          class="${selecionando ? "selecionavel" : ""} ${selecionados.has(p.id) ? "selecionado" : ""}">
           <a href="#/post/${encodeURIComponent(p.id)}" class="${p.capa?.url ? "com-capa" : ""}">
+            ${selecionando ? `<span class="marca-selecao" aria-hidden="true"></span>` : ""}
             ${p.capa?.url ? `<img class="miniatura" src="${esc(p.capa.url)}" alt="" loading="lazy">` : ""}
             <strong>${esc(p.titulo || "(sem título)")}</strong>
-            <span class="meta"><span class="selo ${p.status}">${esc(p.status)}</span><span>${categoria(p.categoria).icone} ${esc(categoria(p.categoria).nome)}</span><span>${formatarData(p.atualizadoEm)}</span></span>
+            <span class="meta"><span class="selo ${p.status}">${esc(p.status)}</span>${postsSumidos.has(p.id) ? `<span class="selo sumido">excluído no Blogger</span>` : ""}<span>${categoria(p.categoria).icone} ${esc(categoria(p.categoria).nome)}</span><span>${formatarData(p.atualizadoEm)}</span></span>
           </a>
         </li>`).join("")}
     </ul>` : `
@@ -737,12 +750,94 @@ function telaPosts() {
     </div>`;
 
   const main = montar({
-    titulo: "Meus posts", aba: "posts",
-    acoesTopo: `<button class="icone-btn" id="escrever" aria-label="Escrever do zero" title="Escrever do zero">${ICONES.mais}</button>`,
+    titulo: selecionando ? `${selecionados.size} selecionado${selecionados.size === 1 ? "" : "s"}` : "Meus posts", aba: "posts",
+    acoesTopo: selecionando
+      ? `<button class="icone-btn" id="selecionar-todos" aria-label="Selecionar todos" title="Selecionar todos">${ICONES.todos}</button>`
+      : `<button class="icone-btn" id="escrever" aria-label="Escrever do zero" title="Escrever do zero">${ICONES.mais}</button>
+         ${posts.length ? `<button class="icone-btn" id="menu-posts" aria-label="Mais opções">${ICONES.menu}</button>` : ""}`,
     html: avisos + lista,
+    barraAcoes: selecionando ? `
+      <button class="btn" id="cancelar-selecao">Cancelar</button>
+      <button class="btn primario perigo-cheio" id="excluir-selecionados" ${selecionados.size ? "" : "disabled"}>${ICONES.lixo} Excluir (${selecionados.size})</button>` : "",
   });
 
-  $("#escrever").onclick = () => { location.hash = `#/post/${criarPost().id}`; };
+  $("#escrever")?.addEventListener("click", () => { location.hash = `#/post/${criarPost().id}`; });
+
+  // ---- Sincronizar com o Blogger ----
+  const temEnviados = posts.some(p => p.bloggerId && p.blogId);
+  const sincronizar = (manual) => {
+    const pedido = garantirToken();
+    (async () => {
+      try {
+        const tk = await pedido;
+        carregando("Conferindo seus posts no Blogger…");
+        const { excluidos, atualizados, conferidos } = await sincronizarComBlogger(tk);
+        carregando(null);
+        if (excluidos.length) {
+          const removidos = await oferecerRemocao(excluidos);
+          toast(removidos ? `${removidos} post${removidos === 1 ? "" : "s"} removido${removidos === 1 ? "" : "s"} do app.` : "Nada foi removido.", "ok");
+        } else {
+          toast(`Tudo certo: ${conferidos} post${conferidos === 1 ? "" : "s"} conferido${conferidos === 1 ? "" : "s"}${atualizados ? `, ${atualizados} atualizado${atualizados === 1 ? "" : "s"}` : ""}.`, "ok");
+        }
+        if (location.hash.startsWith("#/posts")) telaPosts();
+      } catch (erro) {
+        if (manual) toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+      } finally {
+        carregando(null);
+      }
+    })();
+  };
+
+  $("#menu-posts")?.addEventListener("click", async () => {
+    const escolha = await abrirFolha([
+      temEnviados && cfg().clientId && { rotulo: "Sincronizar com o Blogger", valor: "sync", icone: ICONES.sync },
+      { rotulo: "Selecionar posts para excluir", valor: "selecionar", icone: ICONES.todos },
+    ].filter(Boolean));
+    if (escolha === "sync") sincronizar(true);
+    if (escolha === "selecionar") { selecionando = true; selecionados = new Set(); telaPosts(); }
+  });
+  $("#ver-sumidos", main)?.addEventListener("click", async () => {
+    const removidos = await oferecerRemocao(sumidos);
+    if (removidos) toast(`${removidos} post${removidos === 1 ? "" : "s"} removido${removidos === 1 ? "" : "s"} do app.`, "ok");
+    telaPosts();
+  });
+
+  // Conferência automática: só quando o login já está ativo (sem abrir janela) e no máximo a cada 10 min.
+  if (!selecionando && temEnviados && tokenValido() && Date.now() - ultimaSincronizacao > 10 * 60000) {
+    ultimaSincronizacao = Date.now();
+    sincronizarComBlogger(token.valor)
+      .then(({ excluidos, atualizados }) => { if ((excluidos.length || atualizados) && location.hash.startsWith("#/posts")) telaPosts(); })
+      .catch(() => { /* sem internet ou login expirado: tenta de novo depois */ });
+  }
+
+  // ---- Seleção para excluir ----
+  if (selecionando) {
+    $("#lista", main)?.addEventListener("click", (e) => {
+      const li = e.target.closest("li[data-id]");
+      if (!li) return;
+      e.preventDefault();
+      if (selecionados.has(li.dataset.id)) selecionados.delete(li.dataset.id); else selecionados.add(li.dataset.id);
+      const y = window.scrollY;
+      telaPosts();
+      window.scrollTo(0, y);
+    });
+    $("#selecionar-todos").onclick = () => {
+      const visiveis = [...main.querySelectorAll("#lista li:not([hidden])")].map(li => li.dataset.id);
+      const todos = visiveis.every(id => selecionados.has(id));
+      visiveis.forEach(id => todos ? selecionados.delete(id) : selecionados.add(id));
+      telaPosts();
+    };
+    $("#cancelar-selecao", main).onclick = () => { selecionando = false; selecionados = new Set(); telaPosts(); };
+    $("#excluir-selecionados", main).onclick = () => {
+      const n = selecionados.size;
+      if (!n || !confirm(`Excluir ${n} post${n === 1 ? "" : "s"} deste aparelho? O que está no Blogger não é apagado.`)) return;
+      selecionados.forEach(id => { excluirPost(id); postsSumidos.delete(id); });
+      selecionando = false;
+      selecionados = new Set();
+      toast(`${n} post${n === 1 ? "" : "s"} excluído${n === 1 ? "" : "s"} do app.`, "ok");
+      telaPosts();
+    };
+  }
   const filtrar = () => {
     const termo = ($("#busca", main)?.value || "").trim().toLowerCase();
     main.querySelectorAll("#lista li").forEach(li => {
