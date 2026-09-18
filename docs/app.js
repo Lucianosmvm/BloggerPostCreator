@@ -1049,8 +1049,19 @@ function telaEditor(id) {
         <input id="titulo" class="titulo-post" value="${esc(post.titulo)}" placeholder="Título do post">
       </label>
       <label class="campo"><span>Marcadores</span>
-        <input id="marcadores" value="${esc(post.marcadores.join(", "))}" placeholder="separados por vírgula" autocapitalize="off">
+        <input id="marcadores" value="${esc(separarMarcadores(post.marcadores.join(",")).join(", "))}" placeholder="separados por vírgula" autocapitalize="off">
+        <small>Vírgula separa marcadores. Dentro de parênteses ela vira “/” (o Blogger não aceita vírgula no nome).</small>
       </label>
+      <div class="campo campo-descricao">
+        <label for="descricao"><span>Descrição de pesquisa (SEO)</span><span class="contador" id="contador-descricao"></span></label>
+        <textarea id="descricao" rows="3" maxlength="300" placeholder="Resumo de 120 a 155 caracteres que aparece no Google e ao compartilhar o link">${esc(post.descricao || "")}</textarea>
+        <div class="acoes-descricao">
+          <button type="button" class="btn" id="copiar-descricao">${ICONES.copiar} Copiar</button>
+          <button type="button" class="btn" id="gerar-descricao">${ICONES.brilho} ${post.descricao ? "Refazer" : "Gerar com IA"}</button>
+          ${post.bloggerId && post.blogId ? `<a class="btn" href="https://www.blogger.com/blog/post/edit/${encodeURIComponent(post.blogId)}/${encodeURIComponent(post.bloggerId)}" target="_blank" rel="noopener">${ICONES.link} Abrir no Blogger</a>` : ""}
+        </div>
+        <small>A API do Blogger não recebe este campo. Depois de enviar, abra o post no Blogger e cole em <strong>Configurações da postagem → Descrição de pesquisa</strong>. É ele que preenche o <code>og:description</code>.</small>
+      </div>
       <div class="capa-editor">
         ${post.capa?.url ? `
           <img src="${esc(post.capa.url)}" alt="">
@@ -1077,7 +1088,7 @@ function telaEditor(id) {
       <button class="btn primario" id="publicar">${post.status === "agendado" ? "🕒 Agendado" : `${ICONES.enviar}${publicado ? "Atualizar" : "Publicar"}`}</button>`,
   });
 
-  const campos = { titulo: $("#titulo", main), marcadores: $("#marcadores", main), conteudo: $("#conteudo", main) };
+  const campos = { titulo: $("#titulo", main), marcadores: $("#marcadores", main), descricao: $("#descricao", main), conteudo: $("#conteudo", main) };
   const previa = $("#previa", main);
   const indicador = $("#salvo", main);
 
@@ -1104,7 +1115,8 @@ function telaEditor(id) {
     Object.assign(post, {
       titulo: campos.titulo.value.trim(),
       conteudo: campos.conteudo.value,
-      marcadores: campos.marcadores.value.split(",").map(m => m.trim()).filter(Boolean),
+      marcadores: separarMarcadores(campos.marcadores.value),
+      descricao: campos.descricao.value.replace(/\s+/g, " ").trim(),
     });
     if (salvarPost(post)) indicador.textContent = "Salvo neste aparelho";
   };
@@ -1266,6 +1278,45 @@ function telaEditor(id) {
   };
   $("#checar-fatos", main)?.addEventListener("click", () => abrirChecagem(!checagens.has(post.id)));
 
+  // ---- Descrição de pesquisa ----
+  const contador = $("#contador-descricao", main);
+  const atualizarContador = () => {
+    const n = campos.descricao.value.trim().length;
+    contador.textContent = `${n}/155`;
+    contador.className = `contador ${n === 0 ? "" : n < 70 || n > 160 ? "fora" : "ok"}`;
+  };
+  campos.descricao.addEventListener("input", atualizarContador);
+  atualizarContador();
+  $("#copiar-descricao", main).onclick = () => {
+    if (!campos.descricao.value.trim()) { toast("A descrição está vazia. Toque em “Gerar com IA”.", "erro"); return; }
+    copiar(campos.descricao.value.trim());
+  };
+  $("#gerar-descricao", main).onclick = async () => {
+    salvarAgora();
+    if (!post.conteudo.trim()) { toast("Escreva ou gere o conteúdo primeiro.", "erro"); return; }
+    if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini em Ajustes.", "erro"); return; }
+    carregando("Escrevendo a descrição…");
+    try {
+      const dados = await gerarJson({
+        sistema: `Você escreve descrições de pesquisa (meta description) para posts de blog, em português do Brasil.
+- Entre 120 e 155 caracteres, uma frase ou duas, texto puro, sem aspas e sem emojis.
+- Resuma o que o leitor ganha com o post e use a palavra-chave principal de forma natural.
+- Não invente informações que não estão no post.`,
+        texto: `Título: ${post.titulo}\n\nPost:\n${textoDoPost(post.conteudo).slice(0, 6000)}`,
+        schema: { type: "object", properties: { descricao: { type: "string" } }, required: ["descricao"] },
+        maxTokens: 2048, timeoutMs: 60000,
+      });
+      campos.descricao.value = limparDescricao(dados.descricao);
+      salvarAgora();
+      atualizarContador();
+      toast("Descrição pronta. Copie e cole no Blogger.", "ok");
+    } catch (erro) {
+      toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+    } finally {
+      carregando(null);
+    }
+  };
+
   salvarPendente = () => { if (timer) salvarAgora(); };
   aoSairDaTela = () => {
     if (timer) salvarAgora();
@@ -1298,7 +1349,7 @@ function telaEditor(id) {
         salvarPost(post);
         toast(post.status === "agendado" && modo !== "rascunho"
           ? `Agendado para ${formatarAgendamento(post.agendadoPara)}.`
-          : MENSAGENS_ENVIO[modo][1], "ok");
+          : MENSAGENS_ENVIO[modo][1] + (post.descricao && modo !== "rascunho" ? " Lembre de colar a descrição de pesquisa no Blogger." : ""), "ok");
         telaEditor(post.id);
       } catch (erro) {
         toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");

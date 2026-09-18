@@ -35,6 +35,17 @@ fechamento e a cor de destaque. Isso vale para todos os posts.
   simples, corrigir português…) ou escreva o seu. Compare antes/depois e toque em **Aplicar**; o botão
   ↶ desfaz a última reescrita.
 
+## Marcadores e descrição de pesquisa (SEO)
+
+- **Marcadores:** a vírgula separa marcadores (no app e no Blogger). Vírgulas dentro de parênteses
+  viram "/", ex.: `Tipos de redes (LAN/WAN)`. Marcadores quebrados de posts antigos são consertados
+  ao abrir o post; toque em **Atualizar** para corrigir no blog.
+- **Descrição de pesquisa:** a IA gera 120–155 caracteres em cada post (ou toque em **✨ Gerar com IA**
+  no editor). A API do Blogger **não** aceita esse campo, então, depois de enviar:
+  1. Uma vez só: no Blogger, **Configurações → Metatags → Ativar descrição da pesquisa**.
+  2. Em cada post: no editor do app toque em **Copiar** e **Abrir no Blogger**, e cole em
+     **Configurações da postagem → Descrição de pesquisa**. É ela que preenche o `og:description`.
+
 ## Ideias de pauta
 
 Na aba **Criar**, toque em **💡 Sem ideia? Ver sugestões de pauta**. Escolha a categoria, um nicho

@@ -142,10 +142,11 @@ function schema(propriedades, obrigatorios) {
     type: "object",
     properties: {
       titulo: S.texto("Título atraente e claro, até 70 caracteres"),
+      descricao: S.texto("Descrição para buscadores e redes sociais: 120 a 155 caracteres, resume o post e convida a ler, sem aspas e sem emojis"),
       ...propriedades,
-      marcadores: S.lista("3 a 6 marcadores curtos e relevantes"),
+      marcadores: S.lista("3 a 6 marcadores curtos (1 a 3 palavras cada), sem vírgulas e sem parênteses"),
     },
-    required: ["titulo", ...obrigatorios, "marcadores"],
+    required: ["titulo", "descricao", ...obrigatorios, "marcadores"],
   };
 }
 
@@ -400,6 +401,36 @@ const CATEGORIAS = {
   },
 };
 
+/**
+ * Separa marcadores digitados/gerados. O Blogger usa a vírgula como separador de marcadores,
+ * então vírgulas dentro de parênteses viram "/" (ex.: "Tipos de redes (LAN, WAN)" → "Tipos de redes (LAN/WAN)").
+ * Também junta pedaços que ficaram quebrados antes desta correção ("… (LAN" + "WAN)").
+ */
+function separarMarcadores(texto) {
+  const partes = [];
+  let atual = "";
+  let nivel = 0;
+  for (const c of String(texto || "")) {
+    if (c === "(") nivel++;
+    if (c === ")") nivel = Math.max(0, nivel - 1);
+    if ((c === "," || c === ";" || c === "\n") && nivel === 0) { partes.push(atual); atual = ""; continue; }
+    atual += c;
+  }
+  partes.push(atual);
+  const limpos = partes
+    .map(m => m.replace(/\s*,\s*/g, "/").replace(/[<>&"]/g, "").replace(/\s+/g, " ").trim())
+    .map(m => (m.split("(").length > m.split(")").length ? m + ")" : m))
+    .filter(Boolean);
+  return limpos.filter((m, i) => limpos.findIndex(x => x.toLowerCase() === m.toLowerCase()) === i);
+}
+
+/** Descrição de pesquisa: texto puro, uma linha, até 160 caracteres (corta em palavra inteira). */
+function limparDescricao(texto) {
+  let d = String(texto || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  if (d.length > 160) d = d.slice(0, 157).replace(/\s+\S*$/, "") + "…";
+  return d;
+}
+
 const ORDEM_CATEGORIAS = ["tecnologia", "receitas", "dicas", "games", "historias", "geral"];
 
 function categoria(id) { return CATEGORIAS[id] || CATEGORIAS.geral; }
@@ -408,7 +439,11 @@ function categoria(id) { return CATEGORIAS[id] || CATEGORIAS.geral; }
 function montarPost(idCategoria, dados, perfil, entrada = {}) {
   const cat = categoria(idCategoria);
   const html = cat.montar(dados, perfil, entrada) + Bloco.fechamento(perfil);
-  const marcadores = [cat.marcador, ...(dados.marcadores || [])].map(m => String(m || "").trim()).filter(Boolean);
-  const unicos = marcadores.filter((m, i) => marcadores.findIndex(x => x.toLowerCase() === m.toLowerCase()) === i);
-  return { titulo: String(dados.titulo || "").trim(), conteudo: html, marcadores: unicos };
+  const marcadores = separarMarcadores([cat.marcador, ...(dados.marcadores || [])].map(m => String(m || "")).join(","));
+  return {
+    titulo: String(dados.titulo || "").trim(),
+    descricao: limparDescricao(dados.descricao),
+    conteudo: html,
+    marcadores,
+  };
 }

@@ -367,3 +367,12 @@ input[type="color"] { padding: 4px; height: 48px; cursor: pointer; }
 .selo.agendado { background: color-mix(in srgb, #1a73e8 15%, transparent); color: #1a73e8; }
 @media (prefers-color-scheme: dark) { .selo.agendado { color: #8ab4f8; } }
 input[type="datetime-local"] { min-height: 48px; }
+
+/* ---------- Descrição de pesquisa ---------- */
+.campo-descricao > label { display: flex; justify-content: space-between; align-items: baseline; font-size: .875rem; font-weight: 600; margin-bottom: 6px; }
+.contador { font-weight: 600; font-size: .8rem; color: var(--suave); }
+.contador.ok { color: var(--ok); }
+.contador.fora { color: var(--erro); }
+.acoes-descricao { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.acoes-descricao .btn { flex: 1; min-height: 40px; padding: 8px 10px; font-size: .88rem; white-space: nowrap; }
+.acoes-descricao .btn svg { width: 18px; height: 18px; }
