@@ -399,3 +399,10 @@ input[type="datetime-local"] { min-height: 48px; }
 .check input:checked { background: var(--primaria); border-color: var(--primaria); }
 .check input:checked::after { content: ""; position: absolute; left: 5px; top: 1px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
 .check span { line-height: 1.4; }
+
+/* ---------- Posts por blog ---------- */
+.filtro-blogs { margin-bottom: 8px; }
+.grupo-blog + .grupo-blog { margin-top: 8px; }
+.grupo-blog .secao-titulo { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.grupo-blog .secao-titulo span { font-weight: 600; background: var(--superficie-2); border-radius: 99px; padding: 1px 8px; letter-spacing: 0; }
+.grupo-blog:first-child .secao-titulo { margin-top: 4px; }

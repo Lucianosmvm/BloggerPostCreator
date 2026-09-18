@@ -125,6 +125,13 @@ Recomendado: no Google Cloud, em **APIs e serviços → Credenciais**, edite a c
 - **Android (Chrome):** menu ⋮ → **Instalar app** / **Adicionar à tela inicial**.
 - **iPhone (Safari):** Compartilhar → **Adicionar à Tela de Início**.
 
+## Posts por blog
+
+Cada post pertence ao blog que estava escolhido quando foi criado e é enviado para esse blog.
+Em **Meus posts**, com mais de um blog, aparecem botões para ver cada blog (o atual vem
+selecionado) ou **Todos**, agrupados por blog. Antes de enviar, dá para trocar o destino no
+editor em **⋯ → Mudar blog de destino**.
+
 ## Posts excluídos no Blogger
 
 Ao abrir **Meus posts** com o login do Google ativo, o app confere (no máximo a cada 10 minutos)

@@ -91,12 +91,25 @@ function criarPost(dados = {}) {
   const agora = new Date().toISOString();
   const post = {
     id: novoId(), tema: "", titulo: "", conteudo: "", marcadores: [],
-    status: "local", blogId: null, bloggerId: null, url: null,
+    status: "local", blogId: cfg().blogId || null, bloggerId: null, url: null,
     criadoEm: agora, atualizadoEm: agora, ...dados,
   };
   salvarPost(post);
   return post;
 }
+/** Blog do post: o que ele recebeu ao ser criado/enviado; posts antigos sem blog contam como do blog atual. */
+function blogDoPost(post) { return post.blogId || cfg().blogId || ""; }
+function nomeDoBlog(id) {
+  const c = cfg();
+  if (!id) return "Sem blog";
+  return c.nomesBlogs?.[id] || c.perfis?.[id]?.nomeBlog || (id === c.blogId ? c.blogNome : "") || `Blog ${id}`;
+}
+function blogsConhecidos() {
+  const c = cfg();
+  const ids = new Set([...Object.keys(c.nomesBlogs || {}), ...Object.keys(c.perfis || {}), c.blogId].filter(Boolean));
+  return [...ids].map(id => ({ id, nome: nomeDoBlog(id) }));
+}
+
 function excluirPost(id) { gravarPosts(listarPosts().filter(p => p.id !== id)); }
 function novoId() {
   return (crypto.randomUUID && crypto.randomUUID()) || Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -530,7 +543,7 @@ const STATUS_BLOGGER = { DRAFT: "rascunho", SCHEDULED: "agendado", LIVE: "public
  * modo: "rascunho" | "publicar" (agora) | "agendar" (usa agendarPara) | "atualizar" (mantém o status atual)
  */
 async function enviarPost(tk, post, modo, agendarPara = null) {
-  const { blogId } = cfg();
+  const blogId = blogDoPost(post);
   if (!blogId) throw new ErroApp("Escolha o blog em Ajustes antes de publicar.");
   const base = `/blogs/${encodeURIComponent(blogId)}/posts`;
   const corpo = { title: post.titulo, content: conteudoFinal(post), labels: post.marcadores };
@@ -704,6 +717,7 @@ function rota() {
 /* ---------------- Tela: Posts ---------------- */
 
 let filtroCategoria = "";
+let filtroBlog = null; // null = blog atual; "" = todos
 let selecionando = false;
 let selecionados = new Set();
 
@@ -713,7 +727,14 @@ function telaPosts() {
   selecionados = new Set([...selecionados].filter(id => posts.some(p => p.id === id)));
   if (!posts.length) selecionando = false;
   const sumidos = posts.filter(p => postsSumidos.has(p.id));
-  const usadas = ORDEM_CATEGORIAS.filter(id => posts.some(p => (p.categoria || "geral") === id));
+
+  // Blogs presentes na lista (o atual primeiro)
+  const idsBlogs = [...new Set(posts.map(blogDoPost))].sort((a, b) => Number(b === c.blogId) - Number(a === c.blogId) || nomeDoBlog(a).localeCompare(nomeDoBlog(b)));
+  const variosBlogs = idsBlogs.length > 1;
+  if (filtroBlog === null || (filtroBlog && !idsBlogs.includes(filtroBlog))) filtroBlog = variosBlogs && idsBlogs.includes(c.blogId) ? c.blogId : "";
+  if (!variosBlogs) filtroBlog = "";
+  const visiveis = filtroBlog ? posts.filter(p => blogDoPost(p) === filtroBlog) : posts;
+  const usadas = ORDEM_CATEGORIAS.filter(id => visiveis.some(p => (p.categoria || "geral") === id));
   if (!usadas.includes(filtroCategoria)) filtroCategoria = "";
   const avisos = [
     !c.geminiKey && `Para gerar posts com IA, cadastre a chave do Gemini em <a href="#/ajustes">Ajustes</a>.`,
@@ -724,14 +745,7 @@ function telaPosts() {
       <button type="button" class="btn largo" id="ver-sumidos">Ver e remover do app</button>
     </div>` : "");
 
-  const lista = posts.length ? `
-    ${posts.length > 5 ? `<input type="search" class="busca" id="busca" placeholder="Buscar posts…" aria-label="Buscar posts">` : ""}
-    ${usadas.length > 1 ? `<div class="filtros" role="group" aria-label="Filtrar por categoria">
-      <button type="button" data-filtro="" class="${filtroCategoria ? "" : "ativo"}">Todas</button>
-      ${usadas.map(id => `<button type="button" data-filtro="${id}" class="${filtroCategoria === id ? "ativo" : ""}">${CATEGORIAS[id].icone} ${esc(CATEGORIAS[id].nome)}</button>`).join("")}
-    </div>` : ""}
-    <ul class="lista" id="lista">
-      ${posts.map(p => `
+  const itemPost = (p) => `
         <li data-busca="${esc((p.titulo + " " + p.tema).toLowerCase())}" data-categoria="${esc(p.categoria || "geral")}" data-id="${esc(p.id)}"
           class="${selecionando ? "selecionavel" : ""} ${selecionados.has(p.id) ? "selecionado" : ""}">
           <a href="#/post/${encodeURIComponent(p.id)}" class="${p.capa?.url ? "com-capa" : ""}">
@@ -740,8 +754,28 @@ function telaPosts() {
             <strong>${esc(p.titulo || "(sem título)")}</strong>
             <span class="meta"><span class="selo ${p.status}">${esc(p.status)}</span>${postsSumidos.has(p.id) ? `<span class="selo sumido">excluído no Blogger</span>` : ""}<span>${categoria(p.categoria).icone} ${esc(categoria(p.categoria).nome)}</span><span>${formatarData(p.atualizadoEm)}</span></span>
           </a>
-        </li>`).join("")}
-    </ul>` : `
+        </li>`;
+  const grupos = filtroBlog || !variosBlogs
+    ? `<ul class="lista">${visiveis.map(itemPost).join("")}</ul>`
+    : idsBlogs.map(id => {
+      const doBlog = posts.filter(p => blogDoPost(p) === id);
+      return `<section class="grupo-blog">
+        <h2 class="secao-titulo">🌐 ${esc(nomeDoBlog(id))} <span>${doBlog.length}</span></h2>
+        <ul class="lista">${doBlog.map(itemPost).join("")}</ul>
+      </section>`;
+    }).join("");
+
+  const lista = posts.length ? `
+    ${variosBlogs ? `<div class="filtros filtro-blogs" role="group" aria-label="Filtrar por blog">
+      ${idsBlogs.map(id => `<button type="button" data-blog="${esc(id)}" class="${filtroBlog === id ? "ativo" : ""}">🌐 ${esc(nomeDoBlog(id))} · ${posts.filter(p => blogDoPost(p) === id).length}</button>`).join("")}
+      <button type="button" data-blog="" class="${filtroBlog ? "" : "ativo"}">Todos · ${posts.length}</button>
+    </div>` : ""}
+    ${visiveis.length > 5 ? `<input type="search" class="busca" id="busca" placeholder="Buscar posts…" aria-label="Buscar posts">` : ""}
+    ${usadas.length > 1 ? `<div class="filtros" role="group" aria-label="Filtrar por categoria">
+      <button type="button" data-filtro="" class="${filtroCategoria ? "" : "ativo"}">Todas</button>
+      ${usadas.map(id => `<button type="button" data-filtro="${id}" class="${filtroCategoria === id ? "ativo" : ""}">${CATEGORIAS[id].icone} ${esc(CATEGORIAS[id].nome)}</button>`).join("")}
+    </div>` : ""}
+    ${visiveis.length ? `<div id="lista">${grupos}</div>` : `<div class="vazio"><p>Nenhum post em ${esc(nomeDoBlog(filtroBlog))} ainda.</p></div>`}` : `
     <div class="vazio">
       ${ICONES.doc}
       <h2>Nenhum post ainda</h2>
@@ -843,10 +877,12 @@ function telaPosts() {
     main.querySelectorAll("#lista li").forEach(li => {
       li.hidden = Boolean((termo && !li.dataset.busca.includes(termo)) || (filtroCategoria && li.dataset.categoria !== filtroCategoria));
     });
+    main.querySelectorAll(".grupo-blog").forEach(g => { g.hidden = !g.querySelector("li:not([hidden])"); });
     main.querySelectorAll("[data-filtro]").forEach(b => b.classList.toggle("ativo", b.dataset.filtro === filtroCategoria));
   };
   $("#busca", main)?.addEventListener("input", filtrar);
   main.querySelectorAll("[data-filtro]").forEach(b => b.onclick = () => { filtroCategoria = b.dataset.filtro; filtrar(); });
+  main.querySelectorAll("[data-blog]").forEach(b => b.onclick = () => { filtroBlog = b.dataset.blog; filtroCategoria = ""; telaPosts(); });
   filtrar();
 }
 
@@ -1155,6 +1191,7 @@ function telaEditor(id) {
       <div class="editor-meta">
         <span class="selo ${post.status}">${esc(post.status)}</span>
         <span>${categoria(post.categoria).icone} ${esc(categoria(post.categoria).nome)}</span>
+        ${blogDoPost(post) ? `<span>🌐 ${esc(nomeDoBlog(blogDoPost(post)))}</span>` : ""}
         ${post.url && publicado ? `<a href="${esc(post.url)}" target="_blank" rel="noopener">Ver no blog</a>` : ""}
         ${post.status === "agendado" && post.agendadoPara ? `<span>🕒 ${esc(formatarAgendamento(post.agendadoPara))}</span>` : ""}
         <span class="salvo" id="salvo">Salvo neste aparelho</span>
@@ -1452,7 +1489,7 @@ function telaEditor(id) {
   const validarEnvio = () => {
     salvarAgora();
     if (!post.titulo || !post.conteudo.trim()) { toast("Preencha título e conteúdo antes de enviar.", "erro"); return false; }
-    if (!cfg().blogId) { toast("Conecte o Blogger e escolha o blog em Ajustes.", "erro"); return false; }
+    if (!blogDoPost(post)) { toast("Conecte o Blogger e escolha o blog em Ajustes.", "erro"); return false; }
     return true;
   };
 
@@ -1540,6 +1577,7 @@ function telaEditor(id) {
         rotulo: checagens.has(post.id) ? "Ver última checagem de fatos" : "Checar fatos na internet", valor: "checar", icone: ICONES.lupa,
       },
       checagens.has(post.id) && categoria(post.categoria).checarFatos !== false && { rotulo: "Checar fatos de novo", valor: "checar-novo", icone: ICONES.lupa },
+      !post.bloggerId && blogsConhecidos().length > 1 && { rotulo: "Mudar blog de destino", valor: "mudar-blog", icone: ICONES.blog },
       { rotulo: "Criar imagem com IA (para baixar)", valor: "imagem-ia", icone: ICONES.brilho },
       { rotulo: "Copiar HTML", valor: "copiar", icone: ICONES.copiar },
       "-",
@@ -1548,6 +1586,17 @@ function telaEditor(id) {
     if (escolha === "abrir") window.open(post.url, "_blank", "noopener");
     if (escolha === "copiar") { salvarAgora(); copiar(conteudoFinal(post)); }
     if (escolha === "imagem-ia") criarImagemIA(post);
+    if (escolha === "mudar-blog") {
+      const atual = blogDoPost(post);
+      const destino = await abrirFolha(blogsConhecidos().map(b => ({ rotulo: `${b.nome}${b.id === atual ? " (atual)" : ""}`, valor: b.id, icone: ICONES.blog })));
+      if (destino && destino !== atual) {
+        salvarAgora();
+        post.blogId = destino;
+        salvarPost(post);
+        toast(`Este post agora vai para ${nomeDoBlog(destino)}.`, "ok");
+        telaEditor(post.id);
+      }
+    }
     if (escolha === "checar") abrirChecagem(!checagens.has(post.id));
     if (escolha === "checar-novo") abrirChecagem(true);
     if (escolha === "excluir" && confirm("Excluir este post do aparelho? O que já está no Blogger não é apagado.")) {
@@ -1854,6 +1903,7 @@ function telaAjustes() {
         const tk = await pedido;
         carregando("Buscando seus blogs…");
         const blogs = await listarBlogs(tk);
+        salvarConfig({ nomesBlogs: { ...(cfg().nomesBlogs || {}), ...Object.fromEntries(blogs.map(b => [b.id, b.nome])) } });
         carregando(null);
         if (!blogs.length) { toast("Nenhum blog encontrado nesta conta Google.", "erro"); telaAjustes(); return; }
         const escolhido = blogs.length === 1
