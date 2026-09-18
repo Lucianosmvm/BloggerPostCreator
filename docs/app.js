@@ -91,30 +91,95 @@ function novoId() {
 
 /* ---------------- Gemini ---------------- */
 
+const esperar = (ms) => new Promise(r => setTimeout(r, ms));
+
 async function chamarGemini(caminho, { metodo = "GET", corpo, chave, timeoutMs = 30000 } = {}) {
-  let resposta;
-  try {
-    resposta = await fetch(GEMINI_URL + caminho, {
-      method: metodo,
-      headers: { "x-goog-api-key": chave, ...(corpo ? { "Content-Type": "application/json" } : {}) },
-      body: corpo ? JSON.stringify(corpo) : undefined,
-      signal: AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : undefined,
-    });
-  } catch (e) {
-    if (e.name === "TimeoutError") throw new ErroApp("O Gemini demorou demais para responder. Tente de novo.");
-    throw new ErroApp("Sem conexão com a API do Gemini. Verifique sua internet.");
-  }
-  const dados = await resposta.json().catch(() => ({}));
-  if (!resposta.ok) {
+  // "?..." lista os modelos (…/models?...); o resto é …/models/<modelo>:<ação>
+  const url = caminho.startsWith("?") ? GEMINI_URL.slice(0, -1) + caminho : GEMINI_URL + caminho;
+  const modelo = decodeURIComponent(caminho.split(/[:?]/)[0]) || "selecionado";
+  for (let tentativa = 1; ; tentativa++) {
+    let resposta;
+    try {
+      resposta = await fetch(url, {
+        method: metodo,
+        headers: { "x-goog-api-key": chave, ...(corpo ? { "Content-Type": "application/json" } : {}) },
+        body: corpo ? JSON.stringify(corpo) : undefined,
+        signal: AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : undefined,
+      });
+    } catch (e) {
+      if (e.name === "TimeoutError") throw new ErroApp(`O modelo ${modelo} demorou demais para responder. Tente de novo ou escolha outro modelo.`);
+      throw new ErroApp("Sem conexão com a API do Gemini. Verifique sua internet.");
+    }
+    // Sobrecarga momentânea: tenta mais uma vez antes de desistir.
+    if ((resposta.status === 503 || resposta.status === 500) && tentativa < 2) { await esperar(2000); continue; }
+
+    const dados = await resposta.json().catch(() => ({}));
+    if (resposta.ok) return dados;
     const msg = dados.error?.message || resposta.statusText;
     const detalhes = msg + JSON.stringify(dados.error?.details || "");
-    if (resposta.status === 429) throw new ErroApp("Limite de uso da API do Gemini atingido. Aguarde um pouco e tente de novo.", 429);
+    if (resposta.status === 503 || resposta.status === 500)
+      throw new ErroApp(`O modelo ${modelo} está sobrecarregado agora (muita demanda). Escolha outro modelo no seletor e tente de novo.`, resposta.status);
+    if (resposta.status === 429)
+      throw new ErroApp(`Limite de uso do modelo ${modelo} atingido. Aguarde um pouco ou escolha outro modelo no seletor.`, 429);
     if ([400, 401, 403].includes(resposta.status) && /API[ _]?key/i.test(detalhes))
       throw new ErroApp("Chave da API do Gemini inválida. Confira em Ajustes.", resposta.status);
-    if (resposta.status === 404) throw new ErroApp("Modelo do Gemini não encontrado. Escolha outro em Ajustes.", 404);
+    if (resposta.status === 404) throw new ErroApp(`Modelo ${modelo} não encontrado para a sua chave. Escolha outro no seletor.`, 404);
     throw new ErroApp(`Erro do Gemini (${resposta.status}): ${msg}`, resposta.status);
   }
-  return dados;
+}
+
+/* ---------------- Lista de modelos ---------------- */
+
+const MODELOS_IMAGEM_FIXOS = ["gemini-3.1-flash-image", "gemini-3.1-flash-lite-image", "gemini-3-pro-image", "gemini-2.5-flash-image"];
+const NAO_SAO_DE_TEXTO = /embedding|aqa|tts|audio|live|robotics|computer-use|learnlm|veo|imagen|image/i;
+
+/** Ordena do mais novo para o mais antigo, com as versões estáveis antes das prévias. */
+function ordenarModelos(lista) {
+  return lista.sort((a, b) =>
+    Number(/preview|exp/i.test(a.id)) - Number(/preview|exp/i.test(b.id)) ||
+    b.id.localeCompare(a.id, "en", { numeric: true }));
+}
+
+/** Busca na API os modelos disponíveis para a chave e guarda no aparelho. */
+async function atualizarModelos(chave = cfg().geminiKey) {
+  if (!chave) throw new ErroApp("Cadastre a chave do Gemini primeiro.");
+  const dados = await chamarGemini("?pageSize=1000", { chave });
+  const todos = (dados.models || [])
+    .filter(m => m.supportedGenerationMethods?.includes("generateContent"))
+    .map(m => ({ id: String(m.name || "").replace(/^models\//, ""), nome: m.displayName || "" }))
+    .filter(m => /^gemini-/.test(m.id));
+  const texto = ordenarModelos(todos.filter(m => !NAO_SAO_DE_TEXTO.test(m.id)));
+  const imagem = ordenarModelos(todos.filter(m => /image/i.test(m.id)));
+  armazenamento.gravar("bs.modelos", { texto, imagem, quando: Date.now() });
+  return { texto, imagem };
+}
+
+function listaModelos(tipo) {
+  const salvo = armazenamento.ler("bs.modelos", null)?.[tipo];
+  if (Array.isArray(salvo) && salvo.length) return salvo;
+  return (tipo === "imagem" ? MODELOS_IMAGEM_FIXOS : MODELOS).map(id => ({ id, nome: "" }));
+}
+
+/** <select> de modelos; mantém o modelo atual na lista mesmo que a API não o liste. */
+function seletorModelo(nome, tipo, atual) {
+  const lista = listaModelos(tipo);
+  const opcoes = lista.some(m => m.id === atual) ? lista : [{ id: atual, nome: "" }, ...lista];
+  return `<select name="${esc(nome)}" aria-label="Modelo de IA">${opcoes.map(m =>
+    `<option value="${esc(m.id)}" ${m.id === atual ? "selected" : ""}>${esc(m.nome && m.nome !== m.id ? `${m.nome} · ${m.id}` : m.id)}</option>`).join("")}</select>`;
+}
+
+/** Campo compacto para trocar o modelo de texto direto nas telas de geração. */
+function campoModelo() {
+  return `<label class="campo campo-modelo"><span>Modelo de IA</span>
+    ${seletorModelo("modeloIa", "texto", cfg().geminiModel || MODELO_PADRAO)}
+    <small>Se aparecer "sobrecarregado" ou "limite", troque o modelo aqui.</small></label>`;
+}
+function ligarCampoModelo(raiz) {
+  const select = raiz.querySelector('select[name="modeloIa"]');
+  select?.addEventListener("change", () => {
+    salvarConfig({ geminiModel: select.value });
+    toast(`Modelo: ${select.value}`);
+  });
 }
 
 function testarGemini(chave, modelo) {
@@ -727,6 +792,7 @@ function telaNovo() {
         <label class="campo"><span>Instruções extras</span>
           <textarea name="instrucoes" rows="2" placeholder="Algo específico que o post precisa ter?">${esc(f.instrucoes)}</textarea>
         </label>
+        ${campoModelo()}
         <label class="interruptor">
           <span><strong>Revisar esboço antes</strong><small>Escolha o título e ajuste os tópicos antes de escrever</small></span>
           <input type="checkbox" id="usar-esboco" ${usarEsboco() ? "checked" : ""}>
@@ -735,6 +801,7 @@ function telaNovo() {
       </form>`,
     barraAcoes: `<button class="btn primario" id="gerar" form="form-novo" type="submit">${ICONES.brilho} <span id="rotulo-gerar">${usarEsboco() ? "Criar esboço" : "Gerar com IA"}</span></button>`,
   });
+  ligarCampoModelo(main);
   $("#usar-esboco", main).addEventListener("change", (e) => {
     armazenamento.gravar("bs.usarEsboco", e.target.checked);
     $("#rotulo-gerar", main).textContent = e.target.checked ? "Criar esboço" : "Gerar com IA";
@@ -742,7 +809,7 @@ function telaNovo() {
 
   const form = $("#form-novo", main);
   const lerFormulario = () => {
-    for (const [chave, valor] of new FormData(form)) formularioNovo[chave] = String(valor).trim();
+    for (const [chave, valor] of new FormData(form)) if (chave !== "modeloIa") formularioNovo[chave] = String(valor).trim();
   };
   form.addEventListener("input", lerFormulario);
   form.addEventListener("change", lerFormulario);
@@ -823,12 +890,14 @@ function telaEsboco() {
         <p class="pequeno suave">O post vai seguir esta ordem. Edite, reordene, apague ou adicione.</p>
         <ol class="topicos" id="topicos"></ol>
         <button type="button" class="btn largo" id="adicionar-topico">${ICONES.mais} Adicionar tópico</button>
-      </section>`,
+      </section>
+      <section class="cartao">${campoModelo()}</section>`,
     barraAcoes: `
       <button class="btn" id="novo-esboco">Refazer</button>
       <button class="btn primario" id="escrever-post">${ICONES.brilho} Escrever post</button>`,
   });
 
+  ligarCampoModelo(main);
   const lista = $("#topicos", main);
   const gravar = () => salvarEsboco(esboco);
   const renderTopicos = (foco) => {
@@ -1355,12 +1424,15 @@ function telaAjustes() {
             <input type="password" name="chave" autocomplete="off" autocapitalize="off" spellcheck="false"
               placeholder="${c.geminiKey ? "Deixe em branco para manter a atual" : "Cole sua chave aqui"}">
           </label>
-          <label class="campo"><span>Modelo</span>
-            <input name="modelo" value="${esc(c.geminiModel)}" list="modelos" autocapitalize="off" spellcheck="false">
-            <datalist id="modelos">${MODELOS.map(m => `<option value="${m}">`).join("")}</datalist>
+          <label class="campo"><span>Modelo de texto</span>
+            ${seletorModelo("modelo", "texto", c.geminiModel || MODELO_PADRAO)}
+            <small>${armazenamento.ler("bs.modelos", null)?.quando
+              ? `Lista da sua conta, atualizada em ${new Date(armazenamento.ler("bs.modelos", null).quando).toLocaleDateString("pt-BR")}.`
+              : "Lista padrão. Toque em “Atualizar lista” para ver todos os modelos da sua chave."}</small>
           </label>
           <div class="botoes">
             <button class="btn primario">Salvar e testar</button>
+            ${c.geminiKey ? `<button type="button" class="btn" id="atualizar-modelos">Atualizar lista</button>` : ""}
             ${c.geminiKey ? `<button type="button" class="btn perigo" id="remover-gemini">Remover</button>` : ""}
           </div>
         </form>
@@ -1459,7 +1531,7 @@ function telaAjustes() {
               placeholder="${c.pexelsKey ? "Deixe em branco para manter a atual" : "Cole sua chave aqui"}">
           </label>
           <label class="campo"><span>Modelo para imagens com IA</span>
-            <input name="modeloImagem" value="${esc(c.modeloImagem || MODELO_IMAGEM_PADRAO)}" autocapitalize="off" spellcheck="false">
+            ${seletorModelo("modeloImagem", "imagem", c.modeloImagem || MODELO_IMAGEM_PADRAO)}
             <small>Gerar imagens com o Gemini pode exigir faturamento ativo na sua conta.</small>
           </label>
           <div class="botoes">
@@ -1492,13 +1564,26 @@ function telaAjustes() {
     e.preventDefault();
     const form = e.target;
     const chave = form.chave.value.replace(/\s+/g, "") || c.geminiKey;
-    const modelo = form.modelo.value.trim() || MODELO_PADRAO;
+    const modelo = form.modelo.value || MODELO_PADRAO;
     if (!chave) { toast("Cole a chave da API do Gemini.", "erro"); return; }
     carregando("Testando a chave…");
     try {
       await testarGemini(chave, modelo);
       salvarConfig({ geminiKey: chave, geminiModel: modelo });
+      await atualizarModelos(chave).catch(() => {});
       toast("Chave do Gemini salva e testada.", "ok");
+      telaAjustes();
+    } catch (erro) {
+      toast(erro.message, "erro");
+    } finally {
+      carregando(null);
+    }
+  });
+  $("#atualizar-modelos", main)?.addEventListener("click", async () => {
+    carregando("Buscando modelos da sua conta…");
+    try {
+      const { texto, imagem } = await atualizarModelos();
+      toast(`${texto.length} modelos de texto e ${imagem.length} de imagem encontrados.`, "ok");
       telaAjustes();
     } catch (erro) {
       toast(erro.message, "erro");
@@ -1517,7 +1602,7 @@ function telaAjustes() {
   $("#form-imagens", main).addEventListener("submit", async (e) => {
     e.preventDefault();
     const chave = e.target.pexelsKey.value.trim();
-    const modeloImagem = e.target.modeloImagem.value.trim();
+    const modeloImagem = e.target.modeloImagem.value;
     if (chave) {
       carregando("Testando a chave do Pexels…");
       try {
@@ -1646,6 +1731,9 @@ window.addEventListener("hashchange", rota);
 document.addEventListener("visibilitychange", () => { if (document.hidden) salvarPendente?.(); });
 
 if (!location.hash) history.replaceState(null, "", "#/posts");
+if (cfg().geminiKey && Date.now() - (armazenamento.ler("bs.modelos", null)?.quando || 0) > 7 * 86400e3) {
+  atualizarModelos().catch(() => { /* sem internet ou chave inválida: fica a lista atual */ });
+}
 rota();
 
 if ("serviceWorker" in navigator) {

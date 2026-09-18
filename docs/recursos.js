@@ -87,6 +87,7 @@ function telaIdeias() {
           <input name="nicho" value="${esc(f.nicho)}" placeholder="Ex.: doces sem açúcar, jogos indie, segurança no celular">
         </label>
         <div class="campo"><span>Quantas ideias</span>${campoChips("quantidade", ["5", "10", "15"], f.quantidade)}</div>
+        ${campoModelo()}
         <button class="btn primario largo">${ICONES.brilho} Gerar ideias</button>
       </form>
       ${daCategoria.length ? `
@@ -112,6 +113,7 @@ function telaIdeias() {
   });
 
   const form = $("#form-ideias", main);
+  ligarCampoModelo(main);
   const nomeParaId = (nome) => ORDEM_CATEGORIAS.find(id => CATEGORIAS[id].nome === nome) || "geral";
   const ler = () => {
     const d = new FormData(form);
