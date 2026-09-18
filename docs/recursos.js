@@ -185,11 +185,11 @@ function capaHtml(capa) {
 /** Conteúdo final enviado ao Blogger: capa + texto. */
 function conteudoFinal(post) { return capaHtml(post.capa) + (post.conteudo || ""); }
 
-async function buscarPexels(consulta, pagina = 1, chave = cfg().pexelsKey) {
+async function buscarPexels(consulta, pagina = 1, chave = cfg().pexelsKey, locale = "pt-BR") {
   if (!chave) throw new ErroApp("Cadastre a chave do Pexels em Ajustes.");
   let resposta;
   try {
-    const url = `https://api.pexels.com/v1/search?${new URLSearchParams({ query: consulta, page: pagina, per_page: 12, orientation: "landscape", locale: "pt-BR" })}`;
+    const url = `https://api.pexels.com/v1/search?${new URLSearchParams({ query: consulta, page: pagina, per_page: 12, orientation: "landscape", locale })}`;
     resposta = await fetch(url, { headers: { Authorization: chave } });
   } catch {
     throw new ErroApp("Sem conexão com o Pexels. Verifique sua internet.");
@@ -370,4 +370,90 @@ async function escolherDataAgendamento(atual) {
     if (quando.getTime() < Date.now() + 2 * 60000) { toast("Escolha um horário pelo menos 2 minutos no futuro.", "erro"); continue; }
     return quando;
   }
+}
+
+/** Escolhe sozinha uma foto do Pexels para o post gerado (se houver chave e a opção estiver ligada). */
+async function aplicarCapaAutomatica(post, termo, tema) {
+  const c = cfg();
+  if (!c.pexelsKey || c.capaAutomatica === false || post.capa) return false;
+  carregando("Escolhendo a foto de capa…");
+  const consultas = [termo, tema, post.titulo].map(t => String(t || "").trim()).filter(Boolean);
+  for (const consulta of consultas) {
+    try {
+      const ingles = /^[\x20-\x7e]+$/.test(consulta);
+      const { fotos } = await buscarPexels(consulta, 1, c.pexelsKey, ingles ? "en-US" : "pt-BR");
+      if (fotos.length) {
+        const f = fotos[0];
+        post.capa = { fonte: "pexels", url: f.url, alt: f.alt || post.titulo, autor: f.autor, autorUrl: f.autorUrl, paginaUrl: f.paginaUrl };
+        return true;
+      }
+    } catch {
+      return false; // sem capa não impede o post
+    }
+  }
+  return false;
+}
+
+/* ---------------- Perfil automático a partir do blog ---------------- */
+
+async function lerBlog(tk, blogId) {
+  const id = encodeURIComponent(blogId);
+  const info = await chamarBlogger(tk, "GET", `/blogs/${id}?fields=name,description,url`);
+  const recentes = await chamarBlogger(tk, "GET", `/blogs/${id}/posts?maxResults=6&fetchImages=false&fields=items(title,labels,content)`);
+  const rotulos = await chamarBlogger(tk, "GET", `/blogs/${id}/posts?maxResults=100&fetchBodies=false&fields=items(labels)`);
+  const contagem = new Map();
+  for (const post of rotulos.items || []) for (const l of post.labels || []) contagem.set(l, (contagem.get(l) || 0) + 1);
+  return {
+    nome: info.name || "",
+    descricao: info.description || "",
+    url: info.url || "",
+    marcadores: [...contagem].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([l]) => l),
+    posts: (recentes.items || []).map(p => ({ titulo: p.title || "", marcadores: p.labels || [], trecho: textoDoPost(p.content || "").slice(0, 900) })),
+  };
+}
+
+const PERFIL_SCHEMA = {
+  type: "object",
+  properties: {
+    autor: { type: "string", description: "Quem escreve e de que ponto de vista (sem inventar nome próprio)" },
+    publico: { type: "string", description: "Para quem o blog escreve" },
+    tom: { type: "string", description: "Tom de voz em poucas palavras" },
+    regras: { type: "array", items: { type: "string" }, description: "3 a 6 regras de estilo observadas nos posts" },
+    rodape: { type: "string", description: "Mensagem curta de fechamento no estilo do blog, convidando a comentar ou compartilhar" },
+  },
+  required: ["autor", "publico", "tom", "regras", "rodape"],
+};
+
+/** Lê o blog no Blogger e cria o perfil editorial dele com a IA. */
+async function criarPerfilAutomatico(tk, blog) {
+  const dados = await lerBlog(tk, blog.id);
+  const texto = [
+    `Nome do blog: ${dados.nome || blog.nome}`,
+    dados.descricao && `Descrição do blog: ${textoDoPost(dados.descricao)}`,
+    dados.url && `Endereço: ${dados.url}`,
+    dados.marcadores.length && `Marcadores mais usados: ${dados.marcadores.join("; ")}`,
+    dados.posts.length
+      ? `Posts recentes:\n${dados.posts.map(p => `### ${p.titulo}\nMarcadores: ${p.marcadores.join(", ")}\n${p.trecho}`).join("\n\n")}`
+      : "O blog ainda não tem posts publicados.",
+  ].filter(Boolean).join("\n\n");
+  const perfil = await gerarJson({
+    sistema: `Você é um editor de blogs. A partir do nome, da descrição, dos marcadores e dos posts de um blog, descreva o perfil editorial dele, para que novos posts soem como os existentes.
+- Baseie-se no que aparece nos posts (pessoa do discurso, tratamento do leitor, tamanho dos parágrafos, uso de emojis, humor, termos técnicos).
+- Não invente nome próprio, idade ou fatos sobre o autor que não apareçam no texto.
+- Se o blog não tiver posts, deduza de forma conservadora pelo nome e pela descrição.
+- Responda em português do Brasil, somente no formato JSON pedido, em texto puro.`,
+    texto, schema: PERFIL_SCHEMA, maxTokens: 4096, timeoutMs: 120000,
+  });
+  const anterior = perfilSalvo(blog.id);
+  salvarPerfil({
+    nomeBlog: dados.nome || blog.nome || "",
+    autor: String(perfil.autor || "").trim(),
+    publico: String(perfil.publico || "").trim(),
+    tom: String(perfil.tom || "").trim(),
+    regras: (perfil.regras || []).map(r => String(r).trim()).filter(Boolean).join("\n"),
+    rodape: String(perfil.rodape || "").trim(),
+    cor: anterior.cor || "",
+    marcadoresBlog: dados.marcadores,
+    geradoEm: new Date().toISOString(),
+  }, blog.id);
 }

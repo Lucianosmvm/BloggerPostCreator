@@ -47,16 +47,29 @@ const armazenamento = {
 
 function cfg() {
   return {
-    geminiKey: "", geminiModel: MODELO_PADRAO, clientId: "", blogId: "", blogNome: "", perfil: {},
-    pexelsKey: "", modeloImagem: "", ...armazenamento.ler("bs.config", {}),
+    geminiKey: "", geminiModel: MODELO_PADRAO, clientId: "", blogId: "", blogNome: "", perfil: {}, perfis: {},
+    pexelsKey: "", modeloImagem: "", capaAutomatica: true, ...armazenamento.ler("bs.config", {}),
   };
+}
+/** Perfil salvo do blog atual. Cada blog tem o seu; o perfil antigo (único) vale só enquanto não houver perfis por blog. */
+function perfilSalvo(blogId = cfg().blogId) {
+  const c = cfg();
+  const perfis = c.perfis || {};
+  if (blogId && perfis[blogId]) return perfis[blogId];
+  return Object.keys(perfis).length ? {} : (c.perfil || {});
+}
+function salvarPerfil(dados, blogId = cfg().blogId) {
+  const c = cfg();
+  if (blogId) salvarConfig({ perfis: { ...(c.perfis || {}), [blogId]: dados } });
+  else salvarConfig({ perfil: dados });
 }
 function perfilBlog() {
   const c = cfg();
-  const p = c.perfil || {};
+  const p = perfilSalvo();
   return {
     nomeBlog: p.nomeBlog || c.blogNome || "", autor: p.autor || "", publico: p.publico || "",
     tom: p.tom || "", regras: p.regras || "", rodape: p.rodape || "", cor: corValida(p.cor),
+    marcadoresBlog: Array.isArray(p.marcadoresBlog) ? p.marcadoresBlog : [],
   };
 }
 function salvarConfig(parcial) { armazenamento.gravar("bs.config", { ...cfg(), ...parcial }); }
@@ -190,6 +203,7 @@ function montarInstrucoes(cat, perfil) {
   const perfilTexto = [
     linhasPerfil(perfil),
     perfil.rodape && "- O aplicativo já adiciona uma mensagem de fechamento ao post; não crie outra chamada para comentar ou compartilhar.",
+    perfil.marcadoresBlog?.length && `- Marcadores que o blog já usa (reaproveite os que servirem, com a mesma grafia, antes de criar novos): ${perfil.marcadoresBlog.slice(0, 40).join("; ")}`,
   ].filter(Boolean).join("\n");
   return [SISTEMA_BASE, perfilTexto && `Perfil do blog:\n${perfilTexto}`, cat.instrucoes].filter(Boolean).join("\n\n");
 }
@@ -299,6 +313,10 @@ async function gerarPost(entrada, esboco = null) {
   const estruturado = await gerarJson({ sistema: montarInstrucoes(cat, perfil), texto: partes.filter(l => typeof l === "string").join("\n"), schema: cat.schema });
   const post = montarPost(entrada.categoria, estruturado, perfil, entrada);
   if (esboco?.titulo) post.titulo = esboco.titulo;
+  // Usa a grafia dos marcadores que o blog já tem (ex.: "wi-fi" → "Wi-Fi").
+  const chave = (m) => m.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const doBlog = new Map(perfil.marcadoresBlog.map(m => [chave(m), m]));
+  post.marcadores = separarMarcadores(post.marcadores.map(m => doBlog.get(chave(m)) || m).join(","));
   if (!post.titulo || !post.conteudo.trim()) throw new ErroApp("O Gemini devolveu um post vazio. Tente de novo.");
   return { ...post, categoria: entrada.categoria, dados: estruturado };
 }
@@ -777,6 +795,8 @@ function telaNovo() {
           <textarea name="tema" rows="3" required placeholder="${esc(cat.exemploTema)}">${esc(f.tema)}</textarea>
         </label>
         ${camposCategoria}
+        <details class="ajuda mais-opcoes" ${f.palavrasChave || f.publico || f.instrucoes || (f.tom && f.tom !== "Padrão") || (f.tamanho && f.tamanho !== "medio") ? "open" : ""}>
+        <summary>Mais opções (opcional)</summary>
         ${esconder.has("palavrasChave") ? "" : `<label class="campo"><span>Palavras-chave</span>
           <input name="palavrasChave" value="${esc(f.palavrasChave)}" placeholder="Separadas por vírgula" autocapitalize="off"></label>`}
         ${esconder.has("publico") ? "" : `<label class="campo"><span>Público-alvo</span>
@@ -793,6 +813,7 @@ function telaNovo() {
           <textarea name="instrucoes" rows="2" placeholder="Algo específico que o post precisa ter?">${esc(f.instrucoes)}</textarea>
         </label>
         ${campoModelo()}
+        </details>
         <label class="interruptor">
           <span><strong>Revisar esboço antes</strong><small>Escolha o título e ajuste os tópicos antes de escrever</small></span>
           <input type="checkbox" id="usar-esboco" ${usarEsboco() ? "checked" : ""}>
@@ -844,7 +865,8 @@ function telaNovo() {
     }
     carregando(`Escrevendo seu post de ${categoria(entrada.categoria).nome.toLowerCase()}… pode levar até 1 minuto`);
     try {
-      const gerado = await gerarPost(entrada);
+      const { buscaImagem, ...gerado } = await gerarPost(entrada);
+      await aplicarCapaAutomatica(gerado, buscaImagem, entrada.tema);
       const post = criarPost({ ...gerado, tema: entrada.tema });
       formularioNovo = { ...formularioNovo, tema: "", instrucoes: "" };
       location.hash = `#/post/${post.id}`;
@@ -977,7 +999,8 @@ function telaEsboco() {
     if (!final.topicos.length) { toast("Adicione pelo menos um tópico.", "erro"); return; }
     carregando(`Escrevendo seu post de ${cat.nome.toLowerCase()}… pode levar até 1 minuto`);
     try {
-      const gerado = await gerarPost(esboco.entrada, final);
+      const { buscaImagem, ...gerado } = await gerarPost(esboco.entrada, final);
+      await aplicarCapaAutomatica(gerado, buscaImagem, esboco.entrada.tema);
       const post = criarPost({ ...gerado, tema: esboco.entrada.tema, esboco: final });
       armazenamento.gravar("bs.esboco", null);
       formularioNovo = { ...formularioNovo, tema: "", instrucoes: "" };
@@ -1449,6 +1472,7 @@ function telaAjustes() {
   const c = cfg();
   const conectado = tokenValido();
   const instalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  const pf = perfilSalvo();
   const origem = location.origin;
 
   const main = montar({
@@ -1532,26 +1556,30 @@ function telaAjustes() {
 
       <h2 class="secao-titulo">3 · Perfil do blog</h2>
       <section class="cartao">
-        <p class="pequeno suave">Usado em todos os posts gerados, para manter a mesma voz e o mesmo visual.</p>
+        <p class="pequeno suave">${c.blogId
+          ? `Perfil de <strong>${esc(c.blogNome)}</strong>. Cada blog tem o seu: ao trocar de blog, o perfil dele é carregado (e criado automaticamente na primeira vez).`
+          : "Usado em todos os posts gerados. Conecte o Blogger para criar o perfil automaticamente a partir do blog."}</p>
+        ${c.blogId ? `<button type="button" class="btn largo" id="gerar-perfil">${ICONES.brilho} ${pf.geradoEm ? "Recriar perfil a partir do blog" : "Criar perfil a partir do blog"}</button>` : ""}
+        ${pf.geradoEm ? `<p class="pequeno suave">Criado automaticamente em ${new Date(pf.geradoEm).toLocaleDateString("pt-BR")}${pf.marcadoresBlog?.length ? ` · ${pf.marcadoresBlog.length} marcadores do blog serão reaproveitados` : ""}.</p>` : ""}
         <form id="form-perfil">
           <label class="campo"><span>Nome do blog</span>
-            <input name="nomeBlog" value="${esc(c.perfil?.nomeBlog || "")}" placeholder="${esc(c.blogNome || "Ex.: Cozinha & Código")}">
+            <input name="nomeBlog" value="${esc(pf.nomeBlog || "")}" placeholder="${esc(c.blogNome || "Ex.: Cozinha & Código")}">
           </label>
           <label class="campo"><span>Quem escreve</span>
-            <input name="autor" value="${esc(c.perfil?.autor || "")}" placeholder="Ex.: Ana, desenvolvedora que adora cozinhar e jogar">
+            <input name="autor" value="${esc(pf.autor || "")}" placeholder="Ex.: Ana, desenvolvedora que adora cozinhar e jogar">
           </label>
           <label class="campo"><span>Público do blog</span>
-            <input name="publico" value="${esc(c.perfil?.publico || "")}" placeholder="Ex.: adultos curiosos, sem conhecimento técnico">
+            <input name="publico" value="${esc(pf.publico || "")}" placeholder="Ex.: adultos curiosos, sem conhecimento técnico">
           </label>
           <label class="campo"><span>Tom de voz padrão</span>
-            <input name="tom" value="${esc(c.perfil?.tom || "")}" list="tons" placeholder="Ex.: próximo e bem-humorado, sem gírias">
+            <input name="tom" value="${esc(pf.tom || "")}" list="tons" placeholder="Ex.: próximo e bem-humorado, sem gírias">
             <datalist id="tons">${TONS.slice(1).map(t => `<option value="${esc(t)}">`).join("")}</datalist>
           </label>
           <label class="campo"><span>Regras do blog</span>
-            <textarea name="regras" rows="4" placeholder="Uma por linha. Ex.:&#10;Tratar o leitor por você&#10;Nunca usar palavrões&#10;Citar marcas só quando necessário">${esc(c.perfil?.regras || "")}</textarea>
+            <textarea name="regras" rows="4" placeholder="Uma por linha. Ex.:&#10;Tratar o leitor por você&#10;Nunca usar palavrões&#10;Citar marcas só quando necessário">${esc(pf.regras || "")}</textarea>
           </label>
           <label class="campo"><span>Mensagem no final de todo post</span>
-            <textarea name="rodape" rows="2" placeholder="Ex.: Gostou? Deixe um comentário e compartilhe com quem vai curtir!">${esc(c.perfil?.rodape || "")}</textarea>
+            <textarea name="rodape" rows="2" placeholder="Ex.: Gostou? Deixe um comentário e compartilhe com quem vai curtir!">${esc(pf.rodape || "")}</textarea>
             <small>Aparece numa caixa destacada no fim dos posts gerados.</small>
           </label>
           <label class="campo"><span>Cor de destaque</span>
@@ -1584,6 +1612,10 @@ function telaAjustes() {
           <label class="campo"><span>Modelo para imagens com IA</span>
             ${seletorModelo("modeloImagem", "imagem", c.modeloImagem || MODELO_IMAGEM_PADRAO)}
             <small>Gerar imagens com o Gemini pode exigir faturamento ativo na sua conta.</small>
+          </label>
+          <label class="interruptor">
+            <span><strong>Capa automática</strong><small>Escolhe uma foto do Pexels para cada post gerado (dá para trocar no editor)</small></span>
+            <input type="checkbox" name="capaAutomatica" ${c.capaAutomatica !== false ? "checked" : ""}>
           </label>
           <div class="botoes">
             <button class="btn primario">Salvar e testar</button>
@@ -1665,7 +1697,11 @@ function telaAjustes() {
         carregando(null);
       }
     }
-    salvarConfig({ ...(chave ? { pexelsKey: chave } : {}), modeloImagem: modeloImagem === MODELO_IMAGEM_PADRAO ? "" : modeloImagem });
+    salvarConfig({
+      ...(chave ? { pexelsKey: chave } : {}),
+      modeloImagem: modeloImagem === MODELO_IMAGEM_PADRAO ? "" : modeloImagem,
+      capaAutomatica: e.target.capaAutomatica.checked,
+    });
     toast(chave ? "Chave do Pexels salva e testada." : "Configurações de imagem salvas.", "ok");
     telaAjustes();
   });
@@ -1679,8 +1715,26 @@ function telaAjustes() {
   $("#form-perfil", main).addEventListener("submit", (e) => {
     e.preventDefault();
     const dados = Object.fromEntries([...new FormData(e.target)].map(([k, v]) => [k, String(v).trim()]));
-    salvarConfig({ perfil: dados });
+    salvarPerfil({ ...perfilSalvo(), ...dados });
     toast("Perfil do blog salvo.", "ok");
+  });
+  $("#gerar-perfil", main)?.addEventListener("click", () => {
+    if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini primeiro.", "erro"); return; }
+    if (perfilSalvo().autor && !confirm("Substituir o perfil atual por um novo, criado a partir do blog?")) return;
+    const pedido = garantirToken();
+    (async () => {
+      try {
+        const tk = await pedido;
+        carregando("Lendo o blog e montando o perfil…");
+        await criarPerfilAutomatico(tk, { id: cfg().blogId, nome: cfg().blogNome });
+        toast("Perfil criado a partir do blog.", "ok");
+        telaAjustes();
+      } catch (erro) {
+        toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+      } finally {
+        carregando(null);
+      }
+    })();
   });
 
   // Google / Blogger
@@ -1707,10 +1761,22 @@ function telaAjustes() {
         const blogs = await listarBlogs(tk);
         carregando(null);
         if (!blogs.length) { toast("Nenhum blog encontrado nesta conta Google.", "erro"); telaAjustes(); return; }
-        const escolhido = await abrirFolha(blogs.map(b => ({ rotulo: `${b.nome} — ${b.url.replace(/^https?:\/\//, "")}`, valor: b, icone: ICONES.blog })));
+        const escolhido = blogs.length === 1
+          ? blogs[0]
+          : await abrirFolha(blogs.map(b => ({ rotulo: `${b.nome} — ${b.url.replace(/^https?:\/\//, "")}`, valor: b, icone: ICONES.blog })));
         if (escolhido) {
           salvarConfig({ blogId: escolhido.id, blogNome: escolhido.nome });
-          toast(`Blog escolhido: ${escolhido.nome}`, "ok");
+          if (!cfg().perfis?.[escolhido.id] && cfg().geminiKey) {
+            carregando("Lendo o blog e montando o perfil…");
+            try {
+              await criarPerfilAutomatico(tk, escolhido);
+              toast(`Blog ${escolhido.nome} escolhido e perfil criado automaticamente.`, "ok");
+            } catch (erro) {
+              toast(`Blog escolhido, mas o perfil automático falhou: ${erro.message}`, "erro");
+            }
+          } else {
+            toast(`Blog escolhido: ${escolhido.nome}${cfg().perfis?.[escolhido.id] ? " (perfil carregado)" : ""}`, "ok");
+          }
         }
         telaAjustes();
       } catch (erro) {

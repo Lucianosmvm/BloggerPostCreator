@@ -376,3 +376,8 @@ input[type="datetime-local"] { min-height: 48px; }
 .acoes-descricao { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .acoes-descricao .btn { flex: 1; min-height: 40px; padding: 8px 10px; font-size: .88rem; white-space: nowrap; }
 .acoes-descricao .btn svg { width: 18px; height: 18px; }
+
+/* ---------- Criar: mais opções ---------- */
+.mais-opcoes { margin: 4px 0 12px; }
+.mais-opcoes[open] { padding-bottom: 4px; }
+#gerar-perfil { margin: 4px 0 10px; }

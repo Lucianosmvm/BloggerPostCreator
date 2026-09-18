@@ -19,8 +19,14 @@ Na aba **Criar**, escolha o tipo. Cada um tem campos, instruções para a IA e v
 | 📖 Histórias | Ficção original com gênero, narrador, público e tipo de final |
 | 📝 Geral | Post livre |
 
-Em **Ajustes → Perfil do blog** defina nome, quem escreve, público, tom, regras, a mensagem de
-fechamento e a cor de destaque. Isso vale para todos os posts.
+**Perfil do blog automático:** cada blog tem o seu perfil. Ao escolher um blog pela primeira vez,
+o app lê o nome, a descrição, os posts recentes e os marcadores do Blogger e a IA monta o perfil
+(quem escreve, público, tom, regras e mensagem de fechamento). Ao trocar de blog, o perfil dele é
+carregado. Dá para revisar ou recriar em **Ajustes → Perfil do blog**. Os marcadores que o blog já
+usa são reaproveitados com a mesma grafia.
+
+**Capa automática:** com a chave do Pexels cadastrada, cada post gerado já vem com foto de capa
+(dá para trocar no editor ou desligar em **Ajustes → 4 · Imagens**).
 
 > Em Tecnologia e Games, confira datas, versões, preços e requisitos antes de publicar:
 > a IA pode estar desatualizada.

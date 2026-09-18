@@ -143,10 +143,11 @@ function schema(propriedades, obrigatorios) {
     properties: {
       titulo: S.texto("Título atraente e claro, até 70 caracteres"),
       descricao: S.texto("Descrição para buscadores e redes sociais: 120 a 155 caracteres, resume o post e convida a ler, sem aspas e sem emojis"),
+      busca_imagem: S.texto("2 a 4 palavras em inglês para buscar uma foto de capa num banco de imagens (ex.: 'home wifi router')"),
       ...propriedades,
       marcadores: S.lista("3 a 6 marcadores curtos (1 a 3 palavras cada), sem vírgulas e sem parênteses"),
     },
-    required: ["titulo", "descricao", ...obrigatorios, "marcadores"],
+    required: ["titulo", "descricao", "busca_imagem", ...obrigatorios, "marcadores"],
   };
 }
 
@@ -443,6 +444,7 @@ function montarPost(idCategoria, dados, perfil, entrada = {}) {
   return {
     titulo: String(dados.titulo || "").trim(),
     descricao: limparDescricao(dados.descricao),
+    buscaImagem: String(dados.busca_imagem || "").trim(),
     conteudo: html,
     marcadores,
   };
