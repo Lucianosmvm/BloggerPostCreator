@@ -12,9 +12,12 @@ function esc(texto) {
 
 /* ---------------- Limpeza do HTML gerado pela IA ---------------- */
 
-const TAGS_TEXTO = new Set(["P", "H3", "H4", "UL", "OL", "LI", "STRONG", "EM", "B", "I", "A", "BLOCKQUOTE", "BR", "CODE"]);
+const TAGS_TEXTO = new Set(["P", "H3", "H4", "UL", "OL", "LI", "STRONG", "EM", "B", "I", "A", "BLOCKQUOTE", "BR", "CODE",
+  "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "PRE"]);
+const ESTILO_CELULA = "padding:8px 12px;border:1px solid rgba(128,128,128,.35);text-align:left;vertical-align:top;";
+const ESTILO_PRE = "background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;";
 const TAGS_REMOVER = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "INPUT", "BUTTON", "TEMPLATE", "SVG", "MATH"]);
-const TAGS_LAYOUT = new Set(["DIV", "SPAN", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "PRE", "H2"]);
+const TAGS_LAYOUT = new Set(["DIV", "SPAN", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "PRE", "H2", "DETAILS", "SUMMARY"]);
 const ESTILO_PERIGOSO = /url\s*\(|expression|javascript:|@import|behavior|position\s*:\s*fixed/i;
 
 /**
@@ -49,6 +52,18 @@ function limparHtml(html, { permitirH2 = false, manterEstilo = false, envolverP 
     }
   };
   limpar(doc.body);
+  // Tabelas e blocos de código escritos pela IA: mesmo visual dos blocos do app, e tabela larga rola no celular.
+  if (!manterEstilo) {
+    for (const tabela of doc.body.querySelectorAll("table")) {
+      tabela.setAttribute("style", "width:100%;border-collapse:collapse;");
+      tabela.querySelectorAll("th, td").forEach(c => c.setAttribute("style", ESTILO_CELULA + (c.tagName === "TH" ? "background:rgba(128,128,128,.12);" : "")));
+      const caixa = doc.createElement("div");
+      caixa.setAttribute("style", "overflow-x:auto;margin:20px 0;");
+      tabela.replaceWith(caixa);
+      caixa.append(tabela);
+    }
+    doc.body.querySelectorAll("pre").forEach(pre => pre.setAttribute("style", ESTILO_PRE));
+  }
   const resultado = doc.body.innerHTML.trim();
   if (!resultado) return "";
   if (!envolverP) return resultado;
@@ -123,12 +138,31 @@ const Bloco = {
   codigo(codigo, linguagem) {
     if (!codigo?.trim()) return "";
     return (linguagem ? `<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">${esc(linguagem)}</p>` : "") +
-      `<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>${esc(codigo.replace(/\s+$/, ""))}</code></pre>`;
+      `<pre style="${ESTILO_PRE}"><code>${esc(codigo.replace(/\s+$/, ""))}</code></pre>`;
   },
-  secoes(secoes, { comCodigo = false } = {}) {
+  /** Saída esperada de um programa ou comando: bloco claro, para não confundir com o código. */
+  saida(texto) {
+    if (!texto?.trim()) return "";
+    return `<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>` +
+      `<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>${esc(texto.replace(/\s+$/, ""))}</code></pre>`;
+  },
+  /** Seções do post. Campos extras (tabela, código, saída, observação) só aparecem se a IA preencher. */
+  secoes(secoes, { comCodigo = false, cor = "" } = {}) {
     return (secoes || []).filter(s => s?.titulo || s?.conteudo_html).map(s =>
       (s.titulo ? Bloco.h2(s.titulo) : "") + limparHtml(s.conteudo_html) +
-      (comCodigo ? Bloco.codigo(s.codigo, s.linguagem) : "")).join("");
+      (s.tabela?.titulo?.trim() && s.tabela?.colunas?.length ? `<p style="margin:20px 0 -12px;font-weight:bold;">${esc(s.tabela.titulo.trim())}</p>` : "") +
+      Bloco.tabela(s.tabela?.colunas, s.tabela?.linhas, cor) +
+      (comCodigo ? Bloco.codigo(s.codigo, s.linguagem) + Bloco.saida(s.saida) : "") +
+      (s.observacao?.trim() ? Bloco.caixa("", `<p style="margin:0;">${esc(s.observacao.trim())}</p>`, cor) : "")).join("");
+  },
+  /** Exercícios com a resposta escondida (o leitor tenta antes de ver). */
+  exercicios(itens) {
+    const validos = (itens || []).filter(i => i?.pergunta?.trim() && i?.resposta?.trim());
+    if (!validos.length) return "";
+    return Bloco.h2("Exercícios para praticar") + `<ol>` + validos.map(i =>
+      `<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">${esc(i.pergunta.trim())}</p>` +
+      `<details><summary style="cursor:pointer;font-weight:bold;">Ver resposta</summary>` +
+      `<div style="margin-top:8px;">${limparHtml(i.resposta)}</div></details></li>`).join("") + `</ol>`;
   },
   avaliacao(a, cor) {
     if (!a || !(Number(a.nota_geral) > 0)) return "";
@@ -199,31 +233,56 @@ const CATEGORIAS = {
     nome: "Tecnologia",
     icone: "💻",
     marcador: "Tecnologia",
-    esbocoDica: "Tópicos = seções do post. Em tutoriais, as etapas na ordem em que o leitor vai executar.",
-    exemploTema: "Ex.: Como configurar uma VPN no roteador de casa",
-    aviso: "Confira versões, preços, especificações e datas antes de publicar. A IA pode estar desatualizada.",
+    esbocoDica: "Tópicos = seções do post. Em tutoriais, as etapas na ordem em que o leitor vai executar. Em aulas: conceito → tabela de apoio → método → exemplos resolvidos → erros comuns.",
+    exemploTema: "Ex.: Como calcular sub-redes: máscara, rede, broadcast e hosts válidos",
+    aviso: "Confira versões, preços, especificações, datas e as contas dos exemplos antes de publicar. A IA pode errar.",
     campos: [
-      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Tutorial", "Explicação", "Comparativo", "Review", "Novidade"] },
+      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Tutorial", "Aula passo a passo", "Explicação", "Comparativo", "Review", "Novidade"],
+        tamanhoPorOpcao: { "Tutorial": "longo", "Aula passo a passo": "extra", "Explicação": "longo" } },
       { nome: "nivel", rotulo: "Nível do leitor", tipo: "chips", opcoes: ["Iniciante", "Intermediário", "Avançado"] },
-      { nome: "produto", rotulo: "Produto, software ou versão", tipo: "texto", placeholder: "Ex.: Windows 11, iPhone 17, Python 3.14" },
+      { nome: "produto", rotulo: "Produto, software ou versão", tipo: "texto", placeholder: "Ex.: Windows 11, Python 3.14, Cisco Packet Tracer" },
     ],
-    instrucoes: `Categoria: TECNOLOGIA. Escreva como um jornalista de tecnologia experiente e didático.
-- Adapte o vocabulário ao nível do leitor; explique siglas na primeira vez.
+    instrucoes: `Categoria: TECNOLOGIA (programação, redes, banco de dados, sistemas, hardware, ferramentas). Escreva como um professor experiente e didático, que ensina para o leitor conseguir fazer sozinho depois.
+- Adapte o vocabulário ao nível do leitor; explique siglas e termos na primeira vez. Explique o porquê antes do como.
 - Em tutoriais, cada seção é uma etapa clara, na ordem certa, com o que o leitor deve ver ao final.
-- Use "codigo" só quando houver comandos ou código de verdade; o código deve ser completo e funcional.
-- Preencha "comparativo" apenas no formato Comparativo (ou quando uma tabela realmente ajudar).
+- Sempre que o tema tiver cálculo, conversão, fórmula, regra ou código, resolva ao menos um exemplo completo passo a passo, com valores reais, mostrando cada conta ou cada linha e o resultado final. Não pule etapas "óbvias" para iniciantes.
+- Confira cada conta e cada código antes de responder: número errado ou código que não roda é o pior erro num tutorial.
+- "tabela" de cada seção: use para tabelas de referência que o leitor consulta durante a explicação, logo abaixo do texto da seção. Exemplos: potências de 2, conversão binário/decimal, máscaras e prefixos CIDR, portas e protocolos, tipos de dados, operadores, comandos e o que fazem, tabela-verdade, comparação de sintaxes. Cada linha deve ter o mesmo número de colunas.
+- "codigo": código ou comandos de verdade, completos e funcionais, ou contas passo a passo em texto puro (nesse caso, linguagem "Cálculo"). Em programação, explique as partes importantes do código no texto da seção.
+- "saida": o que aparece ao executar o código ou comando daquela seção (opcional, só quando houver código).
+- "observacao": uma dica ou atenção curta sobre a seção, como um erro comum (opcional).
+- Formato "Aula passo a passo": 1) conceito com analogia simples; 2) tabelas de apoio de que o leitor precisa; 3) o método em etapas numeradas; 4) exemplo resolvido completo; 5) segundo exemplo com uma variação; 6) erros comuns; e preencha "exercicios" com 3 a 5 exercícios parecidos com os exemplos, com resposta explicada.
+- "exercicios" também vale em Tutorial e Explicação quando o tema pede prática (cálculo, lógica, código).
+- "comparativo" é uma tabela final de comparação entre opções; use no formato Comparativo ou quando comparar alternativas ajudar. Tabelas de apoio vão em "tabela" das seções.
 - Não invente números de versão, preços, datas de lançamento ou especificações. Se não tiver certeza, fale de forma genérica ou diga que o leitor deve confirmar no site oficial.`,
     schema: schema({
       resumo: S.lista("3 a 5 frases curtas com os pontos principais (resumo rápido)"),
       introducao_html: S.texto("Introdução em HTML (1 a 2 parágrafos)"),
       requisitos: S.lista("O que o leitor precisa antes de começar (pode ser vazio)"),
-      secoes: S.secoes("Seções do post", { codigo: S.texto("Código ou comandos desta seção, sem HTML (opcional)"), linguagem: S.texto("Linguagem do código (opcional)") }),
+      secoes: S.secoes("Seções do post", {
+        tabela: {
+          type: "object", description: "Tabela de apoio desta seção, exibida logo abaixo do texto (opcional)",
+          properties: {
+            titulo: S.texto("Título curto da tabela (opcional)"),
+            colunas: { type: "array", items: { type: "string" } },
+            linhas: { type: "array", items: { type: "array", items: { type: "string" } } },
+          },
+        },
+        codigo: S.texto("Código, comandos ou contas passo a passo desta seção, sem HTML (opcional)"),
+        linguagem: S.texto("Linguagem do código, ou 'Cálculo' para contas (opcional)"),
+        saida: S.texto("Saída esperada ao executar o código ou comando (opcional)"),
+        observacao: S.texto("Dica ou atenção curta sobre esta seção (opcional)"),
+      }),
       comparativo: {
-        type: "object", description: "Tabela comparativa (opcional)",
+        type: "object", description: "Tabela comparativa final entre opções (opcional)",
         properties: { colunas: { type: "array", items: { type: "string" } }, linhas: { type: "array", items: { type: "array", items: { type: "string" } } } },
       },
       pros: S.lista("Pontos positivos (opcional)"),
       contras: S.lista("Pontos negativos (opcional)"),
+      exercicios: {
+        type: "array", description: "Exercícios para o leitor praticar, com resposta explicada passo a passo (opcional; obrigatório em Aula passo a passo)",
+        items: { type: "object", properties: { pergunta: { type: "string" }, resposta: { type: "string", description: "Resposta em HTML, com as contas ou o raciocínio" } }, required: ["pergunta", "resposta"] },
+      },
       faq: S.faq,
       conclusao_html: S.texto("Conclusão em HTML"),
     }, ["resumo", "introducao_html", "secoes", "conclusao_html"]),
@@ -231,9 +290,10 @@ const CATEGORIAS = {
       return Bloco.caixa("Resumo rápido", lista(d.resumo), perfil.cor) +
         limparHtml(d.introducao_html) +
         (d.requisitos?.length ? Bloco.h2("O que você vai precisar") + lista(d.requisitos) : "") +
-        Bloco.secoes(d.secoes, { comCodigo: true }) +
+        Bloco.secoes(d.secoes, { comCodigo: true, cor: perfil.cor }) +
         Bloco.tabela(d.comparativo?.colunas, d.comparativo?.linhas, perfil.cor) +
         Bloco.prosContras(d.pros, d.contras) +
+        Bloco.exercicios(d.exercicios) +
         Bloco.faq(d.faq) +
         Bloco.h2("Conclusão") + limparHtml(d.conclusao_html) +
         `<p style="font-size:13px;opacity:.7;margin-top:24px;">Atualizado em ${dataHoje()}.</p>`;

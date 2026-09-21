@@ -23,7 +23,7 @@ Regras gerais:
 - Use as palavras-chave de forma natural no título, na introdução e em pelo menos um subtítulo.
 - Campos opcionais que não fizerem sentido para o post devem ficar vazios.`;
 
-const TAMANHOS = { curto: "cerca de 400 palavras", medio: "cerca de 800 palavras", longo: "cerca de 1500 palavras" };
+const TAMANHOS = { curto: "cerca de 400 palavras", medio: "cerca de 800 palavras", longo: "cerca de 1500 palavras", extra: "cerca de 2500 palavras (aula completa, sem pular etapas)" };
 const TONS = ["Padrão", "Informal", "Profissional", "Didático", "Bem-humorado", "Inspirador"];
 
 class ErroApp extends Error {
@@ -893,7 +893,7 @@ let formularioNovo = {
   tema: "", palavrasChave: "", publico: "", tom: "Padrão", tamanho: "medio", instrucoes: "",
 };
 
-const ROTULOS_TAMANHO = { curto: "Curto", medio: "Médio", longo: "Longo" };
+const ROTULOS_TAMANHO = { curto: "Curto", medio: "Médio", longo: "Longo", extra: "Extra" };
 let tamanhoAutomatico = false; // o tamanho atual foi escolhido pelo app (não pela pessoa)
 let avisoCategoriaDispensado = false;
 
@@ -959,10 +959,10 @@ function telaNovo() {
         ${esconder.has("tom") ? "" : `<div class="campo"><span>Tom de voz</span>${campoChips("tom", TONS, f.tom)}</div>`}
         ${esconder.has("tamanho") ? "" : `<div class="campo"><span>Tamanho</span>
           <div class="segmentado">
-            ${[["curto", "Curto"], ["medio", "Médio"], ["longo", "Longo"]].map(([v, r]) =>
+            ${Object.entries(ROTULOS_TAMANHO).map(([v, r]) =>
               `<label><input type="radio" name="tamanho" value="${v}" ${v === f.tamanho ? "checked" : ""}><span>${r}</span></label>`).join("")}
           </div>
-          <small>Curto ≈ 400 · Médio ≈ 800 · Longo ≈ 1500 palavras</small>
+          <small>Curto ≈ 400 · Médio ≈ 800 · Longo ≈ 1500 · Extra ≈ 2500 palavras</small>
         </div>`}
         <label class="campo"><span>Instruções extras</span>
           <textarea name="instrucoes" rows="2" placeholder="Algo específico que o post precisa ter?">${esc(f.instrucoes)}</textarea>

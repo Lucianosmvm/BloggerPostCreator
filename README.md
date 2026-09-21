@@ -12,7 +12,7 @@ Na aba **Criar**, escolha o tipo. Cada um tem campos, instruções para a IA e v
 
 | Tipo | O post já sai com |
 |---|---|
-| 💻 Tecnologia | Resumo rápido, requisitos, passo a passo com código, tabela comparativa, prós e contras, perguntas frequentes |
+| 💻 Tecnologia | Resumo rápido, requisitos, passo a passo com código e saída esperada, tabelas de apoio em cada seção (ex.: potências de 2, tipos de dados), exemplos resolvidos, dicas, exercícios com resposta, tabela comparativa, prós e contras, perguntas frequentes. Formato **Aula passo a passo** já sai no tamanho Extra (≈ 2500 palavras) |
 | 🍲 Receitas | Ficha (rendimento, tempos, dificuldade), ingredientes e preparo por grupo, dicas, substituições, conservação |
 | 💡 Dicas | Resumo rápido, dicas numeradas, erros comuns, checklist |
 | 🎮 Games | Ficha técnica, nota com critérios (reviews), prós e contras, requisitos de PC, aviso de spoiler |

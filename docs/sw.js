@@ -1,5 +1,5 @@
 // Service worker: deixa o app abrir sem internet (as APIs continuam precisando de conexão).
-const CACHE = "blog-studio-v12";
+const CACHE = "blog-studio-v13";
 const ARQUIVOS = [
   "./", "./index.html", "./categorias.js", "./recursos.js", "./app.js", "./style.css", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
