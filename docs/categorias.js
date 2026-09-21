@@ -69,6 +69,19 @@ const lista = (itens, ordenada = false) => {
   return `<${tag}>${validos.map(i => `<li>${esc(i)}</li>`).join("")}</${tag}>`;
 };
 
+/**
+ * Campos de chips podem sugerir um tamanho de post para cada opção (tamanhoPorOpcao),
+ * ex.: resumo completo de um anime não cabe em 800 palavras. Devolve o tamanho sugerido ou "".
+ */
+function tamanhoSugerido(cat, entrada) {
+  for (const campo of cat.campos) {
+    if (!campo.tamanhoPorOpcao) continue;
+    const valor = campo.opcoes.includes(entrada[campo.nome]) ? entrada[campo.nome] : (campo.padrao ?? campo.opcoes[0]);
+    if (campo.tamanhoPorOpcao[valor]) return campo.tamanhoPorOpcao[valor];
+  }
+  return "";
+}
+
 const Bloco = {
   h2: (texto) => `<h2>${esc(texto)}</h2>`,
   caixa(titulo, conteudoHtml, cor) {
@@ -320,7 +333,7 @@ const CATEGORIAS = {
     exemploTema: "Ex.: Vale a pena jogar Hollow Knight em 2026?",
     aviso: "Confira datas de lançamento, plataformas, preços e requisitos antes de publicar. A IA pode estar desatualizada.",
     campos: [
-      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Review", "Resumo da história", "Guia", "Dicas", "Top lista", "Notícia"] },
+      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Review", "Resumo da história", "Guia", "Dicas", "Top lista", "Notícia"], tamanhoPorOpcao: { "Resumo da história": "longo" } },
       { nome: "jogo", rotulo: "Jogo", tipo: "texto", placeholder: "Ex.: Hollow Knight" },
       { nome: "plataforma", rotulo: "Plataforma", tipo: "texto", placeholder: "Ex.: PC, PS5, Switch" },
       { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Sem spoilers", "Pode ter spoilers"] },
@@ -373,7 +386,7 @@ const CATEGORIAS = {
     exemploTema: "Ex.: Resumo de Dragon Ball: da busca pelas esferas ao Torneio de Artes Marciais",
     aviso: "Confira nomes, datas, episódios e onde assistir antes de publicar. A IA pode errar detalhes ou estar desatualizada.",
     campos: [
-      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Resumo", "Review", "Explicação do final", "Guia de temporadas", "Top lista", "Notícia"] },
+      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Resumo", "Review", "Explicação do final", "Guia de temporadas", "Top lista", "Notícia"], tamanhoPorOpcao: { "Resumo": "longo", "Guia de temporadas": "longo" } },
       { nome: "obra", rotulo: "Filme, série ou anime", tipo: "texto", placeholder: "Ex.: Dragon Ball, Interestelar, Breaking Bad" },
       { nome: "tipoObra", rotulo: "Tipo", tipo: "chips", opcoes: ["Anime", "Filme", "Série", "Desenho", "Dorama"] },
       { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Sem spoilers", "Pode ter spoilers"] },
@@ -387,7 +400,8 @@ const CATEGORIAS = {
 - Top lista: cada item é uma seção com o porquê de estar ali.
 - Respeite a opção de spoilers; em "Sem spoilers" apresente só a premissa e o início, sem reviravoltas nem final.
 - Se não conhecer bem a obra, diga isso na introdução e fique no que tem certeza; nunca preencha lacunas inventando.
-- Não invente datas, número de episódios, estúdios, bilheteria ou onde assistir. Use "A confirmar" quando não tiver certeza.`,
+- Não invente datas, número de episódios, estúdios, bilheteria ou onde assistir. Use "A confirmar" quando não tiver certeza.
+- "faq": 3 a 5 perguntas que as pessoas realmente pesquisam sobre a obra (ordem para assistir, quantos episódios, se tem continuação, onde assistir…), com respostas curtas. Respeite a opção de spoilers e não invente respostas: se não tiver certeza, deixe a pergunta de fora.`,
     schema: schema({
       introducao_html: S.texto("Introdução em HTML"),
       ficha: {
@@ -404,6 +418,7 @@ const CATEGORIAS = {
       avaliacao: S.avaliacao,
       pros: S.lista("Somente em reviews: pontos positivos"),
       contras: S.lista("Somente em reviews: pontos negativos"),
+      faq: S.faq,
       conclusao_html: S.texto("Conclusão em HTML"),
     }, ["introducao_html", "ficha", "personagens", "secoes", "conclusao_html"]),
     montar(d, perfil, entrada) {
@@ -415,6 +430,7 @@ const CATEGORIAS = {
         Bloco.secoes(d.secoes) +
         Bloco.avaliacao(d.avaliacao, perfil.cor) +
         Bloco.prosContras(d.pros, d.contras) +
+        Bloco.faq(d.faq) +
         Bloco.h2("Conclusão") + limparHtml(d.conclusao_html);
     },
   },
@@ -429,7 +445,7 @@ const CATEGORIAS = {
     campos: [
       { nome: "tipoResumo", rotulo: "O que resumir", tipo: "chips", opcoes: ["Livro", "Filme", "Série ou anime", "Jogo", "Fato histórico", "Assunto de estudo", "Outro"] },
       { nome: "obra", rotulo: "Nome da obra ou assunto", tipo: "texto", placeholder: "Ex.: Dom Casmurro, The Last of Us, Revolução Francesa" },
-      { nome: "profundidade", rotulo: "Profundidade", tipo: "chips", opcoes: ["Rápido", "Completo", "Por partes"], padrao: "Completo" },
+      { nome: "profundidade", rotulo: "Profundidade", tipo: "chips", opcoes: ["Rápido", "Completo", "Por partes"], padrao: "Completo", tamanhoPorOpcao: { "Rápido": "curto", "Completo": "longo", "Por partes": "longo" } },
       { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Pode ter spoilers", "Sem spoilers"] },
     ],
     instrucoes: `Categoria: RESUMOS. Escreva como um professor que resume com clareza e fidelidade.
@@ -438,7 +454,8 @@ const CATEGORIAS = {
 - Obras (livro, filme, série, anime, jogo): conte a trama na ordem, explique quem é quem e preencha "personagens". Fatos históricos: contexto, causas, principais acontecimentos e consequências; em "personagens", as pessoas importantes. Assuntos de estudo: conceitos na ordem lógica; deixe "personagens" vazio.
 - Respeite a opção de spoilers; em "Sem spoilers" fique na premissa e no começo, sem revelar reviravoltas nem o final.
 - "ficha": 3 a 6 dados objetivos adequados ao assunto (ex.: autor, ano, gênero; ou período, local). Use "A confirmar" quando não tiver certeza.
-- Se não conhecer bem o assunto, diga isso na introdução e fique no que tem certeza; nunca preencha lacunas inventando.`,
+- Se não conhecer bem o assunto, diga isso na introdução e fique no que tem certeza; nunca preencha lacunas inventando.
+- "faq": 3 a 5 perguntas que as pessoas realmente pesquisam sobre o assunto, com respostas curtas. Respeite a opção de spoilers e não invente respostas: se não tiver certeza, deixe a pergunta de fora.`,
     schema: schema({
       resumo_rapido: S.lista("3 a 5 frases curtas com o essencial (para quem tem pressa)"),
       introducao_html: S.texto("Introdução em HTML: do que se trata e por que importa"),
@@ -449,6 +466,7 @@ const CATEGORIAS = {
       personagens: S.personagens("Personagens ou pessoas principais, com os nomes reais; vazio se não se aplicar"),
       secoes: S.secoes("Partes do resumo, na ordem"),
       pontos_chave: S.lista("3 a 6 ideias, temas ou lições principais"),
+      faq: S.faq,
       conclusao_html: S.texto("Conclusão em HTML"),
     }, ["resumo_rapido", "introducao_html", "ficha", "secoes", "conclusao_html"]),
     montar(d, perfil, entrada) {
@@ -459,6 +477,7 @@ const CATEGORIAS = {
         Bloco.personagens(d.personagens, perfil.cor, "Quem é quem") +
         Bloco.secoes(d.secoes) +
         (d.pontos_chave?.length ? Bloco.h2("Pontos principais") + lista(d.pontos_chave) : "") +
+        Bloco.faq(d.faq) +
         Bloco.h2("Conclusão") + limparHtml(d.conclusao_html);
     },
   },

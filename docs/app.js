@@ -893,6 +893,29 @@ let formularioNovo = {
   tema: "", palavrasChave: "", publico: "", tom: "Padrão", tamanho: "medio", instrucoes: "",
 };
 
+const ROTULOS_TAMANHO = { curto: "Curto", medio: "Médio", longo: "Longo" };
+let tamanhoAutomatico = false; // o tamanho atual foi escolhido pelo app (não pela pessoa)
+let avisoCategoriaDispensado = false;
+
+/** Aplica o tamanho que a categoria sugere; volta ao médio se o anterior era automático e não vale mais. */
+function ajustarTamanho() {
+  const sugerido = tamanhoSugerido(categoria(formularioNovo.categoria), formularioNovo);
+  const anterior = formularioNovo.tamanho;
+  if (sugerido) { formularioNovo.tamanho = sugerido; tamanhoAutomatico = true; }
+  else if (tamanhoAutomatico) { formularioNovo.tamanho = "medio"; tamanhoAutomatico = false; }
+  return formularioNovo.tamanho !== anterior;
+}
+
+/* Histórias escreve ficção original e troca personagens de obras reais; avisa quando o tema parece um resumo. */
+const PARECE_RESUMO = /\b(resumo|resumir|resuma|sinopse|recap|final explicado|explica\w* (d[oa] )?final|guia de temporadas|ordem (pra|para) assistir|episodios?)\b/;
+const PARECE_AUDIOVISUAL = /\b(anime|filme|serie|desenho|dorama|novela|temporadas?|episodios?|sagas?|assistir|final)\b/;
+function categoriaSugerida(idCategoria, tema) {
+  if (!["historias", "geral"].includes(idCategoria)) return "";
+  const t = String(tema || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  if (!PARECE_RESUMO.test(t)) return "";
+  return PARECE_AUDIOVISUAL.test(t) ? "filmes" : "resumos";
+}
+
 function campoChips(nome, opcoes, valor) {
   return `<div class="chips">${opcoes.map(o =>
     `<label><input type="radio" name="${esc(nome)}" value="${esc(o)}" ${o === valor ? "checked" : ""}><span>${esc(o)}</span></label>`).join("")}</div>`;
@@ -925,6 +948,7 @@ function telaNovo() {
         <label class="campo"><span>Sobre o que é o post? *</span>
           <textarea name="tema" rows="3" required placeholder="${esc(cat.exemploTema)}">${esc(f.tema)}</textarea>
         </label>
+        <div class="aviso aviso-categoria" id="aviso-categoria" role="status" hidden></div>
         ${camposCategoria}
         <details class="ajuda mais-opcoes" ${f.palavrasChave || f.publico || f.instrucoes || (f.tom && f.tom !== "Padrão") || (f.tamanho && f.tamanho !== "medio") ? "open" : ""}>
         <summary>Mais opções (opcional)</summary>
@@ -966,14 +990,52 @@ function telaNovo() {
   form.addEventListener("input", lerFormulario);
   form.addEventListener("change", lerFormulario);
   lerFormulario(); // registra os valores padrão dos chips
-  main.querySelectorAll('input[name="categoria"]').forEach(r => r.addEventListener("change", () => {
+
+  const trocarCategoria = (id, extra = {}) => {
     lerFormulario();
-    formularioNovo.categoria = r.value;
-    armazenamento.gravar("bs.ultimaCategoria", r.value);
+    Object.assign(formularioNovo, extra, { categoria: id });
+    armazenamento.gravar("bs.ultimaCategoria", id);
+    avisoCategoriaDispensado = false;
+    ajustarTamanho();
     const y = window.scrollY;
     telaNovo();
     window.scrollTo(0, y);
-  }));
+  };
+  main.querySelectorAll('input[name="categoria"]').forEach(r => r.addEventListener("change", () => trocarCategoria(r.value)));
+
+  // Tamanho sugerido pela opção escolhida (ex.: resumo completo → longo). A pessoa ainda pode mudar em "Mais opções".
+  main.querySelectorAll('input[name="tamanho"]').forEach(r => r.addEventListener("change", () => { tamanhoAutomatico = false; }));
+  cat.campos.filter(c => c.tamanhoPorOpcao).forEach(campo => {
+    main.querySelectorAll(`input[name="${campo.nome}"]`).forEach(r => r.addEventListener("change", () => {
+      formularioNovo[campo.nome] = r.value;
+      if (!ajustarTamanho()) return;
+      const radio = main.querySelector(`input[name="tamanho"][value="${formularioNovo.tamanho}"]`);
+      if (radio) radio.checked = true;
+      toast(`Tamanho ajustado para ${ROTULOS_TAMANHO[formularioNovo.tamanho]}. Dá para mudar em “Mais opções”.`);
+    }));
+  });
+
+  const aviso = $("#aviso-categoria", main);
+  const atualizarAviso = () => {
+    const sugerida = avisoCategoriaDispensado ? "" : categoriaSugerida(f.categoria, form.tema.value);
+    aviso.hidden = !sugerida;
+    if (!sugerida) return;
+    const destino = CATEGORIAS[sugerida];
+    aviso.innerHTML = `<p>${f.categoria === "historias"
+      ? "💡 Isso parece um resumo de uma obra real. <strong>Histórias</strong> escreve ficção original, com personagens inventados."
+      : "💡 Isso parece um resumo."} Em <strong>${esc(destino.nome)}</strong> a IA usa os personagens e acontecimentos reais, com ficha e opção de spoilers.</p>
+      <div class="acoes-aviso">
+        <button type="button" class="btn" data-acao="trocar">${destino.icone} Usar ${esc(destino.nome)}</button>
+        <button type="button" class="btn texto" data-acao="dispensar">Continuar em ${esc(cat.nome)}</button>
+      </div>`;
+    aviso.querySelector('[data-acao="trocar"]').onclick = () => {
+      const tema = form.tema.value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+      trocarCategoria(sugerida, sugerida === "filmes" ? { formato: /final/.test(tema) ? "Explicação do final" : "Resumo" } : {});
+    };
+    aviso.querySelector('[data-acao="dispensar"]').onclick = () => { avisoCategoriaDispensado = true; aviso.hidden = true; };
+  };
+  form.tema.addEventListener("input", atualizarAviso);
+  atualizarAviso();
   $("#do-zero", main).onclick = () => { location.hash = `#/post/${criarPost({ categoria: formularioNovo.categoria }).id}`; };
 
   form.addEventListener("submit", async (e) => {
