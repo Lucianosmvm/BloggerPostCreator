@@ -117,6 +117,22 @@ const Bloco = {
       (s.titulo ? Bloco.h2(s.titulo) : "") + limparHtml(s.conteudo_html) +
       (comCodigo ? Bloco.codigo(s.codigo, s.linguagem) : "")).join("");
   },
+  avaliacao(a, cor) {
+    if (!a || !(Number(a.nota_geral) > 0)) return "";
+    const nota = (n) => numeroBR(Math.max(0, Math.min(10, Number(n) || 0)));
+    return `<div style="text-align:center;border:2px solid ${corValida(cor)};border-radius:12px;padding:18px;margin:28px 0;">` +
+      `<div style="font-size:52px;font-weight:bold;line-height:1;color:${corValida(cor)};">${nota(a.nota_geral)}</div><div style="opacity:.75;">de 10</div>` +
+      (a.veredito ? `<p style="margin:12px 0 0;"><strong>Veredito:</strong> ${esc(a.veredito)}</p>` : "") + `</div>` +
+      Bloco.ficha((a.criterios || []).map(c => [c.nome, `${nota(c.nota)} / 10`]), cor, "Notas por critério");
+  },
+  avisoSpoiler(entrada) {
+    return entrada.spoilers === "Pode ter spoilers" ? Bloco.caixa("", "<p style=\"margin:0;font-weight:bold;\">⚠️ Atenção: este post contém spoilers.</p>", "#c62828") : "";
+  },
+  personagens(itens, cor, titulo = "Personagens principais") {
+    const validos = (itens || []).filter(p => p?.nome?.trim());
+    if (!validos.length) return "";
+    return Bloco.caixa(titulo, `<ul>${validos.map(p => `<li><strong>${esc(p.nome.trim())}</strong>${p.descricao?.trim() ? ` — ${esc(p.descricao.trim())}` : ""}</li>`).join("")}</ul>`, cor);
+  },
   fechamento(perfil) {
     return perfil.rodape?.trim() ? Bloco.caixa("", `<p style="margin:0;">${esc(perfil.rodape.trim()).replace(/\n/g, "<br>")}</p>`, perfil.cor) : "";
   },
@@ -135,6 +151,18 @@ const S = {
     items: { type: "object", properties: { titulo: { type: "string" }, conteudo_html: { type: "string" }, ...extra }, required: ["titulo", "conteudo_html"] },
   }),
   faq: { type: "array", description: "3 a 5 perguntas frequentes reais sobre o tema", items: { type: "object", properties: { pergunta: { type: "string" }, resposta: { type: "string" } }, required: ["pergunta", "resposta"] } },
+  avaliacao: {
+    type: "object", description: "Somente para reviews",
+    properties: {
+      nota_geral: { type: "number", description: "0 a 10" },
+      criterios: { type: "array", items: { type: "object", properties: { nome: { type: "string" }, nota: { type: "number" } }, required: ["nome", "nota"] } },
+      veredito: { type: "string", description: "Veredito em uma ou duas frases" },
+    },
+  },
+  personagens: (descricao) => ({
+    type: "array", description: descricao,
+    items: { type: "object", properties: { nome: { type: "string", description: "Nome real, como aparece na obra" }, descricao: { type: "string", description: "Quem é, em uma frase" } }, required: ["nome", "descricao"] },
+  }),
 };
 
 function schema(propriedades, obrigatorios) {
@@ -292,13 +320,14 @@ const CATEGORIAS = {
     exemploTema: "Ex.: Vale a pena jogar Hollow Knight em 2026?",
     aviso: "Confira datas de lançamento, plataformas, preços e requisitos antes de publicar. A IA pode estar desatualizada.",
     campos: [
-      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Review", "Guia", "Dicas", "Top lista", "Notícia"] },
+      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Review", "Resumo da história", "Guia", "Dicas", "Top lista", "Notícia"] },
       { nome: "jogo", rotulo: "Jogo", tipo: "texto", placeholder: "Ex.: Hollow Knight" },
       { nome: "plataforma", rotulo: "Plataforma", tipo: "texto", placeholder: "Ex.: PC, PS5, Switch" },
       { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Sem spoilers", "Pode ter spoilers"] },
     ],
     instrucoes: `Categoria: GAMES. Escreva como um jornalista de games apaixonado, mas criterioso e honesto.
 - Review: avalie jogabilidade, gráficos, som, história e desempenho; preencha "avaliacao" com notas de 0 a 10 coerentes com o texto.
+- Resumo da história: conte a história REAL do jogo, na ordem, com os nomes verdadeiros dos personagens, lugares e acontecimentos. Não é ficção: nunca invente personagens ou eventos. Cada seção é um capítulo, ato ou arco do jogo. Preencha "personagens". Não preencha "avaliacao".
 - Guia/Dicas: seções práticas e ordenadas, com nomes corretos de itens, fases e mecânicas.
 - Top lista: cada item da lista é uma seção com o porquê de estar ali.
 - Respeite a opção de spoilers; em "Sem spoilers" não revele reviravoltas nem o final.
@@ -311,15 +340,9 @@ const CATEGORIAS = {
         properties: { jogo: { type: "string" }, genero: { type: "string" }, plataformas: { type: "string" }, desenvolvedora: { type: "string" }, lancamento: { type: "string" } },
         required: ["jogo", "genero", "plataformas", "desenvolvedora", "lancamento"],
       },
+      personagens: S.personagens("Só em resumos da história: 3 a 8 personagens principais"),
       secoes: S.secoes("Seções do post"),
-      avaliacao: {
-        type: "object", description: "Somente para reviews",
-        properties: {
-          nota_geral: { type: "number", description: "0 a 10" },
-          criterios: { type: "array", items: { type: "object", properties: { nome: { type: "string" }, nota: { type: "number" } }, required: ["nome", "nota"] } },
-          veredito: S.texto("Veredito em uma ou duas frases"),
-        },
-      },
+      avaliacao: S.avaliacao,
       pros: S.lista("Pontos positivos"),
       contras: S.lista("Pontos negativos"),
       requisitos_pc: { type: "object", description: "Opcional", properties: { minimos: { type: "string" }, recomendados: { type: "string" } } },
@@ -327,24 +350,115 @@ const CATEGORIAS = {
     }, ["introducao_html", "ficha", "secoes", "conclusao_html"]),
     montar(d, perfil, entrada) {
       const f = d.ficha || {};
-      const a = d.avaliacao;
-      const nota = (n) => numeroBR(Math.max(0, Math.min(10, Number(n) || 0)));
-      const avaliacao = a && Number.isFinite(Number(a.nota_geral)) && Number(a.nota_geral) > 0
-        ? `<div style="text-align:center;border:2px solid ${corValida(perfil.cor)};border-radius:12px;padding:18px;margin:28px 0;">` +
-          `<div style="font-size:52px;font-weight:bold;line-height:1;color:${corValida(perfil.cor)};">${nota(a.nota_geral)}</div><div style="opacity:.75;">de 10</div>` +
-          (a.veredito ? `<p style="margin:12px 0 0;"><strong>Veredito:</strong> ${esc(a.veredito)}</p>` : "") + `</div>` +
-          Bloco.ficha((a.criterios || []).map(c => [c.nome, `${nota(c.nota)} / 10`]), perfil.cor, "Notas por critério")
-        : "";
       const requisitos = d.requisitos_pc?.minimos || d.requisitos_pc?.recomendados
         ? Bloco.h2("Requisitos para PC") + Bloco.ficha([["Mínimos", d.requisitos_pc.minimos], ["Recomendados", d.requisitos_pc.recomendados]], perfil.cor)
         : "";
-      return (entrada.spoilers === "Pode ter spoilers" ? Bloco.caixa("", "<p style=\"margin:0;font-weight:bold;\">⚠️ Atenção: este post contém spoilers.</p>", "#c62828") : "") +
+      return Bloco.avisoSpoiler(entrada) +
         limparHtml(d.introducao_html) +
         Bloco.ficha([["Jogo", f.jogo], ["Gênero", f.genero], ["Plataformas", f.plataformas], ["Desenvolvedora", f.desenvolvedora], ["Lançamento", f.lancamento]], perfil.cor, "Ficha técnica") +
+        Bloco.personagens(d.personagens, perfil.cor) +
         Bloco.secoes(d.secoes) +
-        avaliacao +
+        Bloco.avaliacao(d.avaliacao, perfil.cor) +
         Bloco.prosContras(d.pros, d.contras) +
         requisitos +
+        Bloco.h2("Conclusão") + limparHtml(d.conclusao_html);
+    },
+  },
+
+  filmes: {
+    nome: "Filmes e Animes",
+    icone: "🎬",
+    marcador: "Filmes e Animes",
+    esbocoDica: "Tópicos = seções do post. Em resumos: arcos, sagas ou temporadas na ordem. Em reviews: roteiro, personagens, direção/animação, trilha. Em top listas: os itens na ordem da lista.",
+    exemploTema: "Ex.: Resumo de Dragon Ball: da busca pelas esferas ao Torneio de Artes Marciais",
+    aviso: "Confira nomes, datas, episódios e onde assistir antes de publicar. A IA pode errar detalhes ou estar desatualizada.",
+    campos: [
+      { nome: "formato", rotulo: "Formato", tipo: "chips", opcoes: ["Resumo", "Review", "Explicação do final", "Guia de temporadas", "Top lista", "Notícia"] },
+      { nome: "obra", rotulo: "Filme, série ou anime", tipo: "texto", placeholder: "Ex.: Dragon Ball, Interestelar, Breaking Bad" },
+      { nome: "tipoObra", rotulo: "Tipo", tipo: "chips", opcoes: ["Anime", "Filme", "Série", "Desenho", "Dorama"] },
+      { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Sem spoilers", "Pode ter spoilers"] },
+    ],
+    instrucoes: `Categoria: FILMES E ANIMES. Escreva como um crítico e fã de cinema, séries e animes: apaixonado, mas fiel à obra.
+- Trate sempre da obra REAL indicada, com os nomes verdadeiros dos personagens, lugares, técnicas e acontecimentos. Isto NÃO é ficção: nunca invente personagens, cenas ou eventos, nem troque nomes.
+- Resumo: conte a história na ordem em que acontece; cada seção é um arco, saga, temporada ou ato. Explique quem é quem, o que está em jogo e como a trama avança.
+- Review: avalie roteiro, personagens, direção ou animação, trilha e ritmo; preencha "avaliacao" com notas de 0 a 10 coerentes com o texto.
+- Explicação do final: relembre o essencial da trama e explique o final e as interpretações mais aceitas, deixando claro o que é teoria.
+- Guia de temporadas: uma seção por temporada, saga ou filme, na ordem de lançamento ou na ordem recomendada para assistir.
+- Top lista: cada item é uma seção com o porquê de estar ali.
+- Respeite a opção de spoilers; em "Sem spoilers" apresente só a premissa e o início, sem reviravoltas nem final.
+- Se não conhecer bem a obra, diga isso na introdução e fique no que tem certeza; nunca preencha lacunas inventando.
+- Não invente datas, número de episódios, estúdios, bilheteria ou onde assistir. Use "A confirmar" quando não tiver certeza.`,
+    schema: schema({
+      introducao_html: S.texto("Introdução em HTML"),
+      ficha: {
+        type: "object", description: "Ficha técnica; use 'A confirmar' se não souber",
+        properties: {
+          titulo: S.texto("Título no Brasil e, se diferente, o original"), tipo: { type: "string" }, ano: S.texto("Ano ou período de exibição"),
+          criacao: S.texto("Diretor, criador, autor do mangá ou estúdio"), duracao: S.texto("Duração do filme ou número de temporadas/episódios"),
+          generos: { type: "string" }, onde_assistir: S.texto("Onde assistir no Brasil, ou 'A confirmar'"),
+        },
+        required: ["titulo", "tipo", "ano", "criacao", "duracao", "generos"],
+      },
+      personagens: S.personagens("3 a 8 personagens principais da obra, com os nomes reais"),
+      secoes: S.secoes("Seções do post"),
+      avaliacao: S.avaliacao,
+      pros: S.lista("Somente em reviews: pontos positivos"),
+      contras: S.lista("Somente em reviews: pontos negativos"),
+      conclusao_html: S.texto("Conclusão em HTML"),
+    }, ["introducao_html", "ficha", "personagens", "secoes", "conclusao_html"]),
+    montar(d, perfil, entrada) {
+      const f = d.ficha || {};
+      return Bloco.avisoSpoiler(entrada) +
+        limparHtml(d.introducao_html) +
+        Bloco.ficha([["Título", f.titulo], ["Tipo", f.tipo], ["Ano", f.ano], ["Criação", f.criacao], ["Duração", f.duracao], ["Gêneros", f.generos], ["Onde assistir", f.onde_assistir]], perfil.cor, "Ficha técnica") +
+        Bloco.personagens(d.personagens, perfil.cor) +
+        Bloco.secoes(d.secoes) +
+        Bloco.avaliacao(d.avaliacao, perfil.cor) +
+        Bloco.prosContras(d.pros, d.contras) +
+        Bloco.h2("Conclusão") + limparHtml(d.conclusao_html);
+    },
+  },
+
+  resumos: {
+    nome: "Resumos",
+    icone: "📚",
+    marcador: "Resumos",
+    esbocoDica: "Tópicos = as partes do resumo na ordem (capítulos, arcos, fases, períodos ou ideias principais), com uma frase cada.",
+    exemploTema: "Ex.: Resumo do livro Dom Casmurro",
+    aviso: "Confira nomes, datas e fatos antes de publicar. A IA pode errar detalhes de obras e acontecimentos.",
+    campos: [
+      { nome: "tipoResumo", rotulo: "O que resumir", tipo: "chips", opcoes: ["Livro", "Filme", "Série ou anime", "Jogo", "Fato histórico", "Assunto de estudo", "Outro"] },
+      { nome: "obra", rotulo: "Nome da obra ou assunto", tipo: "texto", placeholder: "Ex.: Dom Casmurro, The Last of Us, Revolução Francesa" },
+      { nome: "profundidade", rotulo: "Profundidade", tipo: "chips", opcoes: ["Rápido", "Completo", "Por partes"], padrao: "Completo" },
+      { nome: "spoilers", rotulo: "Spoilers", tipo: "chips", opcoes: ["Pode ter spoilers", "Sem spoilers"] },
+    ],
+    instrucoes: `Categoria: RESUMOS. Escreva como um professor que resume com clareza e fidelidade.
+- Resuma o assunto ou a obra REAL indicada, com nomes, lugares, datas e acontecimentos verdadeiros. Isto NÃO é ficção: nunca invente personagens, fatos ou eventos, nem troque nomes.
+- Rápido: poucas seções curtas com o essencial. Completo: todas as partes importantes, na ordem. Por partes: uma seção por capítulo, arco, temporada, fase ou período.
+- Obras (livro, filme, série, anime, jogo): conte a trama na ordem, explique quem é quem e preencha "personagens". Fatos históricos: contexto, causas, principais acontecimentos e consequências; em "personagens", as pessoas importantes. Assuntos de estudo: conceitos na ordem lógica; deixe "personagens" vazio.
+- Respeite a opção de spoilers; em "Sem spoilers" fique na premissa e no começo, sem revelar reviravoltas nem o final.
+- "ficha": 3 a 6 dados objetivos adequados ao assunto (ex.: autor, ano, gênero; ou período, local). Use "A confirmar" quando não tiver certeza.
+- Se não conhecer bem o assunto, diga isso na introdução e fique no que tem certeza; nunca preencha lacunas inventando.`,
+    schema: schema({
+      resumo_rapido: S.lista("3 a 5 frases curtas com o essencial (para quem tem pressa)"),
+      introducao_html: S.texto("Introdução em HTML: do que se trata e por que importa"),
+      ficha: {
+        type: "array", description: "3 a 6 dados objetivos sobre a obra ou o assunto",
+        items: { type: "object", properties: { rotulo: { type: "string" }, valor: { type: "string" } }, required: ["rotulo", "valor"] },
+      },
+      personagens: S.personagens("Personagens ou pessoas principais, com os nomes reais; vazio se não se aplicar"),
+      secoes: S.secoes("Partes do resumo, na ordem"),
+      pontos_chave: S.lista("3 a 6 ideias, temas ou lições principais"),
+      conclusao_html: S.texto("Conclusão em HTML"),
+    }, ["resumo_rapido", "introducao_html", "ficha", "secoes", "conclusao_html"]),
+    montar(d, perfil, entrada) {
+      return Bloco.avisoSpoiler(entrada) +
+        Bloco.caixa("Resumo rápido", lista(d.resumo_rapido), perfil.cor) +
+        limparHtml(d.introducao_html) +
+        Bloco.ficha((d.ficha || []).map(i => [i?.rotulo, i?.valor]).filter(([k]) => k), perfil.cor, "Ficha") +
+        Bloco.personagens(d.personagens, perfil.cor, "Quem é quem") +
+        Bloco.secoes(d.secoes) +
+        (d.pontos_chave?.length ? Bloco.h2("Pontos principais") + lista(d.pontos_chave) : "") +
         Bloco.h2("Conclusão") + limparHtml(d.conclusao_html);
     },
   },
@@ -432,7 +546,7 @@ function limparDescricao(texto) {
   return d;
 }
 
-const ORDEM_CATEGORIAS = ["tecnologia", "receitas", "dicas", "games", "historias", "geral"];
+const ORDEM_CATEGORIAS = ["tecnologia", "receitas", "dicas", "games", "filmes", "resumos", "historias", "geral"];
 
 function categoria(id) { return CATEGORIAS[id] || CATEGORIAS.geral; }
 
