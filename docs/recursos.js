@@ -182,8 +182,79 @@ function capaHtml(capa) {
   return `<div style="margin:0 0 24px;"><img src="${esc(capa.url)}" alt="${esc(capa.alt || "")}" style="width:100%;height:auto;border-radius:8px;display:block;">${credito}</div>`;
 }
 
-/** Conteúdo final enviado ao Blogger: capa + texto. */
-function conteudoFinal(post) { return capaHtml(post.capa) + (post.conteudo || ""); }
+/** Conteúdo final enviado ao Blogger: capa + texto + links para outros posts. */
+function conteudoFinal(post) { return capaHtml(post.capa) + (post.conteudo || "") + blocoLeiaTambem(post); }
+
+/* ---------------- Links internos ("Leia também") ---------------- */
+
+const PALAVRAS_VAZIAS = new Set(("para pelo pela pelos pelas como onde quando quem qual quais isso isto aquele aquela aqueles aquelas seus suas dele dela deles delas " +
+  "esse essa esses essas este esta estes estas mais menos muito muita pouco pouca todo toda todos todas outro outra outros outras " +
+  "sobre entre desde ainda depois antes tambem porque entao agora sempre nunca cada").split(" "));
+
+/** Palavras significativas de um texto, sem acento, para comparar assuntos. */
+function palavrasChaveTexto(texto) {
+  const limpo = String(texto || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return new Set((limpo.match(/[a-z0-9]{4,}/g) || []).filter(p => !PALAVRAS_VAZIAS.has(p)));
+}
+
+function chaveTexto(texto) {
+  return String(texto || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+}
+
+/** Posts já publicados no blog mais parecidos com este, para o bloco "Leia também". */
+function linksRelacionados(post, max = 3) {
+  const indice = (perfilSalvo(blogDoPost(post)).postsBlog || []).filter(p => p.url && p.titulo);
+  if (!indice.length) return [];
+  const marcadores = new Set((post.marcadores || []).map(chaveTexto));
+  const palavras = palavrasChaveTexto(`${post.titulo || ""} ${post.tema || ""} ${(post.marcadores || []).join(" ")}`);
+  return indice
+    .filter(p => p.id !== post.bloggerId && chaveTexto(p.titulo) !== chaveTexto(post.titulo) && p.url !== post.url)
+    .map(p => {
+      const iguais = (p.marcadores || []).filter(m => marcadores.has(chaveTexto(m))).length;
+      const emComum = [...palavrasChaveTexto(p.titulo)].filter(w => palavras.has(w)).length;
+      return { post: p, nota: iguais * 2 + emComum };
+    })
+    .filter(x => x.nota > 0)
+    .sort((a, b) => b.nota - a.nota || String(b.post.publicadoEm || "").localeCompare(String(a.post.publicadoEm || "")))
+    .slice(0, max)
+    .map(x => x.post);
+}
+
+/** Bloco de links para outros posts do blog, no fim do post publicado. */
+function blocoLeiaTambem(post) {
+  if (cfg().linksInternos === false) return "";
+  const ligados = linksRelacionados(post);
+  if (!ligados.length) return "";
+  const itens = ligados.map(p => `<li style="margin:4px 0;"><a href="${esc(p.url)}">${esc(p.titulo)}</a></li>`).join("");
+  return `<div style="margin:32px 0 0;"><h2>Leia também</h2><ul style="margin:0;padding-left:20px;">${itens}</ul></div>`;
+}
+
+/** Guarda a lista de posts do blog usada para montar os links internos. */
+function salvarIndiceDoBlog(blogId, itens) {
+  if (!blogId) return 0;
+  const indice = (itens || [])
+    .filter(p => p.url && p.title)
+    .map(p => ({ id: p.id, titulo: p.title, url: p.url, marcadores: p.labels || [], publicadoEm: p.published || "" }))
+    .slice(0, 100);
+  salvarPerfil({ ...perfilSalvo(blogId), postsBlog: indice }, blogId);
+  return indice.length;
+}
+
+/** Relê no Blogger os posts publicados do blog e atualiza a lista de links internos. */
+async function atualizarIndiceDoBlog(tk, blogId = cfg().blogId) {
+  if (!blogId) throw new ErroApp("Escolha o blog em Ajustes antes de atualizar a lista.");
+  const q = "maxResults=100&fetchBodies=false&fetchImages=false&fields=items(id,title,url,labels,published)";
+  const dados = await chamarBlogger(tk, "GET", `/blogs/${encodeURIComponent(blogId)}/posts?${q}`);
+  return salvarIndiceDoBlog(blogId, dados.items);
+}
+
+/** Inclui (ou atualiza) um post recém-publicado na lista, sem reler o blog todo. */
+function registrarNoIndice(blogId, item) {
+  if (!blogId || !item?.url || !item?.titulo) return;
+  const perfil = perfilSalvo(blogId);
+  const indice = (perfil.postsBlog || []).filter(p => p.id !== item.id);
+  salvarPerfil({ ...perfil, postsBlog: [item, ...indice].slice(0, 100) }, blogId);
+}
 
 async function buscarPexels(consulta, pagina = 1, chave = cfg().pexelsKey, locale = "pt-BR") {
   if (!chave) throw new ErroApp("Cadastre a chave do Pexels em Ajustes.");
@@ -400,13 +471,14 @@ async function lerBlog(tk, blogId) {
   const id = encodeURIComponent(blogId);
   const info = await chamarBlogger(tk, "GET", `/blogs/${id}?fields=name,description,url`);
   const recentes = await chamarBlogger(tk, "GET", `/blogs/${id}/posts?maxResults=6&fetchImages=false&fields=items(title,labels,content)`);
-  const rotulos = await chamarBlogger(tk, "GET", `/blogs/${id}/posts?maxResults=100&fetchBodies=false&fields=items(labels)`);
+  const rotulos = await chamarBlogger(tk, "GET", `/blogs/${id}/posts?maxResults=100&fetchBodies=false&fields=items(id,title,url,labels,published)`);
   const contagem = new Map();
   for (const post of rotulos.items || []) for (const l of post.labels || []) contagem.set(l, (contagem.get(l) || 0) + 1);
   return {
     nome: info.name || "",
     descricao: info.description || "",
     url: info.url || "",
+    publicados: rotulos.items || [],
     marcadores: [...contagem].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([l]) => l),
     posts: (recentes.items || []).map(p => ({ titulo: p.title || "", marcadores: p.labels || [], trecho: textoDoPost(p.content || "").slice(0, 900) })),
   };
@@ -456,6 +528,7 @@ async function criarPerfilAutomatico(tk, blog) {
     marcadoresBlog: dados.marcadores,
     geradoEm: new Date().toISOString(),
   }, blog.id);
+  salvarIndiceDoBlog(blog.id, dados.publicados);
 }
 
 /* ---------------- Sincronizar com o Blogger ---------------- */

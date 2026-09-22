@@ -574,6 +574,10 @@ async function enviarPost(tk, post, modo, agendarPara = null) {
   }
 
   const status = STATUS_BLOGGER[r.status] || "publicado";
+  // Mantém a lista de links internos em dia sem precisar reler o blog inteiro.
+  if (status === "publicado" && r.url) {
+    registrarNoIndice(blogId, { id: r.id, titulo: post.titulo, url: r.url, marcadores: post.marcadores || [], publicadoEm: r.published || new Date().toISOString() });
+  }
   return {
     blogId, bloggerId: r.id, url: r.url || null, status,
     agendadoPara: status === "agendado" ? (r.published || agendarPara?.toISOString() || null) : null,
@@ -1679,6 +1683,7 @@ function telaAjustes() {
   const conectado = tokenValido();
   const instalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
   const pf = perfilSalvo();
+  const indiceDoBlog = pf.postsBlog || [];
   const origem = location.origin;
 
   const main = montar({
@@ -1830,6 +1835,16 @@ function telaAjustes() {
         </form>
       </section>
 
+      <h2 class="secao-titulo">5 · Links entre posts</h2>
+      <section class="cartao">
+        <p class="pequeno suave">No fim de cada post enviado ao Blogger entra um bloco <strong>Leia também</strong> com até 3 posts do mesmo blog, escolhidos pelos marcadores e pelo assunto do título. Links entre posts ajudam o Google a achar as páginas e seguram o leitor no blog.</p>
+        <label class="interruptor">
+          <span><strong>Adicionar "Leia também"</strong><small>${indiceDoBlog.length ? `${indiceDoBlog.length} posts do blog na lista` : "A lista é criada ao conectar o blog ou ao publicar"}</small></span>
+          <input type="checkbox" id="links-internos" ${c.linksInternos !== false ? "checked" : ""}>
+        </label>
+        ${c.blogId ? `<button type="button" class="btn largo" id="atualizar-indice">Atualizar lista de posts do blog</button>` : ""}
+      </section>
+
       ${instalado ? "" : `
       <h2 class="secao-titulo">Instalar no celular</h2>
       <section class="cartao">
@@ -1915,6 +1930,28 @@ function telaAjustes() {
     if (!confirm("Remover a chave do Pexels deste aparelho?")) return;
     salvarConfig({ pexelsKey: "" });
     telaAjustes();
+  });
+
+  // Links entre posts
+  $("#links-internos", main)?.addEventListener("change", (e) => {
+    salvarConfig({ linksInternos: e.target.checked });
+    toast(e.target.checked ? "O bloco “Leia também” vai nos próximos envios." : "O bloco “Leia também” foi desligado.", "ok");
+  });
+  $("#atualizar-indice", main)?.addEventListener("click", () => {
+    const pedido = garantirToken();
+    (async () => {
+      try {
+        const tk = await pedido;
+        carregando("Lendo os posts do blog…");
+        const total = await atualizarIndiceDoBlog(tk);
+        toast(total ? `${total} posts do blog na lista de links.` : "O blog ainda não tem posts publicados.", "ok");
+        telaAjustes();
+      } catch (erro) {
+        toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+      } finally {
+        carregando(null);
+      }
+    })();
   });
 
   // Perfil do blog

@@ -28,6 +28,11 @@ usa são reaproveitados com a mesma grafia.
 **Capa automática:** com a chave do Pexels cadastrada, cada post gerado já vem com foto de capa
 (dá para trocar no editor ou desligar em **Ajustes → 4 · Imagens**).
 
+**Links entre posts:** todo post enviado ao Blogger termina com um bloco **Leia também** com até
+3 posts do mesmo blog, escolhidos pelos marcadores em comum e pelas palavras do título. A lista de
+posts do blog é lida junto com o perfil, cresce a cada publicação e pode ser atualizada na hora em
+**Ajustes → 5 · Links entre posts**, onde o bloco também pode ser desligado.
+
 > Em Tecnologia e Games, confira datas, versões, preços e requisitos antes de publicar:
 > a IA pode estar desatualizada.
 
