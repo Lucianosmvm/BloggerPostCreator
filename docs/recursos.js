@@ -183,7 +183,15 @@ function capaHtml(capa) {
 }
 
 /** Conteúdo final enviado ao Blogger: capa + texto + links para outros posts. */
-function conteudoFinal(post) { return capaHtml(post.capa) + (post.conteudo || "") + blocoLeiaTambem(post); }
+function conteudoFinal(post) { return capaHtml(post.capa) + semBlocoLeiaTambem(post.conteudo) + blocoLeiaTambem(post); }
+
+/** Tira um bloco "Leia também" que já esteja no texto (ex.: HTML copiado e colado de volta). */
+function semBlocoLeiaTambem(html) {
+  if (!html || !html.includes(MARCA_LEIA_TAMBEM)) return html || "";
+  const doc = new DOMParser().parseFromString(`<body>${html}</body>`, "text/html");
+  doc.body.querySelectorAll(`[${MARCA_LEIA_TAMBEM}]`).forEach(el => el.remove());
+  return doc.body.innerHTML.trim();
+}
 
 /* ---------------- Links internos ("Leia também") ---------------- */
 
@@ -220,13 +228,16 @@ function linksRelacionados(post, max = 3) {
     .map(x => x.post);
 }
 
+/** Atributo que marca o bloco montado pelo app, para não duplicar ao republicar. */
+const MARCA_LEIA_TAMBEM = "data-leia-tambem";
+
 /** Bloco de links para outros posts do blog, no fim do post publicado. */
 function blocoLeiaTambem(post) {
   if (cfg().linksInternos === false) return "";
   const ligados = linksRelacionados(post);
   if (!ligados.length) return "";
   const itens = ligados.map(p => `<li style="margin:4px 0;"><a href="${esc(p.url)}">${esc(p.titulo)}</a></li>`).join("");
-  return `<div style="margin:32px 0 0;"><h2>Leia também</h2><ul style="margin:0;padding-left:20px;">${itens}</ul></div>`;
+  return `<div ${MARCA_LEIA_TAMBEM}="1" style="margin:32px 0 0;"><h2>Leia também</h2><ul style="margin:0;padding-left:20px;">${itens}</ul></div>`;
 }
 
 /** Guarda a lista de posts do blog usada para montar os links internos. */
@@ -268,7 +279,7 @@ async function buscarPexels(consulta, pagina = 1, chave = cfg().pexelsKey, local
   if (resposta.status === 401 || resposta.status === 403) throw new ErroApp("Chave do Pexels inválida. Confira em Ajustes.");
   if (resposta.status === 429) throw new ErroApp("Limite de buscas do Pexels atingido. Tente mais tarde.");
   if (!resposta.ok) throw new ErroApp(`Erro do Pexels (${resposta.status}).`);
-  const dados = await resposta.json();
+  const dados = await resposta.json().catch(() => { throw new ErroApp("O Pexels devolveu uma resposta inesperada. Tente de novo."); });
   return {
     fotos: (dados.photos || []).map(f => ({
       miniatura: f.src?.medium, url: f.src?.landscape || f.src?.large, alt: f.alt || "",
@@ -459,7 +470,7 @@ async function aplicarCapaAutomatica(post, termo, tema) {
         return true;
       }
     } catch {
-      return false; // sem capa não impede o post
+      // Falha passageira numa busca não cancela as outras; sem capa não impede o post.
     }
   }
   return false;

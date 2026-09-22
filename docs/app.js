@@ -1325,10 +1325,17 @@ function telaEditor(id) {
     campos.conteudo.hidden = modoEditor !== "editar";
     previa.hidden = modoEditor !== "visualizar";
     if (modoEditor === "visualizar") {
+      // Mostra exatamente o que vai para o Blogger, inclusive o bloco "Leia também".
+      const comoVaiSair = conteudoFinal({
+        ...post,
+        titulo: campos.titulo.value,
+        conteudo: campos.conteudo.value,
+        marcadores: separarMarcadores(campos.marcadores.value),
+      });
       previa.srcdoc = `<meta name="viewport" content="width=device-width,initial-scale=1"><style>
         body{font:17px/1.65 Georgia,serif;color:#222;margin:0;padding:16px;overflow-wrap:anywhere}
         h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25}img{max-width:100%;height:auto}</style>
-        <h1>${esc(campos.titulo.value)}</h1>${capaHtml(post.capa)}${campos.conteudo.value}`;
+        <h1>${esc(campos.titulo.value)}</h1>${comoVaiSair}`;
     }
   };
   main.querySelectorAll("[data-modo]").forEach(b => b.onclick = () => { modoEditor = b.dataset.modo; aplicarModo(); });
