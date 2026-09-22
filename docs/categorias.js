@@ -644,8 +644,13 @@ function aplicarMarcadoresFixos(marcadores, fixos, marcadorDaCategoria = "") {
     });
     if (parecido) escolhidos.push(parecido);
   }
-  const daCategoria = porChave.get(chave(marcadorDaCategoria));
-  if (!escolhidos.length && daCategoria) escolhidos.push(daCategoria);
+  // Nunca devolve vazio: post sem marcador some das categorias do blog e, ao atualizar,
+  // apagaria os marcadores que o post já tinha no Blogger.
+  if (!escolhidos.length) {
+    const daCategoria = porChave.get(chave(marcadorDaCategoria)) || String(marcadorDaCategoria || "").trim();
+    if (daCategoria) escolhidos.push(daCategoria);
+    else escolhidos.push(...marcadores.slice(0, 2));
+  }
   return escolhidos.filter((m, i) => escolhidos.indexOf(m) === i);
 }
 

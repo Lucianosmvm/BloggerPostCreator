@@ -517,7 +517,9 @@ async function criarPerfilAutomatico(tk, blog) {
     texto, schema: PERFIL_SCHEMA, maxTokens: 4096, timeoutMs: 120000,
   });
   const anterior = perfilSalvo(blog.id);
+  // Mantém o que a pessoa configurou à mão (marcadores fixos, índice de links…); só o que a IA descreve é refeito.
   salvarPerfil({
+    ...anterior,
     nomeBlog: dados.nome || blog.nome || "",
     autor: String(perfil.autor || "").trim(),
     publico: String(perfil.publico || "").trim(),

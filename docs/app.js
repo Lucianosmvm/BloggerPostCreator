@@ -1864,7 +1864,7 @@ function telaAjustes() {
 
       <h2 class="secao-titulo">Backup</h2>
       <section class="cartao">
-        <p class="pequeno suave">Os posts ficam salvos só neste aparelho. Faça backup para não perdê-los ou para passar para outro aparelho. As chaves não entram no backup.</p>
+        <p class="pequeno suave">Tudo fica salvo só neste aparelho. O backup leva os posts, os perfis dos blogs (com os marcadores fixos e a lista de links), as ideias de pauta e as preferências. As chaves de API não entram.</p>
         <div class="botoes">
           <button type="button" class="btn" id="exportar">Exportar</button>
           <label class="btn">Importar<input type="file" id="importar" accept=".json,application/json" hidden></label>
@@ -2075,7 +2075,11 @@ function telaAjustes() {
 
   // Backup
   $("#exportar", main).onclick = () => {
-    const blob = new Blob([JSON.stringify({ app: "blog-studio", versao: 1, posts: listarPosts() }, null, 2)], { type: "application/json" });
+    // Leva junto perfis, ideias e preferências; as chaves de API ficam de fora de propósito.
+    const { geminiKey, pexelsKey, ...ajustes } = cfg();
+    const blob = new Blob([JSON.stringify({
+      app: "blog-studio", versao: 2, posts: listarPosts(), ideias: lerIdeias(), ajustes,
+    }, null, 2)], { type: "application/json" });
     const a = Object.assign(document.createElement("a"), {
       href: URL.createObjectURL(blob),
       download: `blog-studio-backup-${new Date().toISOString().slice(0, 10)}.json`,
@@ -2101,7 +2105,32 @@ function telaAjustes() {
         else if (post.atualizadoEm > posts[i].atualizadoEm) posts[i] = post;
       }
       gravarPosts(posts);
-      toast(`Backup importado: ${recebidos.length} posts (${novos} novos).`, "ok");
+
+      // Backups da versão 2 trazem perfis, ideias e preferências (sem as chaves de API).
+      const ajustes = dados.ajustes || {};
+      const c = cfg();
+      const perfisNovos = Object.entries(ajustes.perfis || {}).filter(([id]) => !c.perfis?.[id]);
+      if (perfisNovos.length || ajustes.nomesBlogs) {
+        salvarConfig({
+          perfis: { ...(ajustes.perfis || {}), ...(c.perfis || {}) },
+          nomesBlogs: { ...(ajustes.nomesBlogs || {}), ...(c.nomesBlogs || {}) },
+        });
+      }
+      const ideiasRecebidas = (dados.ideias || []).filter(i => i?.id && i?.titulo);
+      let ideiasNovas = 0;
+      if (ideiasRecebidas.length) {
+        const atuais = lerIdeias();
+        const conhecidas = new Set(atuais.map(i => i.id));
+        const entrando = ideiasRecebidas.filter(i => !conhecidas.has(i.id));
+        ideiasNovas = entrando.length;
+        if (ideiasNovas) gravarIdeias([...entrando, ...atuais].slice(0, 200));
+      }
+
+      const extras = [
+        perfisNovos.length && `${perfisNovos.length} perfil${perfisNovos.length === 1 ? "" : "s"} de blog`,
+        ideiasNovas && `${ideiasNovas} ideia${ideiasNovas === 1 ? "" : "s"}`,
+      ].filter(Boolean).join(" e ");
+      toast(`Backup importado: ${recebidos.length} posts (${novos} novos)${extras ? ` · ${extras}` : ""}.`, "ok");
     } catch {
       toast("Arquivo de backup inválido.", "erro");
     }
