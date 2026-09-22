@@ -618,6 +618,37 @@ function separarMarcadores(texto) {
   return limpos.filter((m, i) => limpos.findIndex(x => x.toLowerCase() === m.toLowerCase()) === i);
 }
 
+/**
+ * Deixa no post só os marcadores da lista fixa do blog, quando ela existe.
+ * O que a IA criou fora da lista é aproveitado quando dá para reconhecer o marcador
+ * equivalente (ex.: "Redes de computadores" → "Redes"); o resto é descartado.
+ */
+function aplicarMarcadoresFixos(marcadores, fixos, marcadorDaCategoria = "") {
+  const lista = (fixos || []).filter(Boolean);
+  if (!lista.length) return marcadores;
+  const chave = (m) => String(m || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const palavras = (m) => new Set(chave(m).match(/[a-z0-9]{3,}/g) || []);
+  const porChave = new Map(lista.map(m => [chave(m), m]));
+
+  const escolhidos = [];
+  for (const marcador of marcadores) {
+    const exato = porChave.get(chave(marcador));
+    if (exato) { escolhidos.push(exato); continue; }
+    const doPost = palavras(marcador);
+    const parecido = lista.find(fixo => {
+      const doFixo = palavras(fixo);
+      if (!doFixo.size || !doPost.size) return false;
+      const menor = doFixo.size <= doPost.size ? doFixo : doPost;
+      const maior = doFixo.size <= doPost.size ? doPost : doFixo;
+      return [...menor].every(p => maior.has(p));
+    });
+    if (parecido) escolhidos.push(parecido);
+  }
+  const daCategoria = porChave.get(chave(marcadorDaCategoria));
+  if (!escolhidos.length && daCategoria) escolhidos.push(daCategoria);
+  return escolhidos.filter((m, i) => escolhidos.indexOf(m) === i);
+}
+
 /** Descrição de pesquisa: texto puro, uma linha, até 160 caracteres (corta em palavra inteira). */
 function limparDescricao(texto) {
   let d = String(texto || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();

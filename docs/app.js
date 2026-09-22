@@ -70,6 +70,7 @@ function perfilBlog() {
     nomeBlog: p.nomeBlog || c.blogNome || "", autor: p.autor || "", publico: p.publico || "",
     tom: p.tom || "", regras: p.regras || "", rodape: p.rodape || "", cor: corValida(p.cor),
     marcadoresBlog: Array.isArray(p.marcadoresBlog) ? p.marcadoresBlog : [],
+    marcadoresFixos: Array.isArray(p.marcadoresFixos) ? p.marcadoresFixos : [],
   };
 }
 function salvarConfig(parcial) { armazenamento.gravar("bs.config", { ...cfg(), ...parcial }); }
@@ -216,7 +217,9 @@ function montarInstrucoes(cat, perfil) {
   const perfilTexto = [
     linhasPerfil(perfil),
     perfil.rodape && "- O aplicativo já adiciona uma mensagem de fechamento ao post; não crie outra chamada para comentar ou compartilhar.",
-    perfil.marcadoresBlog?.length && `- Marcadores que o blog já usa (reaproveite os que servirem, com a mesma grafia, antes de criar novos): ${perfil.marcadoresBlog.slice(0, 40).join("; ")}`,
+    perfil.marcadoresFixos?.length
+      ? `- Marcadores permitidos (escolha de 2 a 4 desta lista, com a mesma grafia, e não crie outros): ${perfil.marcadoresFixos.join("; ")}`
+      : perfil.marcadoresBlog?.length && `- Marcadores que o blog já usa (reaproveite os que servirem, com a mesma grafia, antes de criar novos): ${perfil.marcadoresBlog.slice(0, 40).join("; ")}`,
   ].filter(Boolean).join("\n");
   return [SISTEMA_BASE, perfilTexto && `Perfil do blog:\n${perfilTexto}`, cat.instrucoes].filter(Boolean).join("\n\n");
 }
@@ -330,6 +333,7 @@ async function gerarPost(entrada, esboco = null) {
   const chave = (m) => m.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const doBlog = new Map(perfil.marcadoresBlog.map(m => [chave(m), m]));
   post.marcadores = separarMarcadores(post.marcadores.map(m => doBlog.get(chave(m)) || m).join(","));
+  post.marcadores = aplicarMarcadoresFixos(post.marcadores, perfil.marcadoresFixos, categoria(entrada.categoria).marcador);
   if (!post.titulo || !post.conteudo.trim()) throw new ErroApp("O Gemini devolveu um post vazio. Tente de novo.");
   return { ...post, categoria: entrada.categoria, dados: estruturado };
 }
@@ -1789,6 +1793,11 @@ function telaAjustes() {
           <label class="campo"><span>Regras do blog</span>
             <textarea name="regras" rows="4" placeholder="Uma por linha. Ex.:&#10;Tratar o leitor por você&#10;Nunca usar palavrões&#10;Citar marcas só quando necessário">${esc(pf.regras || "")}</textarea>
           </label>
+          <label class="campo"><span>Marcadores fixos do blog</span>
+            <textarea name="marcadoresFixos" rows="3" placeholder="Um por linha ou separados por vírgula. Ex.:&#10;Redes&#10;Programação&#10;Carreira em TI">${esc((pf.marcadoresFixos || []).join(", "))}</textarea>
+            <small>Com a lista preenchida, os posts gerados só recebem marcadores dela. Poucas categorias (6 a 10) rendem mais na busca do que muitos marcadores com um post cada.</small>
+          </label>
+          ${(pf.marcadoresBlog || []).length ? `<button type="button" class="btn largo" id="sugerir-marcadores">${ICONES.brilho} Sugerir lista a partir dos ${pf.marcadoresBlog.length} marcadores do blog</button>` : ""}
           <label class="campo"><span>Mensagem no final de todo post</span>
             <textarea name="rodape" rows="2" placeholder="Ex.: Gostou? Deixe um comentário e compartilhe com quem vai curtir!">${esc(pf.rodape || "")}</textarea>
             <small>Aparece numa caixa destacada no fim dos posts gerados.</small>
@@ -1958,8 +1967,28 @@ function telaAjustes() {
   $("#form-perfil", main).addEventListener("submit", (e) => {
     e.preventDefault();
     const dados = Object.fromEntries([...new FormData(e.target)].map(([k, v]) => [k, String(v).trim()]));
+    dados.marcadoresFixos = separarMarcadores(dados.marcadoresFixos);
     salvarPerfil({ ...perfilSalvo(), ...dados });
-    toast("Perfil do blog salvo.", "ok");
+    toast(dados.marcadoresFixos.length
+      ? `Perfil salvo. Os posts gerados vão usar só os ${dados.marcadoresFixos.length} marcadores da lista.`
+      : "Perfil do blog salvo.", "ok");
+  });
+  $("#sugerir-marcadores", main)?.addEventListener("click", () => {
+    if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini primeiro.", "erro"); return; }
+    (async () => {
+      try {
+        carregando("Agrupando os marcadores do blog…");
+        const lista = await sugerirMarcadoresFixos(perfilSalvo());
+        const campo = $('#form-perfil [name="marcadoresFixos"]', main);
+        campo.value = lista.join(", ");
+        campo.scrollIntoView({ block: "center" });
+        toast(`${lista.length} marcadores sugeridos. Ajuste o que quiser e toque em Salvar perfil.`, "ok");
+      } catch (erro) {
+        toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+      } finally {
+        carregando(null);
+      }
+    })();
   });
   $("#gerar-perfil", main)?.addEventListener("click", () => {
     if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini primeiro.", "erro"); return; }

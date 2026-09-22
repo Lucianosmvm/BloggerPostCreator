@@ -531,6 +531,30 @@ async function criarPerfilAutomatico(tk, blog) {
   salvarIndiceDoBlog(blog.id, dados.publicados);
 }
 
+/** Junta os marcadores espalhados do blog em poucas categorias fixas. */
+async function sugerirMarcadoresFixos(perfil) {
+  const usados = (perfil.marcadoresBlog || []).filter(Boolean);
+  if (!usados.length) throw new ErroApp("Crie o perfil a partir do blog primeiro, para o app conhecer os marcadores.");
+  const texto = [
+    perfil.nomeBlog && `Blog: ${perfil.nomeBlog}`,
+    perfil.publico && `Público: ${perfil.publico}`,
+    `Marcadores usados hoje: ${usados.join("; ")}`,
+  ].filter(Boolean).join("\n");
+  const resposta = await gerarJson({
+    sistema: `Você organiza as categorias de um blog. A partir dos marcadores que o blog usa hoje, proponha a lista definitiva de marcadores.
+- De 6 a 10 marcadores, cada um com 1 a 3 palavras, que sirvam para muitos posts.
+- Junte os parecidos num só e descarte os que serviriam para um post só (nomes de obras, pessoas, versões).
+- Reaproveite a grafia dos marcadores atuais sempre que couber.
+- Responda em português do Brasil, somente no formato JSON pedido.`,
+    texto,
+    schema: { type: "object", properties: { marcadores: { type: "array", items: { type: "string" } } }, required: ["marcadores"] },
+    maxTokens: 2048, timeoutMs: 120000,
+  });
+  const lista = separarMarcadores((resposta.marcadores || []).join(","));
+  if (!lista.length) throw new ErroApp("A IA não devolveu marcadores. Tente de novo.");
+  return lista;
+}
+
 /* ---------------- Sincronizar com o Blogger ---------------- */
 
 /** Todos os posts do blog (publicados, rascunhos e agendados), sem o conteúdo. */

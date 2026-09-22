@@ -25,6 +25,12 @@ o app lê o nome, a descrição, os posts recentes e os marcadores do Blogger e 
 carregado. Dá para revisar ou recriar em **Ajustes → Perfil do blog**. Os marcadores que o blog já
 usa são reaproveitados com a mesma grafia.
 
+**Marcadores fixos:** em **Ajustes → 3 · Perfil do blog** dá para definir a lista de marcadores do
+blog (o botão de sugestão agrupa os marcadores atuais em 6 a 10 categorias). Com a lista
+preenchida, a IA escolhe só marcadores dela e o app descarta o que sobrar, aproveitando o que der
+para reconhecer (ex.: "Redes de Computadores" vira "Redes"). Assim cada categoria junta vários
+posts, em vez de dezenas de marcadores com um post cada.
+
 **Capa automática:** com a chave do Pexels cadastrada, cada post gerado já vem com foto de capa
 (dá para trocar no editor ou desligar em **Ajustes → 4 · Imagens**).
 
