@@ -1066,8 +1066,8 @@ function telaNovo() {
     }
     carregando(`Escrevendo seu post de ${categoria(entrada.categoria).nome.toLowerCase()}… pode levar até 1 minuto`);
     try {
-      const { buscaImagem, ...gerado } = await gerarPost(entrada);
-      await aplicarCapaAutomatica(gerado, buscaImagem, entrada.tema);
+      const { buscasImagem, ...gerado } = await gerarPost(entrada);
+      await aplicarCapaAutomatica(gerado, buscasImagem, entrada.tema);
       const post = criarPost({ ...gerado, tema: entrada.tema });
       formularioNovo = { ...formularioNovo, tema: "", instrucoes: "" };
       location.hash = `#/post/${post.id}`;
@@ -1200,8 +1200,8 @@ function telaEsboco() {
     if (!final.topicos.length) { toast("Adicione pelo menos um tópico.", "erro"); return; }
     carregando(`Escrevendo seu post de ${cat.nome.toLowerCase()}… pode levar até 1 minuto`);
     try {
-      const { buscaImagem, ...gerado } = await gerarPost(esboco.entrada, final);
-      await aplicarCapaAutomatica(gerado, buscaImagem, esboco.entrada.tema);
+      const { buscasImagem, ...gerado } = await gerarPost(esboco.entrada, final);
+      await aplicarCapaAutomatica(gerado, buscasImagem, esboco.entrada.tema);
       const post = criarPost({ ...gerado, tema: esboco.entrada.tema, esboco: final });
       armazenamento.gravar("bs.esboco", null);
       formularioNovo = { ...formularioNovo, tema: "", instrucoes: "" };
@@ -1625,12 +1625,22 @@ function telaEditor(id) {
     salvarAgora();
     const origem = await abrirFolha([
       { rotulo: cfg().pexelsKey ? "Buscar foto grátis (Pexels)" : "Buscar foto grátis (Pexels) — requer chave em Ajustes", valor: "pexels", icone: ICONES.lupa },
+      { rotulo: "Usar imagem própria (link da imagem)", valor: "propria", icone: ICONES.link },
       { rotulo: "Criar imagem com IA (para baixar)", valor: "ia", icone: ICONES.brilho },
     ]);
     if (origem === "ia") { criarImagemIA(post); return; }
+    if (origem === "propria") {
+      const capa = await pedirCapaPropria(post);
+      if (!capa) return;
+      post.capa = capa;
+      salvarPost(post);
+      toast("Capa trocada. Ela vai no topo do post nos próximos envios.", "ok");
+      telaEditor(post.id);
+      return;
+    }
     if (origem !== "pexels") return;
     if (!cfg().pexelsKey) { location.hash = "#/ajustes"; toast("Cadastre a chave gratuita do Pexels em “4 · Imagens”.", "erro"); return; }
-    const capa = await escolherFotoPexels(post.tema || post.titulo || "");
+    const capa = await escolherFotoPexels(post.buscaCapa || post.tema || post.titulo || "");
     if (!capa) return;
     post.capa = capa;
     salvarPost(post);

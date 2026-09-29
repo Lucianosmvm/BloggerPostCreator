@@ -218,11 +218,18 @@ function schema(propriedades, obrigatorios) {
     properties: {
       titulo: S.texto("Título atraente e claro, até 70 caracteres"),
       descricao: S.texto("Descrição para buscadores e redes sociais: 120 a 155 caracteres, resume o post e convida a ler, sem aspas e sem emojis"),
-      busca_imagem: S.texto("2 a 4 palavras em inglês para buscar uma foto de capa num banco de imagens (ex.: 'home wifi router')"),
+      buscas_imagem: {
+        type: "array", items: { type: "string" },
+        description: "3 buscas diferentes, em inglês, para achar a foto de capa num banco de fotos (Pexels). " +
+          "Cada uma com 2 a 5 palavras descrevendo algo que dá para FOTOGRAFAR: objetos, lugares, pessoas fazendo algo, clima. " +
+          "Nada de siglas, marcas, nomes de obras ou personagens, nem palavras de duplo sentido (ex.: para 'endereço MAC' não use 'address', use 'network card chip closeup'). " +
+          "Em ficção, filmes e games, descreva a cena ou o clima (ex.: 'dark castle night fog'), não o título. " +
+          "Da mais específica para a mais genérica.",
+      },
       ...propriedades,
       marcadores: S.lista("3 a 6 marcadores curtos (1 a 3 palavras cada), sem vírgulas e sem parênteses"),
     },
-    required: ["titulo", "descricao", "busca_imagem", ...obrigatorios, "marcadores"],
+    required: ["titulo", "descricao", "buscas_imagem", ...obrigatorios, "marcadores"],
   };
 }
 
@@ -673,7 +680,7 @@ function montarPost(idCategoria, dados, perfil, entrada = {}) {
   return {
     titulo: String(dados.titulo || "").trim(),
     descricao: limparDescricao(dados.descricao),
-    buscaImagem: String(dados.busca_imagem || "").trim(),
+    buscasImagem: [...(dados.buscas_imagem || []), dados.busca_imagem].map(b => String(b || "").trim()).filter(Boolean).slice(0, 3),
     conteudo: html,
     marcadores,
   };

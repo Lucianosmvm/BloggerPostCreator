@@ -336,6 +336,30 @@ async function escolherFotoPexels(sugestao) {
   }
 }
 
+/**
+ * Capa com uma imagem feita fora do app (ex.: gerada em outra IA e enviada ao Blogger).
+ * Resolve com a capa ou null.
+ */
+async function pedirCapaPropria(post) {
+  const atual = post.capa?.fonte === "propria" ? post.capa : null;
+  while (true) {
+    const { valor, campos } = await abrirDialogo({
+      titulo: "Imagem própria como capa",
+      html: `
+        <label class="campo"><span>Link da imagem</span>
+          <input name="url" value="${esc(atual?.url || "")}" placeholder="https://blogger.googleusercontent.com/..." autocapitalize="off" spellcheck="false"></label>
+        <label class="campo"><span>Texto alternativo</span>
+          <input name="alt" value="${esc(atual?.alt || post.titulo || "")}" placeholder="Descreva a imagem (ajuda no Google Imagens)"></label>
+        <p class="pequeno suave">Envie a imagem no editor do Blogger (ícone de imagem), abra a imagem e copie o endereço dela. Com o link aqui, o app mantém sua imagem sempre que atualizar o post.</p>`,
+      botoes: [{ rotulo: "Cancelar", valor: null }, { rotulo: "Usar esta imagem", valor: "ok", primario: true }],
+    });
+    if (!valor) return null;
+    const url = String(campos.url || "").trim();
+    if (!/^https:\/\/\S+$/i.test(url)) { toast("Cole um link de imagem que comece com https://", "erro"); continue; }
+    return { fonte: "propria", url, alt: String(campos.alt || "").trim() || post.titulo || "" };
+  }
+}
+
 const ESTILOS_IMAGEM = {
   "Foto realista": "fotografia realista, luz natural, alta qualidade",
   "Ilustração": "ilustração digital colorida e moderna",
@@ -454,26 +478,55 @@ async function escolherDataAgendamento(atual) {
   }
 }
 
-/** Escolhe sozinha uma foto do Pexels para o post gerado (se houver chave e a opção estiver ligada). */
-async function aplicarCapaAutomatica(post, termo, tema) {
+/**
+ * Escolhe sozinha uma foto do Pexels para o post gerado (se houver chave e a opção estiver ligada).
+ * Junta as fotos das buscas sugeridas pela IA e pede para a IA escolher, pela descrição de cada foto,
+ * a que combina com o post. Se nenhuma combinar, o post fica sem capa (melhor que uma capa errada).
+ */
+async function aplicarCapaAutomatica(post, buscas, tema) {
   const c = cfg();
   if (!c.pexelsKey || c.capaAutomatica === false || post.capa) return false;
-  carregando("Escolhendo a foto de capa…");
-  const consultas = [termo, tema, post.titulo].map(t => String(t || "").trim()).filter(Boolean);
+  const consultas = (Array.isArray(buscas) ? buscas : [buscas]).map(t => String(t || "").trim()).filter(Boolean).slice(0, 3);
+  if (!consultas.length) return false;
+  post.buscaCapa = consultas[0];
+  carregando("Procurando uma foto de capa que combine com o post…");
+
+  const candidatas = [];
   for (const consulta of consultas) {
     try {
-      const ingles = /^[\x20-\x7e]+$/.test(consulta);
-      const { fotos } = await buscarPexels(consulta, 1, c.pexelsKey, ingles ? "en-US" : "pt-BR");
-      if (fotos.length) {
-        const f = fotos[0];
-        post.capa = { fonte: "pexels", url: f.url, alt: f.alt || post.titulo, autor: f.autor, autorUrl: f.autorUrl, paginaUrl: f.paginaUrl };
-        return true;
+      const { fotos } = await buscarPexels(consulta, 1, c.pexelsKey, "en-US");
+      for (const f of fotos.slice(0, 8)) {
+        if (f.alt && !candidatas.some(x => x.url === f.url)) candidatas.push(f);
       }
     } catch {
       // Falha passageira numa busca não cancela as outras; sem capa não impede o post.
     }
   }
-  return false;
+  if (!candidatas.length) return false;
+
+  let escolhida = candidatas[0];
+  try {
+    const resposta = await gerarJson({
+      sistema: `Você escolhe a foto de capa de um post de blog a partir da descrição de cada foto de um banco de imagens.
+- Escolha a foto que um leitor associaria de imediato ao assunto do post.
+- Descarte fotos que só combinam por coincidência de palavra (ex.: "endereço MAC" com caixas de correio, "máscara de rede" com máscara de rosto).
+- Se nenhuma combinar de verdade, responda -1.`,
+      texto: [
+        `Post: ${post.titulo}`,
+        tema && `Assunto: ${tema}`,
+        `Fotos:\n${candidatas.map((f, i) => `${i}. ${f.alt}`).join("\n")}`,
+      ].filter(Boolean).join("\n\n"),
+      schema: { type: "object", properties: { escolha: { type: "integer", description: "Número da foto, ou -1 se nenhuma combinar" } }, required: ["escolha"] },
+      maxTokens: 1024, timeoutMs: 60000,
+    });
+    const i = Number(resposta.escolha);
+    if (i === -1) return false;
+    if (Number.isInteger(i) && candidatas[i]) escolhida = candidatas[i];
+  } catch {
+    // Sem a opinião da IA, fica a primeira foto da busca mais específica.
+  }
+  post.capa = { fonte: "pexels", url: escolhida.url, alt: escolhida.alt || post.titulo, autor: escolhida.autor, autorUrl: escolhida.autorUrl, paginaUrl: escolhida.paginaUrl };
+  return true;
 }
 
 /* ---------------- Perfil automático a partir do blog ---------------- */
