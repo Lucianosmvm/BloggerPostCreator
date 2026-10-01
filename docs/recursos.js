@@ -621,6 +621,60 @@ async function sugerirMarcadoresFixos(perfil) {
   return lista;
 }
 
+/* ---------------- Trazer a versão do Blogger ---------------- */
+
+/** Lê no Blogger o post como ele está agora (inclusive mudanças feitas direto no editor do Blogger). */
+async function buscarPostNoBlogger(tk, post) {
+  const blogId = blogDoPost(post);
+  if (!post.bloggerId || !blogId) throw new ErroApp("Este post ainda não foi enviado ao Blogger.");
+  const campos = "id,title,content,labels,updated,url,status";
+  return chamarBlogger(tk, "GET", `/blogs/${encodeURIComponent(blogId)}/posts/${encodeURIComponent(post.bloggerId)}?view=AUTHOR&fields=${campos}`);
+}
+
+/**
+ * Converte o post do Blogger nas partes que o app guarda separadas: título, marcadores, capa e texto.
+ * O bloco "Leia também" sai do texto (o app monta um novo a cada envio) e a imagem do topo vira a capa.
+ */
+function versaoDoBlogger(post, remoto) {
+  const corpo = new DOMParser().parseFromString(`<body>${remoto.content || ""}</body>`, "text/html").body;
+
+  corpo.querySelectorAll(`[${MARCA_LEIA_TAMBEM}]`).forEach(el => el.remove());
+  // Posts enviados antes da marca existir: div com só o título "Leia também" e a lista de links.
+  [...corpo.children].filter(el => el.tagName === "DIV" && el.children.length === 2 &&
+    el.children[0].tagName === "H2" && /^\s*Leia também\s*$/i.test(el.children[0].textContent) &&
+    el.children[1].tagName === "UL").forEach(el => el.remove());
+
+  let capa = null;
+  const topo = corpo.firstElementChild;
+  const img = topo?.querySelector("img");
+  const soImagem = img && !topo.querySelector("h2, h3, ul, ol, table, pre") &&
+    topo.textContent.replace(/\s+/g, " ").trim().length < 120; // só a imagem (e talvez o crédito da foto)
+  if (soImagem && /^https:\/\//i.test(img.getAttribute("src") || "")) {
+    const url = img.getAttribute("src");
+    const alt = img.getAttribute("alt") || "";
+    if (post.capa?.url === url) {
+      capa = { ...post.capa, alt: alt || post.capa.alt || "" };
+    } else if (/^https:\/\/images\.pexels\.com\//i.test(url)) {
+      // Foto do Pexels: recupera o crédito do fotógrafo que o app tinha posto embaixo da capa.
+      const [autor, pagina] = [...topo.querySelectorAll("a[href]")];
+      capa = { fonte: "pexels", url, alt, autor: autor?.textContent.trim() || "", autorUrl: autor?.getAttribute("href") || "", paginaUrl: pagina?.getAttribute("href") || "" };
+    } else {
+      capa = { fonte: "propria", url, alt };
+    }
+    topo.remove();
+  }
+
+  return {
+    titulo: String(remoto.title || post.titulo || "").trim(),
+    marcadores: (remoto.labels || []).map(String),
+    conteudo: corpo.innerHTML.trim(),
+    capa,
+    url: remoto.url || post.url || null,
+    status: STATUS_BLOGGER[remoto.status] || post.status,
+    sincronizadoEm: remoto.updated || new Date().toISOString(),
+  };
+}
+
 /* ---------------- Sincronizar com o Blogger ---------------- */
 
 /** Todos os posts do blog (publicados, rascunhos e agendados), sem o conteúdo. */

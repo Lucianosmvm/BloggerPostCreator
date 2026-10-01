@@ -546,12 +546,24 @@ const STATUS_BLOGGER = { DRAFT: "rascunho", SCHEDULED: "agendado", LIVE: "public
  * Envia o post ao Blogger.
  * modo: "rascunho" | "publicar" (agora) | "agendar" (usa agendarPara) | "atualizar" (mantém o status atual)
  */
-async function enviarPost(tk, post, modo, agendarPara = null) {
+async function enviarPost(tk, post, modo, agendarPara = null, { forcar = false } = {}) {
   const blogId = blogDoPost(post);
   if (!blogId) throw new ErroApp("Escolha o blog em Ajustes antes de publicar.");
   const base = `/blogs/${encodeURIComponent(blogId)}/posts`;
   const corpo = { title: post.titulo, content: conteudoFinal(post), labels: post.marcadores };
   const acao = (id, nome, params = "") => chamarBlogger(tk, "POST", `${base}/${encodeURIComponent(id)}/${nome}${params}`);
+
+  // Não sobrescreve sem avisar um post que foi editado direto no Blogger depois do último envio.
+  if (post.bloggerId && post.blogId === blogId && !forcar) {
+    const remoto = await chamarBlogger(tk, "GET", `${base}/${encodeURIComponent(post.bloggerId)}?view=AUTHOR&fields=updated`)
+      .catch(e => { if (e.status === 404) return null; throw e; });
+    // Posts enviados antes deste controle existir não têm a data do último envio: pergunta uma vez.
+    if (remoto?.updated && (!post.sincronizadoEm || new Date(remoto.updated) > new Date(post.sincronizadoEm))) {
+      throw new ErroApp(post.sincronizadoEm
+        ? "Este post foi alterado direto no Blogger depois do último envio pelo app."
+        : "O app não sabe se este post foi alterado direto no Blogger depois do último envio.", "conflito");
+    }
+  }
 
   let r = null;
   if (post.bloggerId && post.blogId === blogId) {
@@ -585,6 +597,7 @@ async function enviarPost(tk, post, modo, agendarPara = null) {
   return {
     blogId, bloggerId: r.id, url: r.url || null, status,
     agendadoPara: status === "agendado" ? (r.published || agendarPara?.toISOString() || null) : null,
+    sincronizadoEm: r.updated || new Date().toISOString(),
   };
 }
 
@@ -1570,20 +1583,60 @@ function telaEditor(id) {
     return true;
   };
 
+  /** Troca a versão do app pela que está no Blogger (título, marcadores, capa e texto). */
+  const trazerDoBlogger = () => {
+    const pedido = garantirToken();
+    (async () => {
+      try {
+        const tk = await pedido;
+        carregando("Trazendo a versão do Blogger…");
+        salvarAgora();
+        const dados = versaoDoBlogger(post, await buscarPostNoBlogger(tk, post));
+        Object.assign(post, dados);
+        if (!dados.capa) delete post.capa;
+        salvarPost(post);
+        toast("Pronto: o app agora tem a versão que está no Blogger.", "ok");
+        telaEditor(post.id);
+      } catch (erro) {
+        toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
+      } finally {
+        carregando(null);
+      }
+    })();
+  };
+
+  /** O post mudou no Blogger depois do último envio: pergunta o que fazer em vez de sobrescrever. */
+  const resolverConflito = async (modo, agendarPara, mensagem) => {
+    const { valor } = await abrirDialogo({
+      titulo: post.sincronizadoEm ? "Este post foi editado no Blogger" : "Confira antes de enviar",
+      html: `<p>${esc(mensagem)}</p>
+        <p class="pequeno suave">Se houver mudanças feitas direto no Blogger (título, marcadores, imagens ou texto), enviar a versão do app apaga essas mudanças. O mais seguro é trazer a versão do Blogger para cá, revisar e depois enviar.</p>`,
+      botoes: [
+        { rotulo: "Cancelar", valor: null },
+        { rotulo: "Enviar a do app mesmo assim", valor: "sobrescrever", perigo: true },
+        { rotulo: "Trazer a versão do Blogger", valor: "trazer", primario: true },
+      ],
+    });
+    if (valor === "trazer") trazerDoBlogger();
+    if (valor === "sobrescrever") enviar(modo, agendarPara, { forcar: true });
+  };
+
   /** Deve ser chamada direto a partir de um toque (o login do Google abre uma janela). */
-  const enviar = (modo, agendarPara = null) => {
+  const enviar = (modo, agendarPara = null, opcoes = {}) => {
     const pedido = garantirToken();
     (async () => {
       try {
         const tk = await pedido;
         carregando(MENSAGENS_ENVIO[modo][0]);
-        Object.assign(post, await enviarPost(tk, post, modo, agendarPara));
+        Object.assign(post, await enviarPost(tk, post, modo, agendarPara, opcoes));
         salvarPost(post);
         toast(post.status === "agendado" && modo !== "rascunho"
           ? `Agendado para ${formatarAgendamento(post.agendadoPara)}.`
           : MENSAGENS_ENVIO[modo][1] + (post.descricao && modo !== "rascunho" ? " Lembre de colar a descrição de pesquisa no Blogger." : ""), "ok");
         telaEditor(post.id);
       } catch (erro) {
+        carregando(null);
+        if (erro instanceof ErroApp && erro.status === "conflito") { resolverConflito(modo, agendarPara, erro.message); return; }
         toast(erro instanceof ErroApp ? erro.message : `Erro inesperado: ${erro.message}`, "erro");
       } finally {
         carregando(null);
@@ -1660,6 +1713,7 @@ function telaEditor(id) {
   $("#menu-post").onclick = async () => {
     const escolha = await abrirFolha([
       post.url && publicado && { rotulo: "Abrir no blog", valor: "abrir", icone: ICONES.link },
+      post.bloggerId && { rotulo: "Trazer versão do Blogger", valor: "trazer", icone: ICONES.sync },
       categoria(post.categoria).checarFatos !== false && {
         rotulo: checagens.has(post.id) ? "Ver última checagem de fatos" : "Checar fatos na internet", valor: "checar", icone: ICONES.lupa,
       },
@@ -1671,6 +1725,7 @@ function telaEditor(id) {
       { rotulo: "Excluir deste aparelho", valor: "excluir", perigo: true, icone: ICONES.lixo },
     ].filter(Boolean));
     if (escolha === "abrir") window.open(post.url, "_blank", "noopener");
+    if (escolha === "trazer" && confirm("Trocar o título, os marcadores, a capa e o texto deste post pela versão que está no Blogger? A descrição de pesquisa não muda.")) trazerDoBlogger();
     if (escolha === "copiar") { salvarAgora(); copiar(conteudoFinal(post)); }
     if (escolha === "imagem-ia") criarImagemIA(post);
     if (escolha === "mudar-blog") {
