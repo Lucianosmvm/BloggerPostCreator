@@ -1,0 +1,282 @@
+<!-- Backup de 2025-06-18 | id 6108658852433359963 | https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html
+     Título: Arrays em C#: Guia Fácil e Prático
+     Marcadores:  -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f0f4f8;
+
+            color: #333;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+        header {
+
+            background-color: #007ACC;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 20px;
+
+        }
+
+        main {
+
+            max-width: 900px;
+
+            margin: 20px auto;
+
+            padding: 20px;
+
+            background-color: white;
+
+            border-radius: 8px;
+
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+        }
+
+        h1, h2, h3 {
+
+            color: #007ACC;
+
+        }
+
+        pre {
+
+            background-color: #263238;
+
+            color: #ffffff;
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            overflow-x: auto;
+
+        }
+
+        .destaque {
+
+            background-color: #E3F2FD;
+
+            padding: 10px;
+
+            border-left: 5px solid #007ACC;
+
+            margin-bottom: 20px;
+
+            border-radius: 5px;
+
+        }
+
+        footer {
+
+            background-color: #007ACC;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 10px;
+
+            margin-top: 30px;
+
+        }
+
+        @media(max-width: 600px) {
+
+            main {
+
+                margin: 10px;
+
+                padding: 15px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+  
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRa3RI-2Xz_sJ5GxA_ihRuxLbZG06ewjh3F3mC7o4E6K_MK_S_lPGybFwxKilQbSm9DfENXfJsk3k0atU7UU9ns6pnyusgQ-5j4wGCv-UXiQRh8p9zaqOxiimQwwc0K43520yz1pzJapQlLxvx24BR7CgLm4s_G0pMhyphenhyphenSwpHHtaYJsbnEwx8AZdGLsSlUX/s1536/1000090841.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRa3RI-2Xz_sJ5GxA_ihRuxLbZG06ewjh3F3mC7o4E6K_MK_S_lPGybFwxKilQbSm9DfENXfJsk3k0atU7UU9ns6pnyusgQ-5j4wGCv-UXiQRh8p9zaqOxiimQwwc0K43520yz1pzJapQlLxvx24BR7CgLm4s_G0pMhyphenhyphenSwpHHtaYJsbnEwx8AZdGLsSlUX/s320/1000090841.png"/></a></div>
+
+<header>
+
+    <p>Aprenda de forma simples a trabalhar com arrays unidimensionais e multidimensionais!</p>
+
+</header>
+
+<main>
+
+    <h2>🔎 O que é um Array?</h2>
+
+    <p>Um <strong>array</strong> é uma estrutura de dados que armazena vários valores do mesmo tipo em uma única variável. No C#, os arrays são baseados em índices que começam no <strong>zero</strong>.</p>
+
+    <div class="destaque">
+
+        Exemplo de tipos: <code>int[]</code>, <code>string[]</code>, <code>double[]</code>
+
+    </div>
+
+    <h2>📌 Arrays Unidimensionais (Os mais comuns)</h2>
+
+    <h3>✅ Sintaxe Básica:</h3>
+
+    <pre>tipo[] nomeDoArray = new tipo[tamanho];</pre>
+
+    <h3>✅ Exemplo de Array de inteiros:</h3>
+
+    <pre>int[] numeros = new int[5];</pre>
+
+    <p>Nesse exemplo, criamos um array de 5 posições, todas iniciadas com o valor <strong>0</strong>.</p>
+
+    <h3>✅ Atribuindo e Acessando Valores:</h3>
+
+    <pre>
+
+numeros[0] = 10;
+
+numeros[1] = 20;
+
+numeros[2] = 30;
+
+numeros[3] = 40;
+
+numeros[4] = 50;
+
+Console.WriteLine(numeros[0]);  // Saída: 10
+
+Console.WriteLine(numeros[4]);  // Saída: 50
+
+    </pre>
+
+    <h3>✅ Inicializando com valores direto:</h3>
+
+    <pre>int[] numeros = { 10, 20, 30, 40, 50 };</pre>
+
+    <h3>✅ Percorrendo com um loop for:</h3>
+
+    <pre>
+
+for (int i = 0; i < numeros.Length; i++) {
+
+    Console.WriteLine(numeros[i]);
+
+}
+
+    </pre>
+
+    <h2>📌 Arrays Multidimensionais (Matrizes)</h2>
+
+    <p>Quando você precisa trabalhar com tabelas ou grades de dados, os arrays multidimensionais são a solução.</p>
+
+    <h3>✅ Sintaxe para Arrays Bidimensionais:</h3>
+
+    <pre>tipo[,] nomeDoArray = new tipo[linhas, colunas];</pre>
+
+    <h3>✅ Exemplo: Matriz 2x3:</h3>
+
+    <pre>
+
+int[,] matriz = new int[2, 3];
+
+// Atribuindo valores:
+
+matriz[0, 0] = 10;
+
+matriz[0, 1] = 20;
+
+matriz[0, 2] = 30;
+
+matriz[1, 0] = 40;
+
+matriz[1, 1] = 50;
+
+matriz[1, 2] = 60;
+
+// Acessando um valor:
+
+Console.WriteLine(matriz[1, 2]);  // Saída: 60
+
+    </pre>
+
+    <h3>✅ Inicializando diretamente:</h3>
+
+    <pre>
+
+int[,] matriz = {
+
+    { 10, 20, 30 },
+
+    { 40, 50, 60 }
+
+};
+
+    </pre>
+
+    <h3>✅ Percorrendo com dois loops for:</h3>
+
+    <pre>
+
+for (int i = 0; i < matriz.GetLength(0); i++) {
+
+    for (int j = 0; j < matriz.GetLength(1); j++) {
+
+        Console.WriteLine(matriz[i, j]);
+
+    }
+
+}
+
+    </pre>
+
+    <h2>📌 Arrays Tridimensionais (Quando uma matriz não é suficiente 😅)</h2>
+
+    <p>Quer ir além? C# permite criar arrays com quantas dimensões você quiser.</p>
+
+    <h3>✅ Exemplo de Array 3D:</h3>
+
+    <pre>int[,,] cubo = new int[3, 3, 3];</pre>
+
+    <p>Agora, cada elemento pode ser acessado usando três índices, como por exemplo: <code>cubo[0, 1, 2]</code>.</p>
+
+    <h2>✅ Conclusão</h2>
+
+    <p>Arrays são uma ferramenta essencial no C#. Seja para armazenar listas simples ou criar estruturas complexas como matrizes, entender o funcionamento deles vai te ajudar muito no dia a dia como dev!</p>
+
+    <p>👉 Se quiser, posso trazer um post sobre <strong>Listas (List&lt;T&gt;)</strong> ou até sobre <strong>Arrays Dinâmicos</strong>. Comenta aí o que você quer ver no próximo! 😉</p>
+
+</main>
+
+<footer>
+
+    <p>Dev na Prática - Programação sem enrolação!</p>
+
+</footer>
+
+</body>
+
+</html>

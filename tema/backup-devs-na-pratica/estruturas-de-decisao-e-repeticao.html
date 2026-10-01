@@ -1,0 +1,256 @@
+<!-- Backup de 2024-10-23 | id 8683217749502862865 | https://devsnapratica.blogspot.com/2024/10/estruturas-de-decisao-e-repeticao.html
+     Título: Estruturas Aninhadas em C#: Decisão e Repetição Passo a Passo!
+     Marcadores: C# -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f0f9ff;
+
+            color: #333;
+
+            margin: 0;
+
+            padding: 20px;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #0077cc;
+
+        }
+
+        .box {
+
+            background-color: #ffffff;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+            margin-bottom: 20px;
+
+        }
+
+        pre {
+
+            background-color: #272822;
+
+            color: #f8f8f2;
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            overflow-x: auto;
+
+        }
+
+        ul {
+
+            list-style-type: disc;
+
+            padding-left: 20px;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+   <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-Wp3mp-65YoQIJl8e09jKHwF6-sIseEJrvufwTm72SIOummxz24ibtTtnJM4SygrQYLMar9PRaze93raWHbJun4U6ZTQaF6fSFV2RMFQ4eGOmXSxvc_4hi7dlcBwNfGfdonoXtDuH87cjrKLN-JDJmuN3_eAm9LkZQpd-bewTKncVrywxazRS458e2nFE/s1536/1000090934.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="320" data-original-height="1536" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-Wp3mp-65YoQIJl8e09jKHwF6-sIseEJrvufwTm72SIOummxz24ibtTtnJM4SygrQYLMar9PRaze93raWHbJun4U6ZTQaF6fSFV2RMFQ4eGOmXSxvc_4hi7dlcBwNfGfdonoXtDuH87cjrKLN-JDJmuN3_eAm9LkZQpd-bewTKncVrywxazRS458e2nFE/s320/1000090934.png"/></a></div>
+
+    <p>Já conferiu os posts sobre <strong>Estruturas de Decisão</strong> e <strong>Estruturas de Repetição</strong> em C#? Se não viu ainda, vale a pena dar uma olhada antes de continuar! 😉</p>
+
+    <div class="box">
+
+        <h2>🌳 O que são Estruturas Aninhadas?</h2>
+
+        <p>Resumindo: <strong>Estruturas Aninhadas</strong> são quando colocamos uma estrutura de controle <strong>dentro de outra</strong>. Isso nos permite criar lógicas mais poderosas e detalhadas.</p>
+
+        <p>Exemplos clássicos:</p>
+
+        <ul>
+
+            <li>👉 Um <strong>if</strong> dentro de outro <strong>if</strong></li>
+
+            <li>👉 Um <strong>for</strong> dentro de outro <strong>for</strong></li>
+
+            <li>👉 Um <strong>if</strong> dentro de um <strong>for</strong> (e vice-versa)</li>
+
+        </ul>
+
+    </div>
+
+    <div class="box">
+
+        <h2>✅ Estruturas de Decisão Aninhadas (if dentro de if)</h2>
+
+        <p>Perfeitas para quando você precisa verificar múltiplas condições!</p>
+
+        <h3>Exemplo Prático:</h3>
+
+        <pre>
+
+int idade = 20;
+
+bool possuiHabilitacao = true;
+
+if (idade >= 18)
+
+{
+
+    if (possuiHabilitacao)
+
+    {
+
+        Console.WriteLine("Você pode dirigir.");
+
+    }
+
+    else
+
+    {
+
+        Console.WriteLine("Você precisa tirar a habilitação.");
+
+    }
+
+}
+
+else
+
+{
+
+    Console.WriteLine("Você é menor de idade.");
+
+}
+
+        </pre>
+
+        <p><strong>📝 Explicação:</strong> Primeiro o programa verifica a idade. Se for maior de 18, ele faz uma nova verificação: a pessoa tem habilitação?</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🔂 Estruturas de Repetição Aninhadas (Laços dentro de Laços)</h2>
+
+        <p>Muito usadas quando trabalhamos com <strong>matrizes</strong> ou precisamos repetir uma ação em vários níveis.</p>
+
+        <h3>Exemplo de For dentro de For:</h3>
+
+        <pre>
+
+for (int i = 0; i < 3; i++)
+
+{
+
+    for (int j = 0; j < 3; j++)
+
+    {
+
+        Console.WriteLine("i = " + i + ", j = " + j);
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>📝 Resultado:</strong> Para cada valor de <strong>i</strong>, o laço interno percorre todos os valores de <strong>j</strong>. Você terá combinações de todos os pares possíveis entre i e j.</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>💡 Decisão Dentro de Repetição (if dentro de for)</h2>
+
+        <p>Outro cenário super comum: verificar algo a cada repetição!</p>
+
+        <h3>Exemplo:</h3>
+
+        <pre>
+
+for (int i = 0; i < 5; i++)
+
+{
+
+    if (i % 2 == 0)
+
+    {
+
+        Console.WriteLine(i + " é par.");
+
+    }
+
+    else
+
+    {
+
+        Console.WriteLine(i + " é ímpar.");
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>📝 O que acontece aqui:</strong> O laço <strong>for</strong> percorre de 0 a 4, e o <strong>if</strong> verifica se o número atual é par ou ímpar.</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🎯 Boas Práticas com Estruturas Aninhadas</h2>
+
+        <ul>
+
+            <li><strong>✔️ Cuidado com a complexidade:</strong> Evite criar muitos níveis de aninhamento. Isso pode deixar o código confuso.</li>
+
+            <li><strong>✔️ Indente bem seu código:</strong> Uma boa indentação faz toda a diferença na leitura!</li>
+
+            <li><strong>✔️ Use funções:</strong> Se o código ficar muito grande, separe a lógica em funções menores.</li>
+
+        </ul>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🚀 Conclusão</h2>
+
+        <p>As <strong>estruturas aninhadas</strong> são ferramentas poderosas, mas devem ser usadas com responsabilidade! Agora que você entendeu como funciona, que tal praticar criando seus próprios exemplos? 💻✨</p>
+
+    </div>
+
+</body>
+
+</html>

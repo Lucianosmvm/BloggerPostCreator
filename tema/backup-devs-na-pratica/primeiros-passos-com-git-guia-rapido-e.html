@@ -1,0 +1,197 @@
+<!-- Backup de 2025-06-17 | id 8253234914619735624 | https://devsnapratica.blogspot.com/2025/06/primeiros-passos-com-git-guia-rapido-e.html
+     Título: (sem título)
+     Marcadores: C#, Commit, Git, Push -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Primeiros Passos com Git: Guia Rápido e Fácil</title>
+
+    <style>
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background-color: #f0f8ff;
+
+            color: #333;
+
+        }
+
+        header {
+
+            background: linear-gradient(90deg, #ff6a00, #ee0979);
+
+            color: white;
+
+            padding: 20px;
+
+            text-align: center;
+
+        }
+
+        h1, h2 {
+
+            color: #ee0979;
+
+        }
+
+        .container {
+
+            padding: 20px;
+
+            max-width: 900px;
+
+            margin: auto;
+
+        }
+
+        .box {
+
+            background-color: #ffffff;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+        }
+
+        pre {
+
+            background-color: #282c34;
+
+            color: #61dafb;
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            overflow-x: auto;
+
+        }
+
+        code {
+
+            color: #ff6a00;
+
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+
+                font-size: 18px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSESTOyIS724ri78d1_BDeVziuVdDcrnoAeG9LqeazC7OgbIKYvFIcGCArqgVst8qDZ8X98zLdsmlUwJ3QklUCxIx09MnfJAKej2bqlOWHYBw8IV2N-qABB5YOXTPl4IHNe1c1s1zNLjPFzR481HzMVWxTsZ2Kt2v1u4VK1AA-uAwxqchWIiQ-Y3bYtoak/s1536/1000090637.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="320" data-original-height="1536" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiSESTOyIS724ri78d1_BDeVziuVdDcrnoAeG9LqeazC7OgbIKYvFIcGCArqgVst8qDZ8X98zLdsmlUwJ3QklUCxIx09MnfJAKej2bqlOWHYBw8IV2N-qABB5YOXTPl4IHNe1c1s1zNLjPFzR481HzMVWxTsZ2Kt2v1u4VK1AA-uAwxqchWIiQ-Y3bYtoak/s320/1000090637.png"/></a></div>
+
+
+<div class="container">
+
+    <div class="box">
+
+        <h2>📌 O que é o Git?</h2>
+
+        <p>O <strong>Git</strong> é um sistema de controle de versão super popular usado por desenvolvedores para gerenciar o código de seus projetos. Ele permite acompanhar todas as mudanças, trabalhar em equipe e evitar perdas de código.</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🔧 Como instalar o Git?</h2>
+
+        <p>👉 Acesse o site oficial: <a href="https://git-scm.com/downloads" target="_blank">https://git-scm.com/downloads</a></p>
+
+        <p>👉 Baixe e siga o processo de instalação de acordo com seu sistema operacional (Windows, Mac ou Linux).</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>💻 Configurando o Git</h2>
+
+        <p>Após instalar, abra o terminal (ou Git Bash no Windows) e configure seu nome e email:</p>
+
+        <pre><code>git config --global user.name "Seu Nome"
+
+git config --global user.email "seuemail@exemplo.com"</code></pre>
+
+    </div>
+
+    <div class="box">
+
+        <h2>⚡ Principais comandos do Git</h2>
+
+        <p>Confira os comandos básicos para começar:</p>
+
+        <h3>👉 Criar um repositório local:</h3>
+
+        <pre><code>git init</code></pre>
+
+        <h3>👉 Verificar o status dos arquivos:</h3>
+
+        <pre><code>git status</code></pre>
+
+        <h3>👉 Adicionar arquivos para o próximo commit:</h3>
+
+        <pre><code>git add .</code></pre>
+
+        <h3>👉 Fazer um commit (salvar alterações):</h3>
+
+        <pre><code>git commit -m "Mensagem do commit"</code></pre>
+
+        <h3>👉 Conectar com um repositório remoto (ex: GitHub):</h3>
+
+        <pre><code>git remote add origin https://github.com/seuusuario/seurepositorio.git</code></pre>
+
+        <h3>👉 Enviar os commits para o GitHub:</h3>
+
+        <pre><code>git push -u origin main</code></pre>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🎯 Dica Extra!</h2>
+
+        <p>Se estiver começando, crie uma conta no <strong>GitHub</strong> e faça seus primeiros testes criando repositórios públicos.</p>
+
+    </div>
+
+    <div class="box" style="background-color: #ffecd2; border-left: 5px solid #ee0979;">
+
+        <h2>🚨 Conclusão</h2>
+
+        <p>O Git pode parecer complicado no começo, mas com o tempo ele vai se tornar seu melhor amigo no desenvolvimento. Continue praticando! 😉</p>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

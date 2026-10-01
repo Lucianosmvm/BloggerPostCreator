@@ -1,0 +1,92 @@
+<!-- Backup de 2024-10-04 | id 1753630365982725050 | https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html
+     Título: O Guia Descomplicado: Variáveis em C#
+     Marcadores: C#, dicas, variáveis -->
+<!--Google tag (gtag.js)-->
+<h2>📚 O Guia Descomplicado: Variáveis em C#</h2>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGy2s_s3qoTsQxFjtXiLbhax8fSTLf5JyGyTHLHArhUpNtF_OtI4AKlYLS8hRhJmuwGqFCVVC9jC6K17Yw8g8L2lHkvwEuCS-Gzuq7DPcfYfBaiiYZtNqklo6GTByMs4Sq8xcqX0cYBbqOLcfFLaQFYx9Yk8UXOe6P1c2T8-rqb3nCoUaGItjfiYLXRCB9/s1024/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_04_11.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGy2s_s3qoTsQxFjtXiLbhax8fSTLf5JyGyTHLHArhUpNtF_OtI4AKlYLS8hRhJmuwGqFCVVC9jC6K17Yw8g8L2lHkvwEuCS-Gzuq7DPcfYfBaiiYZtNqklo6GTByMs4Sq8xcqX0cYBbqOLcfFLaQFYx9Yk8UXOe6P1c2T8-rqb3nCoUaGItjfiYLXRCB9/s320/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_04_11.png"/></a></div>
+
+<p>Se você está começando no mundo da programação em <strong>C#</strong> (ou “C Sharp”, para os mais íntimos), um dos primeiros conceitos que vai encontrar são as <strong>variáveis</strong>. E, vamos ser sinceros, sem elas a programação seria bem mais difícil (ou impossível!).</p>
+
+<p>Neste post, vamos <strong>descomplicar</strong> esse assunto e te mostrar como <strong>dominar as variáveis de uma vez por todas</strong>. Então, bora lá! 🚀</p>
+
+<h3>🔎 O Que São Variáveis?</h3>
+
+<p>Pensa nas variáveis como <strong>caixinhas onde você guarda informações</strong>. Essas informações podem ser:</p>
+
+<ul>
+  <li>Números</li>
+  <li>Textos</li>
+  <li>Valores lógicos (tipo verdadeiro ou falso)</li>
+  <li>E muito mais!</li>
+</ul>
+
+<p>Por exemplo: imagine que você está criando um jogo. Vai precisar armazenar a <strong>pontuação do jogador</strong> em algum lugar, certo? Esse lugar é a variável!</p>
+
+<p>Em C#, a definição de uma variável é simples. Você diz ao computador <strong>qual tipo de informação</strong> quer guardar e dá um <strong>nome</strong> pra essa “caixinha”. Algo assim:</p>
+
+<pre><code>int pontuacao = 0;</code></pre>
+
+<p>Aqui:</p>
+<ul>
+  <li><strong>int</strong> = tipo da variável (número inteiro)</li>
+  <li><strong>pontuacao</strong> = nome da variável</li>
+  <li><strong>0</strong> = valor inicial</li>
+</ul>
+
+<h3>📌 Tipos de Variáveis em C#</h3>
+
+<p>No C#, toda variável precisa ter um tipo. Isso significa que você deve <strong>especificar o tipo de dado</strong> que ela vai guardar. Aqui estão os mais comuns:</p>
+
+<ul>
+  <li><strong>int</strong>: Números inteiros (ex: 1, 2, -10, 0)</li>
+  <li><strong>float</strong>: Números com ponto flutuante (ex: 3.14 ou 2.5f)</li>
+  <li><strong>double</strong>: Também números com ponto flutuante, mas com mais precisão que o float</li>
+  <li><strong>char</strong>: Um único caractere (ex: 'A', 'B')</li>
+  <li><strong>string</strong>: Textos e frases (ex: "Olá, Mundo!")</li>
+  <li><strong>bool</strong>: Valores booleanos: <code>true</code> (verdadeiro) ou <code>false</code> (falso)</li>
+</ul>
+
+<h3>📝 Como Declarar Variáveis</h3>
+
+<p>Declarar uma variável é tipo <strong>dar um nome para o seu animal de estimação</strong>: você diz o tipo e o nome que ela terá. Exemplos:</p>
+
+<pre><code>int idade = 25;
+float altura = 1.75f;
+string nome = "João";
+bool temCartaDeMotorista = true;</code></pre>
+
+<p>Cada uma dessas linhas está criando uma variável. Agora você tem a idade, altura, nome e status da carteira de motorista guardados e prontos para usar no seu código.</p>
+
+<h3>✅ Regras para Nomes de Variáveis</h3>
+
+<p>Algumas dicas importantes na hora de nomear suas variáveis:</p>
+
+<ol>
+  <li>❌ Não pode começar com números. Exemplo errado: <code>int 1pontuacao;</code> / Exemplo certo: <code>int pontuacao1;</code></li>
+  <li>❌ Não use espaços. Prefira: <code>int minhaIdade;</code> ou <code>int minha_idade;</code></li>
+  <li>⚠️ C# diferencia maiúsculas de minúsculas. <code>idade</code> e <code>Idade</code> são variáveis diferentes!</li>
+</ol>
+
+<h3>🔒 Valores Constantes</h3>
+
+<p>Se você tem uma variável cujo valor <strong>não vai mudar</strong> durante o programa, use a palavra-chave <code>const</code>. Exemplo:</p>
+
+<pre><code>const double PI = 3.1415;
+const int maxTentativas = 3;</code></pre>
+
+<h3>🔄 Modificando Variáveis</h3>
+
+<p>Variáveis (que não são constantes) podem ser alteradas durante a execução do programa. Por exemplo:</p>
+
+<pre><code>int pontuacao = 0;
+pontuacao = 10; // Agora a pontuação é 10</code></pre>
+
+<h3>🏁 Conclusão</h3>
+
+<p>Variáveis são a <strong>base de tudo na programação</strong>. Elas guardam dados importantes e são super versáteis.</p>
+
+<p>Com esse guia, você já sabe o básico sobre como <strong>criar</strong> e <strong>usar variáveis em C#</strong>. Agora é hora de praticar e colocar a mão no código!</p>
+
+<p>👉 <strong>E aí, pronto para dominar o C#?</strong>  
+Deixa nos comentários o que você achou ou se tiver alguma dúvida. Até a próxima! 😄</p>

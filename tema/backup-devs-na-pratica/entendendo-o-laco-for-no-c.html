@@ -1,0 +1,275 @@
+<!-- Backup de 2024-10-18 | id 4590202282675858188 | https://devsnapratica.blogspot.com/2024/10/entendendo-o-laco-for-no-c.html
+     Título: Aprenda o Laço for em C# de Forma Fácil
+     Marcadores: C#, for, laço, lista -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Laço For em C# - Guia Prático</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            line-height: 1.6;
+
+            margin: 0;
+
+            padding: 0;
+
+            background: #f5f7fa;
+
+            color: #333;
+
+        }
+
+        .container {
+
+            max-width: 960px;
+
+            margin: auto;
+
+            padding: 20px;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #2c3e50;
+
+        }
+
+        pre {
+
+            background: #ecf0f1;
+
+            padding: 10px;
+
+            border-left: 5px solid #3498db;
+
+            overflow-x: auto;
+
+        }
+
+        .highlight {
+
+            background: #dff9fb;
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            margin-bottom: 15px;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+        .example-title {
+
+            color: #2980b9;
+
+            margin-top: 20px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwJrXvbdJhCOiZYShMpRzxyUnf_v9oXs7PDvCN37fiiJdnhb5xK0ybigCJ5jxGC-l93a0oPZJ7_AhTZSj5w7CDpqWZGM02BAJv4slaxjOgBk4LV4VR5qupSe96Rkfs-0AUalonguHZ-gj3gsRrY-V4O2NEGimxrfPGagzk4zmcloUa6A7FFMN9FJYdWBz7/s1024/1000090476.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwJrXvbdJhCOiZYShMpRzxyUnf_v9oXs7PDvCN37fiiJdnhb5xK0ybigCJ5jxGC-l93a0oPZJ7_AhTZSj5w7CDpqWZGM02BAJv4slaxjOgBk4LV4VR5qupSe96Rkfs-0AUalonguHZ-gj3gsRrY-V4O2NEGimxrfPGagzk4zmcloUa6A7FFMN9FJYdWBz7/s320/1000090476.png"/></a></div>
+
+    <p>Programar é, muitas vezes, repetir tarefas. Seja para contar números, percorrer listas ou executar uma ação várias vezes, o laço <strong>for</strong> é um dos recursos mais usados no C#.</p>
+
+    <h2>👉 O que é o laço <code>for</code>?</h2>
+
+    <p>O <strong>for</strong> é uma estrutura de repetição que permite executar um bloco de código várias vezes, seguindo uma condição pré-definida. Ideal quando você já sabe o número de repetições desejado.</p>
+
+    <h3>✅ Estrutura básica:</h3>
+
+    <pre>
+
+for (inicialização; condição; incremento)
+
+{
+
+    // Código a ser executado
+
+}
+
+    </pre>
+
+    <div class="highlight">
+
+        <strong>Partes principais:</strong><br>
+
+        <ul>
+
+            <li><strong>Inicialização:</strong> Define a variável de controle. Exemplo: <code>int i = 0;</code></li>
+
+            <li><strong>Condição:</strong> Define até quando o laço será executado. Exemplo: <code>i &lt;= 10;</code></li>
+
+            <li><strong>Incremento:</strong> Atualiza a variável de controle a cada repetição. Exemplo: <code>i++;</code></li>
+
+        </ul>
+
+    </div>
+
+    <h2 class="example-title">📌 Exemplo 1: Contando de 1 a 10</h2>
+
+    <pre>
+
+for (int i = 1; i <= 10; i++)
+
+{
+
+    Console.WriteLine("Número: " + i);
+
+}
+
+    </pre>
+
+    <p><strong>Explicação:</strong></p>
+
+    <ul>
+
+        <li><strong>Inicialização:</strong> Começamos com <code>i = 1</code></li>
+
+        <li><strong>Condição:</strong> O laço roda até <code>i &lt;= 10</code></li>
+
+        <li><strong>Incremento:</strong> <code>i++</code> aumenta 1 a cada repetição</li>
+
+    </ul>
+
+    <p><strong>Resultado:</strong></p>
+
+    <pre>
+
+Número: 1
+
+Número: 2
+
+Número: 3
+
+...
+
+Número: 10
+
+    </pre>
+
+    <h2 class="example-title">📌 Exemplo 2: Percorrendo um Array</h2>
+
+    <pre>
+
+string[] nomes = { "Ana", "Bruno", "Carla", "Diego" };
+
+for (int i = 0; i < nomes.Length; i++)
+
+{
+
+    Console.WriteLine("Nome: " + nomes[i]);
+
+}
+
+    </pre>
+
+    <p><strong>Explicação:</strong></p>
+
+    <ul>
+
+        <li><strong>Inicialização:</strong> <code>i = 0</code> (Arrays começam no índice 0)</li>
+
+        <li><strong>Condição:</strong> <code>i &lt; nomes.Length</code> garante que percorremos todo o array</li>
+
+        <li><strong>Incremento:</strong> <code>i++</code> passa para o próximo nome</li>
+
+    </ul>
+
+    <p><strong>Resultado:</strong></p>
+
+    <pre>
+
+Nome: Ana
+
+Nome: Bruno
+
+Nome: Carla
+
+Nome: Diego
+
+    </pre>
+
+    <h2 class="example-title">📌 Exemplo 3: Contagem Regressiva</h2>
+
+    <pre>
+
+for (int i = 5; i > 0; i--)
+
+{
+
+    Console.WriteLine("Contagem: " + i);
+
+}
+
+    </pre>
+
+    <p><strong>Explicação:</strong></p>
+
+    <ul>
+
+        <li><strong>Inicialização:</strong> Começamos com <code>i = 5</code></li>
+
+        <li><strong>Condição:</strong> Enquanto <code>i &gt; 0</code></li>
+
+        <li><strong>Decremento:</strong> <code>i--</code> diminui 1 a cada repetição</li>
+
+    </ul>
+
+    <p><strong>Resultado:</strong></p>
+
+    <pre>
+
+Contagem: 5
+
+Contagem: 4
+
+Contagem: 3
+
+Contagem: 2
+
+Contagem: 1
+
+    </pre>
+
+    <h2>🎯 Conclusão</h2>
+
+    <p>O laço <strong>for</strong> é uma das ferramentas mais poderosas na programação C#. Ele permite que você controle exatamente quantas vezes um bloco de código será executado.</p>
+
+    <p>👉 Dica: Teste alterar a inicialização, a condição e o incremento para criar suas próprias variações de laços!</p>
+
+    <p>Continue praticando e logo o <strong>for</strong> vai ser seu aliado em muitos projetos! 🚀</p>
+
+</div>
+
+</body>
+
+</html>

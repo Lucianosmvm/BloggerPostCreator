@@ -1,0 +1,329 @@
+<!-- Backup de 2024-10-12 | id 3022045977507175074 | https://devsnapratica.blogspot.com/2024/10/modificadores-de-acesso-private-public.html
+     Título: Modificadores de acesso: private, public, protected e internal
+     Marcadores: C#, internal, private, protected, public -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Modificadores de Acesso em C#</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            margin: 0;
+
+            padding: 20px;
+
+            background: #f5f7fa;
+
+            color: #333;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #2c3e50;
+
+        }
+
+        h1 {
+
+            text-align: center;
+
+            color: #2980b9;
+
+        }
+
+        p {
+
+            line-height: 1.6;
+
+        }
+
+        .section {
+
+            background: #ffffff;
+
+            padding: 15px;
+
+            margin-bottom: 20px;
+
+            border-radius: 8px;
+
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+        }
+
+        .highlight {
+
+            color: #e74c3c;
+
+            font-weight: bold;
+
+        }
+
+        pre {
+
+            background: #2d2d2d;
+
+            color: #f1f1f1;
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            overflow-x: auto;
+
+        }
+
+        .compare {
+
+            background: #ecf0f1;
+
+            padding: 10px;
+
+            border-left: 5px solid #3498db;
+
+            margin-top: 10px;
+
+            border-radius: 5px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg61S9pc2p4KGZ_hctiqh_BVvBUeCt1W-l7FuFOvxZTgxEwgqnd8jDdorTQ51XdN0iriP6aZ8c02PfiqUIY1VaPeis_WbgaCrzrgs4K9_BENvbQRgNrDQmpYFMeT3GeAKY6ha2NIc9cXH3G5PNzSRcngUZpdz2Fcg_Qx-lbnfpkGDwjwA1VmT8rWG_fM9TO/s1024/1000090477.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg61S9pc2p4KGZ_hctiqh_BVvBUeCt1W-l7FuFOvxZTgxEwgqnd8jDdorTQ51XdN0iriP6aZ8c02PfiqUIY1VaPeis_WbgaCrzrgs4K9_BENvbQRgNrDQmpYFMeT3GeAKY6ha2NIc9cXH3G5PNzSRcngUZpdz2Fcg_Qx-lbnfpkGDwjwA1VmT8rWG_fM9TO/s320/1000090477.png"/></a></div>
+  
+    <h1>🔒 Modificadores de Acesso em C#</h1>
+
+    <p>Os modificadores de acesso em <strong>C#</strong> são palavras-chave que controlam a visibilidade e o escopo de <span class="highlight">classes</span>, <span class="highlight">métodos</span> e <span class="highlight">variáveis</span>. Eles são fundamentais para o <strong>encapsulamento</strong>, um dos pilares da <em>Programação Orientada a Objetos</em>.</p>
+
+    <p>Neste post, vamos focar nos 3 mais usados:</p>
+
+    <ul>
+
+        <li><strong>private</strong></li>
+
+        <li><strong>public</strong></li>
+
+        <li><strong>protected</strong></li>
+
+    </ul>
+
+    <div class="section">
+
+        <h2>🔐 1. Modificador <span class="highlight">private</span></h2>
+
+        <p>O <strong>private</strong> é o mais restritivo. Ele limita o acesso apenas dentro da própria classe.</p>
+
+        <p><strong>Exemplo:</strong></p>
+
+        <pre>
+
+class Pessoa
+
+{
+
+    private string nome;
+
+    private int idade;
+
+    public Pessoa(string nome, int idade)
+
+    {
+
+        this.nome = nome;
+
+        this.idade = idade;
+
+    }
+
+    public void ExibirInfo()
+
+    {
+
+        Console.WriteLine($"Nome: {nome}, Idade: {idade}");
+
+    }
+
+}
+
+        </pre>
+
+        <p>Se tentarmos acessar os campos <code>nome</code> ou <code>idade</code> de fora da classe, teremos um erro:</p>
+
+        <pre>
+
+Pessoa pessoa = new Pessoa("João", 30);
+
+Console.WriteLine(pessoa.nome); // Erro: 'Pessoa.nome' é inacessível
+
+        </pre>
+
+        <p>A única forma de acessar esses dados é através do método público <code>ExibirInfo()</code>.</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🌍 2. Modificador <span class="highlight">public</span></h2>
+
+        <p>O <strong>public</strong> permite o acesso a um membro de qualquer lugar do código.</p>
+
+        <p><strong>Exemplo:</strong></p>
+
+        <pre>
+
+class Carro
+
+{
+
+    public string marca;
+
+    public string modelo;
+
+    public Carro(string marca, string modelo)
+
+    {
+
+        this.marca = marca;
+
+        this.modelo = modelo;
+
+    }
+
+    public void ExibirCarro()
+
+    {
+
+        Console.WriteLine($"Marca: {marca}, Modelo: {modelo}");
+
+    }
+
+}
+
+        </pre>
+
+        <p>Agora podemos acessar diretamente os campos:</p>
+
+        <pre>
+
+Carro carro = new Carro("Ford", "Mustang");
+
+Console.WriteLine(carro.marca); // Saída: Ford
+
+carro.marca = "Chevrolet";
+
+Console.WriteLine(carro.marca); // Saída: Chevrolet
+
+        </pre>
+
+        <p><strong>Cuidado:</strong> Isso permite modificações diretas nos campos, o que pode comprometer a integridade dos dados.</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🦁 3. Modificador <span class="highlight">protected</span></h2>
+
+        <p>O <strong>protected</strong> permite o acesso dentro da própria classe e também em <strong>classes derivadas</strong> (subclasses).</p>
+
+        <p>É muito útil em cenários de herança!</p>
+
+        <p><strong>Exemplo:</strong></p>
+
+        <pre>
+
+class Animal
+
+{
+
+    protected string nome;
+
+    public Animal(string nome)
+
+    {
+
+        this.nome = nome;
+
+    }
+
+    public void ExibirNome()
+
+    {
+
+        Console.WriteLine($"Nome do animal: {nome}");
+
+    }
+
+}
+
+class Cachorro : Animal
+
+{
+
+    public Cachorro(string nome) : base(nome) { }
+
+    public void Latir()
+
+    {
+
+        Console.WriteLine($"{nome} está latindo!");
+
+    }
+
+}
+
+        </pre>
+
+        <p>Assim podemos fazer:</p>
+
+        <pre>
+
+Cachorro cachorro = new Cachorro("Rex");
+
+cachorro.Latir(); // Saída: Rex está latindo!
+
+        </pre>
+
+        <p>Mas tentar acessar <code>nome</code> diretamente de fora ainda dará erro:</p>
+
+        <pre>
+
+Console.WriteLine(cachorro.nome); // Erro: 'Animal.nome' é inacessível
+
+        </pre>
+
+    </div>
+
+    <div class="section compare">
+
+        <h3>📌 Resumo Comparativo:</h3>
+
+        <ul>
+
+            <li><strong>private:</strong> Apenas a própria classe pode acessar. ✅ Protege os detalhes internos.</li>
+
+            <li><strong>public:</strong> Qualquer código pode acessar. ⚠️ Use com cuidado para não expor demais.</li>
+
+            <li><strong>protected:</strong> A classe e suas subclasses têm acesso. ✅ Bom para herança mantendo encapsulamento.</li>
+
+        </ul>
+
+    </div>
+
+</body>
+
+</html>

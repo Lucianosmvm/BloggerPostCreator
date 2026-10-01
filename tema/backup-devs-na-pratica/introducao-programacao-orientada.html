@@ -1,0 +1,408 @@
+<!-- Backup de 2025-06-19 | id 632289498907852928 | https://devsnapratica.blogspot.com/2025/06/introducao-programacao-orientada.html
+     Título: Introdução à Programação Orientada a Objetos (POO) em C#
+     Marcadores:  -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            margin: 0;
+
+            padding: 20px;
+
+            background: #f0f4f8;
+
+            color: #333;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #2c3e50;
+
+        }
+
+        h1 {
+
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+
+            color: white;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+        }
+
+        section {
+
+            background: white;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+
+        }
+
+        code {
+
+            background: #eef1f5;
+
+            padding: 2px 6px;
+
+            border-radius: 4px;
+
+            color: #d63384;
+
+        }
+
+        pre {
+
+            background: #272822;
+
+            color: #f8f8f2;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            overflow-x: auto;
+
+        }
+
+        ul li {
+
+            margin-bottom: 10px;
+
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgs3Zc7R-4BxHXp8C9Jtoujn0clUtvquutpZucirVAIAjfydotAFEWjYa3q74-0P8s5qPR5z-n4hgjn1GpO_BPB7gI02JjX8s_BwA_Zq8BPDGy4GiBTbpB8TEaXhKTP9AKbXigTBeFs7K_7KhiDBeoTXfj-GH7dMJSY3PuXGaFZgH70rZPMuJduJNutTIiO/s1536/1000090987.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgs3Zc7R-4BxHXp8C9Jtoujn0clUtvquutpZucirVAIAjfydotAFEWjYa3q74-0P8s5qPR5z-n4hgjn1GpO_BPB7gI02JjX8s_BwA_Zq8BPDGy4GiBTbpB8TEaXhKTP9AKbXigTBeFs7K_7KhiDBeoTXfj-GH7dMJSY3PuXGaFZgH70rZPMuJduJNutTIiO/s320/1000090987.png"/></a></div>
+
+<section>
+
+    <h2>O que é Programação Orientada a Objetos?</h2>
+
+    <p>A <strong>Programação Orientada a Objetos (POO)</strong> é um dos conceitos mais usados na criação de software moderno. Ela permite organizar o código de forma mais próxima do mundo real, usando <strong>objetos</strong> que possuem <em>características</em> (atributos) e <em>ações</em> (métodos).</p>
+
+    <h3>🌟 Os 4 pilares da POO:</h3>
+
+    <ul>
+
+        <li><strong>Encapsulamento:</strong> Protege os dados internos dos objetos.</li>
+
+        <li><strong>Abstração:</strong> Mostra só o que é importante, escondendo os detalhes.</li>
+
+        <li><strong>Herança:</strong> Permite que uma classe herde comportamentos de outra.</li>
+
+        <li><strong>Polimorfismo:</strong> Um mesmo método pode ter comportamentos diferentes.</li>
+
+    </ul>
+
+</section>
+
+<section>
+
+    <h2>📌 Classes e Objetos</h2>
+
+    <p>Uma <strong>classe</strong> é como um molde. Já o <strong>objeto</strong> é o que nasce desse molde!</p>
+
+    <h3>Exemplo básico em C#:</h3>
+
+    <pre><code>public class Carro
+
+{
+
+    public string Marca { get; set; }
+
+    public string Modelo { get; set; }
+
+    public int Ano { get; set; }
+
+    public void ExibirDetalhes()
+
+    {
+
+        Console.WriteLine($&quot;Marca: {Marca}, Modelo: {Modelo}, Ano: {Ano}&quot;);
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Carro meuCarro = new Carro();
+
+        meuCarro.Marca = &quot;Toyota&quot;;
+
+        meuCarro.Modelo = &quot;Corolla&quot;;
+
+        meuCarro.Ano = 2020;
+
+        meuCarro.ExibirDetalhes();
+
+    }
+
+}</code></pre>
+
+    <p>👉 Esse código cria um objeto <code>Carro</code> e exibe seus detalhes no console.</p>
+
+</section>
+
+<section>
+
+    <h2>🔒 Encapsulamento</h2>
+
+    <p>Serve para proteger os dados internos de uma classe.</p>
+
+    <h3>Exemplo de Encapsulamento:</h3>
+
+    <pre><code>public class Carro
+
+{
+
+    private string _marca;
+
+    public void SetMarca(string marca)
+
+    {
+
+        if (!string.IsNullOrEmpty(marca))
+
+        {
+
+            _marca = marca;
+
+        }
+
+    }
+
+    public string GetMarca()
+
+    {
+
+        return _marca;
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Carro carro = new Carro();
+
+        carro.SetMarca(&quot;Honda&quot;);
+
+        Console.WriteLine(carro.GetMarca());
+
+    }
+
+}</code></pre>
+
+    <p>✅ Aqui, só podemos acessar a marca usando os métodos <code>SetMarca()</code> e <code>GetMarca()</code>.</p>
+
+</section>
+
+<section>
+
+    <h2>👑 Herança</h2>
+
+    <p>Com a <strong>herança</strong>, uma classe pode aproveitar atributos e métodos de outra classe.</p>
+
+    <h3>Exemplo de Herança:</h3>
+
+    <pre><code>public class Veiculo
+
+{
+
+    public string Marca { get; set; }
+
+    public int Ano { get; set; }
+
+    public void ExibirInfo()
+
+    {
+
+        Console.WriteLine($&quot;Marca: {Marca}, Ano: {Ano}&quot;);
+
+    }
+
+}
+
+public class Carro : Veiculo
+
+{
+
+    public string Modelo { get; set; }
+
+    public new void ExibirInfo()
+
+    {
+
+        base.ExibirInfo();
+
+        Console.WriteLine($&quot;Modelo: {Modelo}&quot;);
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Carro carro = new Carro();
+
+        carro.Marca = &quot;Ford&quot;;
+
+        carro.Ano = 2019;
+
+        carro.Modelo = &quot;Focus&quot;;
+
+        carro.ExibirInfo();
+
+    }
+
+}</code></pre>
+
+    <p>✅ A classe <code>Carro</code> herda de <code>Veiculo</code> e ainda adiciona o atributo <code>Modelo</code>.</p>
+
+</section>
+
+<section>
+
+    <h2>🎭 Polimorfismo</h2>
+
+    <p>Permite que métodos com o mesmo nome tenham comportamentos diferentes.</p>
+
+    <h3>Exemplo de Polimorfismo:</h3>
+
+    <pre><code>public class Animal
+
+{
+
+    public virtual void Som()
+
+    {
+
+        Console.WriteLine(&quot;O animal faz um som&quot;);
+
+    }
+
+}
+
+public class Cachorro : Animal
+
+{
+
+    public override void Som()
+
+    {
+
+        Console.WriteLine(&quot;O cachorro late&quot;);
+
+    }
+
+}
+
+public class Gato : Animal
+
+{
+
+    public override void Som()
+
+    {
+
+        Console.WriteLine(&quot;O gato mia&quot;);
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Animal meuAnimal = new Animal();
+
+        Animal meuCachorro = new Cachorro();
+
+        Animal meuGato = new Gato();
+
+        meuAnimal.Som();
+
+        meuCachorro.Som();
+
+        meuGato.Som();
+
+    }
+
+}</code></pre>
+
+    <p>✅ Cada classe filha sobrescreve o método <code>Som()</code> de forma diferente!</p>
+
+</section>
+
+<section>
+
+    <h2>✅ Conclusão</h2>
+
+    <p>A <strong>Programação Orientada a Objetos</strong> é um conceito essencial para quem quer dominar o desenvolvimento em <strong>C#</strong>! Agora que você já entende os pilares principais, que tal praticar criando seus próprios exemplos?</p>
+
+    <p>💡 Dica: Comece criando novas classes com atributos e métodos diferentes e experimente usar herança e polimorfismo!</p>
+
+</section>
+
+</body>
+
+</html>

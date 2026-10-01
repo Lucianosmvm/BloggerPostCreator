@@ -1,0 +1,162 @@
+<!-- Backup de 2024-10-05 | id 1072258598156481563 | https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html
+     Título: Condicionais em Programação: Introdução ao if, else, else if e switch em C#
+     Marcadores: break, C#, condicionais, dicas, else if, if, switch -->
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiNFsGlGkM9JhOJrqYiJp1LkoRq7BnxIb8PtTSxDxGTr6Kgxn7X2FE4AovmXCUdqudZ2JoSp5F-DmyS54yoNyDUnmoAsVbmvgsqkbSZWq7uAb-41mhiaBau9LCuqZuBGpRxJL2sWUvTIIDh6P60ygC-Afmn1LfmUD5HQfmaz4RcgC7c2elTddQ6L-Ym3hRx/s1024/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_09_07.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiNFsGlGkM9JhOJrqYiJp1LkoRq7BnxIb8PtTSxDxGTr6Kgxn7X2FE4AovmXCUdqudZ2JoSp5F-DmyS54yoNyDUnmoAsVbmvgsqkbSZWq7uAb-41mhiaBau9LCuqZuBGpRxJL2sWUvTIIDh6P60ygC-Afmn1LfmUD5HQfmaz4RcgC7c2elTddQ6L-Ym3hRx/s320/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_09_07.png"/></a></div>
+
+<p>As estruturas condicionais são fundamentais em qualquer linguagem de programação, pois permitem que o programa tome decisões com base em condições específicas. Em C#, as principais estruturas são: <strong>if</strong>, <strong>else</strong>, <strong>else if</strong> e <strong>switch</strong>. Vamos explorar cada uma com exemplos simples e diretos para quem está começando.</p>
+
+<h3>✅ Estrutura <code>if</code></h3>
+
+<p>A palavra-chave <code>if</code> é usada para executar um bloco de código se uma condição for verdadeira. É a forma mais básica de uma condicional.</p>
+
+<strong>Sintaxe:</strong>
+<pre><code>if (condição)
+{
+    // Código a ser executado se a condição for verdadeira
+}</code></pre>
+
+<strong>Exemplo:</strong>
+<pre><code>int idade = 18;
+
+if (idade >= 18)
+{
+    Console.WriteLine("Você é maior de idade.");
+}</code></pre>
+
+<p>Neste exemplo, se a variável <code>idade</code> for maior ou igual a 18, a mensagem será exibida.</p>
+
+<h3>✅ Estrutura <code>else</code></h3>
+
+<p>O <code>else</code> é usado em conjunto com o <code>if</code> para definir o que acontece caso a condição seja falsa.</p>
+
+<strong>Sintaxe:</strong>
+<pre><code>if (condição)
+{
+    // Código se a condição for verdadeira
+}
+else
+{
+    // Código se a condição for falsa
+}</code></pre>
+
+<strong>Exemplo:</strong>
+<pre><code>int idade = 16;
+
+if (idade >= 18)
+{
+    Console.WriteLine("Você é maior de idade.");
+}
+else
+{
+    Console.WriteLine("Você é menor de idade.");
+}</code></pre>
+
+<h3>✅ Estrutura <code>else if</code></h3>
+
+<p>O <code>else if</code> permite testar várias condições em sequência.</p>
+
+<strong>Sintaxe:</strong>
+<pre><code>if (condição1)
+{
+    // Código se condição1 for verdadeira
+}
+else if (condição2)
+{
+    // Código se condição2 for verdadeira
+}
+else
+{
+    // Código se nenhuma condição for verdadeira
+}</code></pre>
+
+<strong>Exemplo:</strong>
+<pre><code>int nota = 85;
+
+if (nota >= 90)
+{
+    Console.WriteLine("Sua nota é A.");
+}
+else if (nota >= 80)
+{
+    Console.WriteLine("Sua nota é B.");
+}
+else if (nota >= 70)
+{
+    Console.WriteLine("Sua nota é C.");
+}
+else
+{
+    Console.WriteLine("Sua nota é D.");
+}</code></pre>
+
+<p>Nesse caso, como a nota é 85, o programa vai exibir: <strong>"Sua nota é B."</strong></p>
+
+<h3>✅ Estrutura <code>switch</code></h3>
+
+<p>O <code>switch</code> é uma alternativa ao uso de vários <code>if-else</code> quando se trata de comparar uma variável com vários valores fixos.</p>
+
+<strong>Sintaxe:</strong>
+<pre><code>switch (variável)
+{
+    case valor1:
+        // Código se variável for igual a valor1
+        break;
+    case valor2:
+        // Código se variável for igual a valor2
+        break;
+    default:
+        // Código se nenhum dos casos for verdadeiro
+        break;
+}</code></pre>
+
+<strong>Exemplo:</strong>
+<pre><code>int diaSemana = 3;
+
+switch (diaSemana)
+{
+    case 1:
+        Console.WriteLine("Hoje é segunda-feira.");
+        break;
+    case 2:
+        Console.WriteLine("Hoje é terça-feira.");
+        break;
+    case 3:
+        Console.WriteLine("Hoje é quarta-feira.");
+        break;
+    case 4:
+        Console.WriteLine("Hoje é quinta-feira.");
+        break;
+    case 5:
+        Console.WriteLine("Hoje é sexta-feira.");
+        break;
+    case 6:
+        Console.WriteLine("Hoje é sábado.");
+        break;
+    case 7:
+        Console.WriteLine("Hoje é domingo.");
+        break;
+    default:
+        Console.WriteLine("Dia da semana inválido.");
+        break;
+}</code></pre>
+
+<p>Como a variável <code>diaSemana</code> tem o valor 3, o programa exibirá: <strong>"Hoje é quarta-feira."</strong></p>
+
+<h3>ℹ️ Importância do <code>break</code></h3>
+
+<p>Cada <code>case</code> dentro do <code>switch</code> termina com <strong>break</strong> para evitar que o código continue executando os próximos casos. Sem o <code>break</code>, todos os casos seguintes seriam executados após o primeiro verdadeiro.</p>
+
+<h3>📌 Diferenças entre <code>if-else</code> e <code>switch</code></h3>
+
+<ul>
+<li><strong>if-else:</strong> Mais flexível, ideal para condições complexas com operadores lógicos.</li>
+<li><strong>switch:</strong> Melhor quando você precisa comparar uma variável com vários valores fixos. Mais organizado visualmente.</li>
+</ul>
+
+<h3>✅ Conclusão</h3>
+
+<p>As estruturas <strong>if</strong>, <strong>else</strong>, <strong>else if</strong> e <strong>switch</strong> são essenciais para criar a lógica dos seus programas. Dominar essas ferramentas é um passo importante para escrever códigos eficientes e bem estruturados em C#.</p>
+
+<p><strong>Dica final:</strong> Teste cada uma dessas estruturas na prática! Só assim você vai pegar confiança e começar a pensar como um programador de verdade.</p>
+
+<p>👉 Tem dúvidas ou sugestões? Deixa nos comentários! Até a próxima!</p>

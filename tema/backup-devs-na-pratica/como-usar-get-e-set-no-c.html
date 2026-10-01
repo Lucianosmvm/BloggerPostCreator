@@ -1,0 +1,320 @@
+<!-- Backup de 2024-10-12 | id 115117714811048571 | https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html
+     Título: Propriedades em C#
+     Marcadores: C# -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Propriedades em C#</title>
+
+  <style>
+
+    body {
+
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+      margin: 0;
+
+      padding: 20px;
+
+      background-color: #f4f6f8;
+
+      color: #333;
+
+    }
+
+    h1, h2 {
+
+      color: #007acc;
+
+    }
+
+    h1 {
+
+      text-align: center;
+
+      margin-bottom: 30px;
+
+    }
+
+    code {
+
+      background-color: #eaeaea;
+
+      padding: 2px 6px;
+
+      border-radius: 4px;
+
+      font-family: 'Courier New', Courier, monospace;
+
+      color: #d63384;
+
+    }
+
+    pre {
+
+      background-color: #272822;
+
+      color: #f8f8f2;
+
+      padding: 15px;
+
+      border-radius: 8px;
+
+      overflow-x: auto;
+
+      margin: 15px 0;
+
+    }
+
+    section {
+
+      margin-bottom: 30px;
+
+    }
+
+    .resumo {
+
+      background-color: #fff3cd;
+
+      border-left: 5px solid #ffc107;
+
+      padding: 15px;
+
+      border-radius: 5px;
+
+    }
+
+    @media (max-width: 600px) {
+
+      body {
+
+        padding: 10px;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglTQMfXDNLec27JTemKiWj8Ko1akLw07s5vkFbpfHswvWq08CwpDMCr5YLPSUjmvJl5RFTEyFJxKXAmyu1ld2XodjNpBmBo36YzFMj1frQd981DkX_VtbKJkyKIZOX0UlvP5kCciX06vGtNljBzhfl4lixde5rvnaB69N0Ow35Tfo3X-UoAjPb3bud_RVJ/s1314/1000090479.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="320" data-original-height="1314" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEglTQMfXDNLec27JTemKiWj8Ko1akLw07s5vkFbpfHswvWq08CwpDMCr5YLPSUjmvJl5RFTEyFJxKXAmyu1ld2XodjNpBmBo36YzFMj1frQd981DkX_VtbKJkyKIZOX0UlvP5kCciX06vGtNljBzhfl4lixde5rvnaB69N0Ow35Tfo3X-UoAjPb3bud_RVJ/s320/1000090479.png"/></a></div>
+
+  <section>
+
+    <p>As <strong>propriedades em C#</strong> são um recurso poderoso que permite controlar o acesso a campos privados de uma classe de forma segura e flexível. Elas funcionam como uma ponte entre os membros privados da classe e o mundo exterior, controlando como os dados são lidos ou modificados.</p>
+
+    <p>Isso promove o <strong>encapsulamento</strong>, protegendo os dados internos enquanto oferece controle total sobre como acessá-los.</p>
+
+  </section>
+
+  <section>
+
+    <h2>🌉 Estrutura de uma Propriedade</h2>
+
+    <p>Uma propriedade é composta por dois acessores principais: <code>get</code> (leitura) e <code>set</code> (escrita).</p>
+
+    <pre><code>class Pessoa
+
+{
+
+    private string nome;
+
+    public string Nome
+
+    {
+
+        get { return nome; }
+
+        set { nome = value; }
+
+    }
+
+}</code></pre>
+
+    <p><strong>Uso:</strong></p>
+
+    <pre><code>Pessoa pessoa = new Pessoa();
+
+pessoa.Nome = "João";
+
+Console.WriteLine(pessoa.Nome); // Saída: João</code></pre>
+
+  </section>
+
+  <section>
+
+    <h2>🧠 Propriedades com Lógica Interna</h2>
+
+    <p>É possível inserir lógica nos acessores, como validações:</p>
+
+    <pre><code>class Funcionario
+
+{
+
+    private int idade;
+
+    public int Idade
+
+    {
+
+        get { return idade; }
+
+        set
+
+        {
+
+            if (value >= 18)
+
+                idade = value;
+
+            else
+
+                Console.WriteLine("A idade deve ser maior ou igual a 18.");
+
+        }
+
+    }
+
+}</code></pre>
+
+    <p><strong>Uso:</strong></p>
+
+    <pre><code>Funcionario funcionario = new Funcionario();
+
+funcionario.Idade = 25;
+
+Console.WriteLine(funcionario.Idade); // 25
+
+funcionario.Idade = 16; // Mensagem de erro</code></pre>
+
+  </section>
+
+  <section>
+
+    <h2>🔒 Somente Leitura / Escrita</h2>
+
+    <h3>🔍 Propriedade Somente Leitura:</h3>
+
+    <pre><code>class Circulo
+
+{
+
+    private double raio;
+
+    public Circulo(double raio)
+
+    {
+
+        this.raio = raio;
+
+    }
+
+    public double Area
+
+    {
+
+        get { return Math.PI * raio * raio; }
+
+    }
+
+}</code></pre>
+
+    <h3>✍️ Propriedade Somente Escrita:</h3>
+
+    <pre><code>class Segredo
+
+{
+
+    private string mensagem;
+
+    public string Mensagem
+
+    {
+
+        set { mensagem = value; }
+
+    }
+
+}</code></pre>
+
+  </section>
+
+  <section>
+
+    <h2>⚡ Propriedades Automáticas</h2>
+
+    <p>Para casos simples, você pode usar propriedades automáticas sem precisar de campos privados explícitos:</p>
+
+    <pre><code>class Carro
+
+{
+
+    public string Marca { get; set; }
+
+    public string Modelo { get; set; }
+
+}</code></pre>
+
+    <p><strong>Uso:</strong></p>
+
+    <pre><code>Carro carro = new Carro();
+
+carro.Marca = "Ford";
+
+Console.WriteLine(carro.Marca);</code></pre>
+
+  </section>
+
+  <section>
+
+    <h2>📘 Propriedades Automáticas Somente Leitura</h2>
+
+    <p>Com o <code>init</code>, você permite atribuição apenas na inicialização:</p>
+
+    <pre><code>class Livro
+
+{
+
+    public string Titulo { get; init; }
+
+}</code></pre>
+
+    <p><strong>Uso:</strong></p>
+
+    <pre><code>Livro livro = new Livro { Titulo = "Programando em C#" };
+
+Console.WriteLine(livro.Titulo);</code></pre>
+
+  </section>
+
+  <section class="resumo">
+
+    <h2>📌 Resumo</h2>
+
+    <ul>
+
+      <li>Propriedades protegem seus campos privados com segurança.</li>
+
+      <li>Permitem lógica nos acessores, como validações.</li>
+
+      <li>Propriedades automáticas facilitam e economizam tempo.</li>
+
+      <li>Com <code>get</code>, <code>set</code> e <code>init</code>, você tem controle total!</li>
+
+    </ul>
+
+  </section>
+
+</body>
+
+</html>

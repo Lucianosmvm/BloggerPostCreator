@@ -1,0 +1,348 @@
+<!-- Backup de 2024-10-23 | id 9176455844707793061 | https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html
+     Título: Laços de Repetição em C#: For, While, Do-While e Foreach
+     Marcadores: C# -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            margin: 0;
+
+            padding: 20px;
+
+            background: #f0f4f8;
+
+            color: #333;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #007ACC;
+
+        }
+
+        pre {
+
+            background: #272822;
+
+            color: #f8f8f2;
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            overflow-x: auto;
+
+        }
+
+        .section {
+
+            background: #ffffff;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+
+            margin-bottom: 20px;
+
+        }
+
+        .highlight {
+
+            color: #d63384;
+
+            font-weight: bold;
+
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQTksot1teYlGKuckeV9UooOPZYl31P4hZpwC7tskcqVYtMurYTiJUfaAspFmvc0LkVnzPmxTdCGjFKNOuI-T9j8aTFbu5uh0HJcXicpmhu7ZLVqyE7l69iO-Qvuo1iq1XeihFbrYMOCSRfC4o5P-TmDPT4I1qD1e1MYjLxAHXnyNC0cTjW0tGWGuGYp8h/s1536/1000090986.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjQTksot1teYlGKuckeV9UooOPZYl31P4hZpwC7tskcqVYtMurYTiJUfaAspFmvc0LkVnzPmxTdCGjFKNOuI-T9j8aTFbu5uh0HJcXicpmhu7ZLVqyE7l69iO-Qvuo1iq1XeihFbrYMOCSRfC4o5P-TmDPT4I1qD1e1MYjLxAHXnyNC0cTjW0tGWGuGYp8h/s320/1000090986.png"/></a></div>
+  
+    <h1>Laços de Repetição em C#: <span class="highlight">For, While, Do-While e Foreach</span></h1>
+
+    <p>Os <strong>laços de repetição</strong> são essenciais em qualquer linguagem de programação! Eles permitem executar um bloco de código várias vezes, dependendo de uma condição. Em <strong>C#</strong>, temos quatro principais:</p>
+
+    <div class="section">
+
+        <h2>🔁 Laço <code>for</code></h2>
+
+        <p>Ideal quando você <strong>já sabe o número de vezes</strong> que o código precisa rodar.</p>
+
+        <h3>✅ Sintaxe:</h3>
+
+        <pre>
+
+for (inicialização; condição; incremento)
+
+{
+
+    // Código a ser executado
+
+}</pre>
+
+        <h3>✅ Exemplo:</h3>
+
+        <pre>
+
+for (int i = 0; i &lt; 5; i++)
+
+{
+
+    Console.WriteLine("Valor de i: " + i);
+
+}</pre>
+
+        <p><strong>Como funciona:</strong> Inicializa → Testa condição → Executa → Incrementa → Repete</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🔁 Laço <code>while</code></h2>
+
+        <p>Perfeito quando <strong>não sabemos quantas vezes o código vai rodar</strong>. A condição é avaliada antes de cada execução.</p>
+
+        <h3>✅ Sintaxe:</h3>
+
+        <pre>
+
+while (condição)
+
+{
+
+    // Código a ser executado
+
+}</pre>
+
+        <h3>✅ Exemplo:</h3>
+
+        <pre>
+
+int contador = 0;
+
+while (contador &lt; 5)
+
+{
+
+    Console.WriteLine("Contador: " + contador);
+
+    contador++;
+
+}</pre>
+
+        <p><strong>Dica:</strong> O laço pode <strong>não rodar nenhuma vez</strong> se a condição for falsa desde o início.</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🔁 Laço <code>do-while</code></h2>
+
+        <p>Quase igual ao <code>while</code>, mas <strong>Garante pelo menos uma execução</strong>, porque a condição só é verificada depois.</p>
+
+        <h3>✅ Sintaxe:</h3>
+
+        <pre>
+
+do
+
+{
+
+    // Código a ser executado
+
+} while (condição);</pre>
+
+        <h3>✅ Exemplo:</h3>
+
+        <pre>
+
+int contador = 0;
+
+do
+
+{
+
+    Console.WriteLine("Contador: " + contador);
+
+    contador++;
+
+} while (contador &lt; 5);</pre>
+
+        <p><strong>Quando usar?</strong> Sempre que você precisar garantir que o código rode ao menos uma vez.</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🔁 Laço <code>foreach</code></h2>
+
+        <p>Perfeito para <strong>percorrer coleções</strong> como arrays e listas, sem se preocupar com índices!</p>
+
+        <h3>✅ Sintaxe:</h3>
+
+        <pre>
+
+foreach (tipo item in coleção)
+
+{
+
+    // Código para cada item
+
+}</pre>
+
+        <h3>✅ Exemplo:</h3>
+
+        <pre>
+
+string[] nomes = { "Ana", "Bruno", "Carlos" };
+
+foreach (string nome in nomes)
+
+{
+
+    Console.WriteLine("Nome: " + nome);
+
+}</pre>
+
+        <p><strong>Vantagens:</strong> Mais simples, mais seguro (sem risco de acessar índice inválido) e ótimo para leitura de dados.</p>
+
+    </div>
+
+    <div class="section">
+
+        <h2>📊 Comparação rápida:</h2>
+
+        <ul>
+
+            <li><strong>for:</strong> Melhor quando o número de repetições é conhecido.</li>
+
+            <li><strong>while:</strong> Quando o número de repetições depende de uma condição.</li>
+
+            <li><strong>do-while:</strong> Garante pelo menos uma execução.</li>
+
+            <li><strong>foreach:</strong> Ideal para percorrer coleções.</li>
+
+        </ul>
+
+    </div>
+
+    <div class="section">
+
+        <h2>🧑‍💻 Exemplo prático: Somando de 1 a 5 com todos os laços</h2>
+
+        <h3>✔️ Usando <code>for</code>:</h3>
+
+        <pre>
+
+int somaFor = 0;
+
+for (int i = 1; i &lt;= 5; i++)
+
+{
+
+    somaFor += i;
+
+}
+
+Console.WriteLine("Soma com for: " + somaFor);</pre>
+
+        <h3>✔️ Usando <code>while</code>:</h3>
+
+        <pre>
+
+int somaWhile = 0;
+
+int contadorWhile = 1;
+
+while (contadorWhile &lt;= 5)
+
+{
+
+    somaWhile += contadorWhile;
+
+    contadorWhile++;
+
+}
+
+Console.WriteLine("Soma com while: " + somaWhile);</pre>
+
+        <h3>✔️ Usando <code>do-while</code>:</h3>
+
+        <pre>
+
+int somaDoWhile = 0;
+
+int contadorDoWhile = 1;
+
+do
+
+{
+
+    somaDoWhile += contadorDoWhile;
+
+    contadorDoWhile++;
+
+} while (contadorDoWhile &lt;= 5);
+
+Console.WriteLine("Soma com do-while: " + somaDoWhile);</pre>
+
+        <h3>✔️ Usando <code>foreach</code>:</h3>
+
+        <pre>
+
+int[] numeros = { 1, 2, 3, 4, 5 };
+
+int somaForeach = 0;
+
+foreach (int numero in numeros)
+
+{
+
+    somaForeach += numero;
+
+}
+
+Console.WriteLine("Soma com foreach: " + somaForeach);</pre>
+
+    </div>
+
+    <div class="section">
+
+        <h2>✅ Conclusão</h2>
+
+        <p>Dominar os <strong>laços de repetição</strong> é essencial para qualquer programador C#. Entenda as diferenças, pratique bastante e logo você estará usando cada um deles como um verdadeiro ninja da programação! 🥷💻</p>
+
+    </div>
+
+</body>
+
+</html>

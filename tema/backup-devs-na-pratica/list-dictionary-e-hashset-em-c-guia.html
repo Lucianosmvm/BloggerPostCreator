@@ -1,0 +1,301 @@
+<!-- Backup de 2025-06-19 | id 3575017949589429291 | https://devsnapratica.blogspot.com/2025/06/list-dictionary-e-hashset-em-c-guia.html
+     Título: List, Dictionary e HashSet em C#: Guia Prático de Coleções
+     Marcadores:  -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <style>
+
+        body {
+
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            background-color: #f0f4f8;
+
+            color: #333;
+
+            margin: 0;
+
+            padding: 20px;
+
+        }
+
+        h1 {
+
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+
+            color: white;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            text-align: center;
+
+        }
+
+        h2, h3 {
+
+            color: #2c3e50;
+
+        }
+
+        section {
+
+            background: white;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+
+        }
+
+        pre {
+
+            background: #272822;
+
+            color: #f8f8f2;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            overflow-x: auto;
+
+        }
+
+        code {
+
+            background-color: #eef1f5;
+
+            padding: 2px 6px;
+
+            border-radius: 4px;
+
+            color: #d63384;
+
+        }
+
+        ul li {
+
+            margin-bottom: 8px;
+
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHo5qvH5AipBjtQBkAWsZlbgGTPol_PYuvcAAGK7btdixjP_0-K6ueSQsaAkYgMasaGl4_P-SmWZs7QCPsiJThuHqX7UX8hzvTXwHK18M9-fWjbNM5puXAZfkNK4lHNqQvYtbhYVJ8DV6oGk9yT0mfRa-u2vNpUWsmW5x7pDwP_2nrS2qjPWdpEMRjMB2i/s1536/1000090988.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgHo5qvH5AipBjtQBkAWsZlbgGTPol_PYuvcAAGK7btdixjP_0-K6ueSQsaAkYgMasaGl4_P-SmWZs7QCPsiJThuHqX7UX8hzvTXwHK18M9-fWjbNM5puXAZfkNK4lHNqQvYtbhYVJ8DV6oGk9yT0mfRa-u2vNpUWsmW5x7pDwP_2nrS2qjPWdpEMRjMB2i/s320/1000090988.png"/></a></div>
+
+<section>
+
+    <h2>📌 O que são Coleções?</h2>
+
+    <p>Em <strong>C#</strong>, as coleções são estruturas que permitem armazenar, organizar e manipular conjuntos de dados de forma eficiente. Hoje vamos focar em três das mais usadas: <strong>List</strong>, <strong>Dictionary</strong> e <strong>HashSet</strong>.</p>
+
+</section>
+
+<section>
+
+    <h2>1️⃣ List: Trabalhando com Listas Ordenadas</h2>
+
+    <h3>✅ O que é?</h3>
+
+    <p>A <code>List&lt;T&gt;</code> é uma lista dinâmica que pode crescer ou diminuir conforme necessário. Ideal para quando você precisa acessar elementos por índice.</p>
+
+    <h3>Exemplo prático:</h3>
+
+    <pre><code>List&lt;int&gt; numeros = new List&lt;int&gt;();
+
+numeros.Add(10);
+
+numeros.Add(20);
+
+numeros.Add(30);
+
+int primeiro = numeros[0]; // Retorna 10
+
+foreach (int numero in numeros)
+
+{
+
+    Console.WriteLine(numero);
+
+}</code></pre>
+
+    <h3>⭐ Vantagens:</h3>
+
+    <ul>
+
+        <li>Permite duplicatas</li>
+
+        <li>Preserva a ordem de inserção</li>
+
+        <li>Acesso rápido por índice</li>
+
+    </ul>
+
+    <h3>⚠️ Desvantagens:</h3>
+
+    <ul>
+
+        <li>Operações de busca podem ser lentas em listas grandes</li>
+
+    </ul>
+
+</section>
+
+<section>
+
+    <h2>2️⃣ Dictionary: Dados em Chave-Valor</h2>
+
+    <h3>✅ O que é?</h3>
+
+    <p>O <code>Dictionary&lt;TKey, TValue&gt;</code> armazena pares de chave e valor. Acesso super rápido pela chave!</p>
+
+    <h3>Exemplo prático:</h3>
+
+    <pre><code>Dictionary&lt;string, int&gt; estoque = new Dictionary&lt;string, int&gt;();
+
+estoque.Add(&quot;Maçã&quot;, 100);
+
+estoque.Add(&quot;Banana&quot;, 50);
+
+if (estoque.ContainsKey(&quot;Maçã&quot;))
+
+{
+
+    Console.WriteLine(&quot;Maçã está no estoque.&quot;);
+
+}
+
+foreach (var item in estoque)
+
+{
+
+    Console.WriteLine($&quot;Produto: {item.Key}, Quantidade: {item.Value}&quot;);
+
+}</code></pre>
+
+    <h3>⭐ Vantagens:</h3>
+
+    <ul>
+
+        <li>Altíssima performance para buscas</li>
+
+        <li>Chaves únicas</li>
+
+    </ul>
+
+    <h3>⚠️ Desvantagens:</h3>
+
+    <ul>
+
+        <li>Não permite chaves duplicadas</li>
+
+        <li>Ordem dos itens não garantida</li>
+
+    </ul>
+
+</section>
+
+<section>
+
+    <h2>3️⃣ HashSet: Conjunto de Itens Únicos</h2>
+
+    <h3>✅ O que é?</h3>
+
+    <p>O <code>HashSet&lt;T&gt;</code> é uma coleção que só permite elementos únicos e não se preocupa com a ordem.</p>
+
+    <h3>Exemplo prático:</h3>
+
+    <pre><code>HashSet&lt;int&gt; numerosUnicos = new HashSet&lt;int&gt;();
+
+numerosUnicos.Add(1);
+
+numerosUnicos.Add(2);
+
+numerosUnicos.Add(1); // Ignorado, pois já existe
+
+if (numerosUnicos.Contains(2))
+
+{
+
+    Console.WriteLine(&quot;O número 2 está presente.&quot;);
+
+}
+
+foreach (int numero in numerosUnicos)
+
+{
+
+    Console.WriteLine(numero);
+
+}</code></pre>
+
+    <h3>⭐ Vantagens:</h3>
+
+    <ul>
+
+        <li>Operações super rápidas</li>
+
+        <li>Garante itens únicos</li>
+
+    </ul>
+
+    <h3>⚠️ Desvantagens:</h3>
+
+    <ul>
+
+        <li>Não mantém a ordem dos itens</li>
+
+    </ul>
+
+</section>
+
+<section>
+
+    <h2>🔎 Resumo: Quando Usar Cada Uma?</h2>
+
+    <ul>
+
+        <li><strong>List:</strong> Quando você precisa de uma lista ordenada que pode ter itens repetidos.</li>
+
+        <li><strong>Dictionary:</strong> Quando precisa mapear chaves únicas para valores e quer rapidez na busca.</li>
+
+        <li><strong>HashSet:</strong> Quando precisa garantir que os itens não se repitam.</li>
+
+    </ul>
+
+    <p>✅ Agora é a sua vez: pratique criando suas próprias coleções e testando os exemplos!</p>
+
+</section>
+
+</body>
+
+</html>

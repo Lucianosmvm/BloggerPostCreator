@@ -1,0 +1,233 @@
+<!-- Backup de 2025-06-16 | id 7085470065840307870 | https://devsnapratica.blogspot.com/2025/06/como-renomear-um-arquivo-ou-pasta-em-c.html
+     Título: Como Renomear um Arquivo ou Pasta em C#
+     Marcadores: C#, mover arquivo, renomear -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #f0f4f8;
+
+            margin: 0;
+
+            padding: 20px;
+
+            color: #333;
+
+        }
+
+        h1 {
+
+            color: #2c3e50;
+
+            text-align: center;
+
+        }
+
+        h2 {
+
+            color: #2980b9;
+
+            margin-top: 30px;
+
+        }
+
+        p {
+
+            line-height: 1.6;
+
+        }
+
+        code {
+
+            background-color: #ecf0f1;
+
+            padding: 2px 6px;
+
+            border-radius: 4px;
+
+            color: #c0392b;
+
+        }
+
+        pre {
+
+            background-color: #2d3436;
+
+            color: #ecf0f1;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            overflow-x: auto;
+
+        }
+
+        .destaque {
+
+            background-color: #dff9fb;
+
+            border-left: 5px solid #2980b9;
+
+            padding: 10px 15px;
+
+            margin: 20px 0;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjm4beNNd3qvwEzpSPDsLN07WcJUnl6Gj7Z24u25jfOANiMnrjH9MY5l4bMsHEir3YBIIuaCW5iXjnbxrghq5om3k6zS5bp9X7VqWzAsOfdshbzDtyYbTXLRdwJWYjX54mHO9boTFs4Uca06jzEB6Hfq40VLd0Phbesj7vmy83qPHHtFT4-adN0ijQ7iQBu/s1024/1000090624.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjm4beNNd3qvwEzpSPDsLN07WcJUnl6Gj7Z24u25jfOANiMnrjH9MY5l4bMsHEir3YBIIuaCW5iXjnbxrghq5om3k6zS5bp9X7VqWzAsOfdshbzDtyYbTXLRdwJWYjX54mHO9boTFs4Uca06jzEB6Hfq40VLd0Phbesj7vmy83qPHHtFT4-adN0ijQ7iQBu/s320/1000090624.png"/></a></div>
+
+    <p>Se você está programando em C# e precisa renomear um arquivo ou uma pasta, saiba que isso é mais fácil do que parece! 🚀 Neste post, vou te mostrar como fazer isso de forma rápida e segura usando a classe <code>File</code> e a classe <code>Directory</code> da biblioteca <code>System.IO</code>.</p>
+
+    <h2>✅ Renomeando um Arquivo</h2>
+
+    <p>Para renomear um arquivo, o método mais simples é usar o <code>File.Move</code>. Basicamente, você informa o caminho original e o novo caminho com o novo nome.</p>
+
+    <div class="destaque">
+
+        <strong>Exemplo prático:</strong>
+
+    </div>
+
+    <pre>
+
+using System;
+
+using System.IO;
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        string caminhoOriginal = @"C:\Projetos\meuArquivo.txt";
+
+        string novoCaminho = @"C:\Projetos\arquivoRenomeado.txt";
+
+        if (File.Exists(caminhoOriginal))
+
+        {
+
+            File.Move(caminhoOriginal, novoCaminho);
+
+            Console.WriteLine("Arquivo renomeado com sucesso!");
+
+        }
+
+        else
+
+        {
+
+            Console.WriteLine("O arquivo não foi encontrado.");
+
+        }
+
+    }
+
+}
+
+    </pre>
+
+    <h2>✅ Renomeando uma Pasta</h2>
+
+    <p>O processo para pastas é bem parecido. A diferença é que usamos o método <code>Directory.Move</code> ao invés de <code>File.Move</code>.</p>
+
+    <div class="destaque">
+
+        <strong>Exemplo prático:</strong>
+
+    </div>
+
+    <pre>
+
+using System;
+
+using System.IO;
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        string pastaOriginal = @"C:\Projetos\PastaAntiga";
+
+        string novaPasta = @"C:\Projetos\PastaNova";
+
+        if (Directory.Exists(pastaOriginal))
+
+        {
+
+            Directory.Move(pastaOriginal, novaPasta);
+
+            Console.WriteLine("Pasta renomeada com sucesso!");
+
+        }
+
+        else
+
+        {
+
+            Console.WriteLine("A pasta não foi encontrada.");
+
+        }
+
+    }
+
+}
+
+    </pre>
+
+    <h2>🔎 Dicas Importantes</h2>
+
+    <ul>
+
+        <li>📌 Verifique sempre se o arquivo ou a pasta existe antes de tentar renomear, para evitar erros de execução.</li>
+
+        <li>📌 Se o destino já existir, o método <code>Move</code> pode lançar uma exceção. Sempre trate os erros com <code>try-catch</code> em projetos mais robustos.</li>
+
+        <li>📌 Não esqueça de ter permissões adequadas de leitura e gravação no diretório.</li>
+
+    </ul>
+
+    <h2>🚀 Conclusão</h2>
+
+    <p>Renomear arquivos e pastas em C# é simples e direto usando as classes do namespace <code>System.IO</code>. Com apenas algumas linhas de código, você já consegue automatizar várias tarefas de manipulação de arquivos no seu sistema.</p>
+
+    <p>Curtiu o conteúdo? Então continue acompanhando o <strong>Dev Na Prática</strong> para mais dicas de programação! 💻✨</p>
+
+</body>
+
+</html>

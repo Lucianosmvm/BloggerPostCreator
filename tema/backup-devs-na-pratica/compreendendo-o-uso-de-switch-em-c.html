@@ -1,0 +1,302 @@
+<!-- Backup de 2024-10-16 | id 6362580858007420181 | https://devsnapratica.blogspot.com/2024/10/compreendendo-o-uso-de-switch-em-c.html
+     Título: Dominando o Switch em C# - Guia Completo com Exemplos!
+     Marcadores: C#, dicas, switch -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            line-height: 1.6;
+
+            margin: 0;
+
+            padding: 0;
+
+            background-color: #f0f8ff;
+
+            color: #333;
+
+        }
+
+        header {
+
+            background: linear-gradient(45deg, #0077cc, #00c6ff);
+
+            color: white;
+
+            padding: 20px;
+
+            text-align: center;
+
+        }
+
+        main {
+
+            padding: 20px;
+
+            max-width: 900px;
+
+            margin: auto;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #0077cc;
+
+        }
+
+        pre {
+
+            background-color: #272822;
+
+            color: #f8f8f2;
+
+            padding: 15px;
+
+            overflow-x: auto;
+
+            border-radius: 8px;
+
+        }
+
+        .ads {
+
+            background-color: #e0e0e0;
+
+            text-align: center;
+
+            padding: 10px;
+
+            margin: 20px 0;
+
+            border-radius: 8px;
+
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+  
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6gvKv8oU7X_YeJ51t-JlUZ4qkAisRG6kuVkYvc8316q-WcyH6pOTUH_I396wW699zEjoPM-CCyL_xOTjXis1HNnBRgCwt-COEbD9me8DuhbMTvzeA5H4TGEvOeIPJPArR1uB6EMEuYVZbgCmIp6M_kVAcnMLKoCCKQ3HaUUzMdpN9W4kCUwF9sYsVZSrD/s1536/1000090726.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6gvKv8oU7X_YeJ51t-JlUZ4qkAisRG6kuVkYvc8316q-WcyH6pOTUH_I396wW699zEjoPM-CCyL_xOTjXis1HNnBRgCwt-COEbD9me8DuhbMTvzeA5H4TGEvOeIPJPArR1uB6EMEuYVZbgCmIp6M_kVAcnMLKoCCKQ3HaUUzMdpN9W4kCUwF9sYsVZSrD/s320/1000090726.png"/></a></div>
+    <p>Aprenda de forma fácil e com exemplos práticos!</p>
+
+</header>
+
+<main>
+
+
+    <h2>O que é o Switch?</h2>
+
+    <p>O <strong>switch</strong> é uma estrutura de controle de fluxo super útil em <strong>C#</strong>, perfeita para quando você precisa tomar decisões baseadas em múltiplos valores. Ele deixa seu código mais limpo e organizado, principalmente quando comparado com aquele monte de <code>if-else</code> encadeado.</p>
+
+    <h2>📝 Sintaxe Básica</h2>
+
+    <pre><code>switch (expressao) 
+
+{ 
+
+    case valor1: 
+
+        // Código para valor1 
+
+        break; 
+
+    case valor2: 
+
+        // Código para valor2 
+
+        break; 
+
+    default: 
+
+        // Código padrão 
+
+        break; 
+
+}</code></pre>
+
+    <h3>🔎 Elementos principais:</h3>
+
+    <ul>
+
+        <li><strong>expressao:</strong> Variável a ser avaliada.</li>
+
+        <li><strong>case:</strong> Bloco de código executado quando há correspondência.</li>
+
+        <li><strong>break:</strong> Impede que os outros casos sejam executados.</li>
+
+        <li><strong>default:</strong> Executado se nenhum caso for verdadeiro (tipo o "else" do switch).</li>
+
+    </ul>
+
+    <h2>📌 Exemplo Básico</h2>
+
+    <p>Vamos criar um sistema que diz o dia da semana com base em um número:</p>
+
+    <pre><code>int diaSemana = 3;
+
+switch (diaSemana)
+
+{
+
+    case 1:
+
+        Console.WriteLine("Domingo");
+
+        break;
+
+    case 2:
+
+        Console.WriteLine("Segunda-feira");
+
+        break;
+
+    case 3:
+
+        Console.WriteLine("Terça-feira");
+
+        break;
+
+    case 4:
+
+        Console.WriteLine("Quarta-feira");
+
+        break;
+
+    case 5:
+
+        Console.WriteLine("Quinta-feira");
+
+        break;
+
+    case 6:
+
+        Console.WriteLine("Sexta-feira");
+
+        break;
+
+    case 7:
+
+        Console.WriteLine("Sábado");
+
+        break;
+
+    default:
+
+        Console.WriteLine("Número inválido. Escolha entre 1 e 7.");
+
+        break;
+
+}</code></pre>
+
+    <p><strong>Resultado:</strong> Como o valor de <code>diaSemana</code> é 3, a saída será: <strong>"Terça-feira"</strong>.</p>
+
+    <h2>🤓 Agrupando Casos Iguais</h2>
+
+    <p>Quer tratar vários casos de forma igual? Dá pra fazer assim:</p>
+
+    <pre><code>char letra = 'a';
+
+switch (letra)
+
+{
+
+    case 'a':
+
+    case 'e':
+
+    case 'i':
+
+    case 'o':
+
+    case 'u':
+
+        Console.WriteLine("Vogal");
+
+        break;
+
+    default:
+
+        Console.WriteLine("Consoante");
+
+        break;
+
+}</code></pre>
+
+    <p>Se a letra for uma vogal, o programa exibe: <strong>"Vogal"</strong>. Caso contrário, <strong>"Consoante"</strong>.</p>
+
+    <h2>💡 Switch com Expressões e Padrões (C# 8.0+)</h2>
+
+    <p>A partir do <strong>C# 8.0</strong>, o switch ficou ainda mais poderoso com o <em>Pattern Matching</em>! Olha esse exemplo:</p>
+
+    <pre><code>int idade = 25;
+
+string faixaEtaria = idade switch
+
+{
+
+    < 13 => "Criança",
+
+    >= 13 and < 18 => "Adolescente",
+
+    >= 18 and < 60 => "Adulto",
+
+    _ => "Idoso"
+
+};
+
+Console.WriteLine(faixaEtaria);</code></pre>
+
+    <p>Nesse caso, o resultado seria: <strong>"Adulto"</strong>. Perceba o uso do <code>_</code>, que faz o papel de um <code>default</code> no switch por expressões.</p>
+
+    <h2>👉 Quando Usar o Switch?</h2>
+
+    <p>O <strong>switch</strong> é perfeito para:</p>
+
+    <ul>
+
+        <li>Selecionar um <strong>dia da semana</strong> a partir de um número.</li>
+
+        <li>Determinar <strong>estados de jogo</strong> ou de uma aplicação.</li>
+
+        <li>Classificar <strong>faixas etárias</strong>, <strong>tipos de produtos</strong>, entre outros.</li>
+
+    </ul>
+
+    <h2>✅ Conclusão</h2>
+
+    <p>O <strong>switch em C#</strong> é uma ferramenta poderosa e versátil! Desde os exemplos mais simples até os mais avançados com expressões e padrões, ele te ajuda a manter o código limpo, legível e eficiente.</p>
+
+    <p>Curtiu o conteúdo? Tem alguma dúvida ou exemplo legal pra compartilhar? <strong>Deixa nos comentários!</strong> 😊</p>
+
+</main>
+
+</body>
+
+</html>

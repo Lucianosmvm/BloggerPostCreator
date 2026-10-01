@@ -1,0 +1,138 @@
+<!-- Backup de 2024-10-07 | id 1950771833449785474 | https://devsnapratica.blogspot.com/2024/10/entrada-e-saida-em-c.html
+     Título: Console.WriteLine() e Console.ReadLine() C#
+     Marcadores: C#, console, entrada, saida, write -->
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiELzTBoKlddpt7qiCGLv6Onvnfj6iSFROzak8mVoN699_nw7vK9SZByFj_Gej-s7jIm7zyKhdSZMhim0nd7u7rXf999PoJcexZw-Iz_JmNhTc5BM63rcH3vV5UpswABTlBgVJYmW9SpM0toIR1gw4iQ3bu6shFDMXesayeDArPG9EMZBKJFdvujc5HQdX_/s1024/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_16_08.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiELzTBoKlddpt7qiCGLv6Onvnfj6iSFROzak8mVoN699_nw7vK9SZByFj_Gej-s7jIm7zyKhdSZMhim0nd7u7rXf999PoJcexZw-Iz_JmNhTc5BM63rcH3vV5UpswABTlBgVJYmW9SpM0toIR1gw4iQ3bu6shFDMXesayeDArPG9EMZBKJFdvujc5HQdX_/s320/ChatGPT%20Image%2015%20de%20jun.%20de%202025,%2000_16_08.png"/></a></div>
+
+<p>Em C#, a <strong>entrada e saída de dados</strong> no console são feitas principalmente com os métodos <code>Console.WriteLine()</code> e <code>Console.ReadLine()</code>. Eles são essenciais para criar interações simples com o usuário.</p>
+
+<p>Vamos descomplicar isso de forma prática e fácil!</p>
+
+<h3>📤 O que é o Console.WriteLine()?</h3>
+
+<p>O método <code>Console.WriteLine()</code> serve para <strong>exibir mensagens ou valores no console</strong>.</p>
+
+<h4>✅ Sintaxe básica:</h4>
+
+<pre><code>Console.WriteLine("mensagem");</code></pre>
+
+<p>Aqui, <code>"mensagem"</code> pode ser um texto, número, variável ou qualquer outro valor.</p>
+
+<h4>✅ Exemplo prático:</h4>
+
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Olá, bem-vindo ao mundo da programação em C#!");
+
+        int idade = 25;
+        Console.WriteLine("Sua idade é: " + idade);
+    }
+}</code></pre>
+
+<p><strong>Saída:</strong></p>
+
+<pre><code>Olá, bem-vindo ao mundo da programação em C#!
+Sua idade é: 25</code></pre>
+
+<h3>🎨 Formatação de Strings com Console.WriteLine()</h3>
+
+<p>Você também pode <strong>formatar as mensagens</strong> usando placeholders:</p>
+
+<pre><code>int idade = 25;
+string nome = "Maria";
+
+Console.WriteLine("Olá {0}, você tem {1} anos.", nome, idade);</code></pre>
+
+<p><strong>Saída:</strong></p>
+
+<pre><code>Olá Maria, você tem 25 anos.</code></pre>
+
+<h3>📥 O que é o Console.ReadLine()?</h3>
+
+<p>O <code>Console.ReadLine()</code> serve para <strong>ler o que o usuário digitar</strong> no console.</p>
+
+<h4>✅ Sintaxe:</h4>
+
+<pre><code>string valorDigitado = Console.ReadLine();</code></pre>
+
+<p>Lembre-se: o resultado <strong>sempre vem como string</strong>, então se quiser transformar em número, será preciso converter.</p>
+
+<h4>✅ Exemplo prático:</h4>
+
+<pre><code>using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Digite o seu nome:");
+        string nome = Console.ReadLine();
+
+        Console.WriteLine("Olá " + nome + ", seja bem-vindo!");
+
+        Console.WriteLine("Digite a sua idade:");
+        string idadeTexto = Console.ReadLine();
+
+        int idade = int.Parse(idadeTexto);
+
+        Console.WriteLine("Você tem " + idade + " anos.");
+    }
+}</code></pre>
+
+<p><strong>Saída:</strong></p>
+
+<pre><code>Digite o seu nome:
+Maria
+Olá Maria, seja bem-vinda!
+Digite a sua idade:
+25
+Você tem 25 anos.</code></pre>
+
+<h3>⚠️ Cuidado: Conversão e Tratamento de Erros</h3>
+
+<p>Como o <code>ReadLine()</code> sempre retorna string, é importante tratar casos onde o usuário digita algo inesperado.</p>
+
+<h4>✅ Exemplo com Try-Catch:</h4>
+
+<pre><code>try
+{
+    Console.WriteLine("Digite sua idade:");
+    int idade = int.Parse(Console.ReadLine());
+
+    Console.WriteLine("Sua idade é: " + idade);
+}
+catch (FormatException)
+{
+    Console.WriteLine("Erro: Por favor, digite um número válido.");
+}</code></pre>
+
+<p>Assim você evita que o programa quebre se o usuário digitar algo errado.</p>
+
+<h3>✨ Diferença entre Console.WriteLine() e Console.Write()</h3>
+
+<p>A diferença é simples:</p>
+
+<ul>
+  <li><strong><code>Console.WriteLine()</code> →</strong> Imprime e pula para a próxima linha.</li>
+  <li><strong><code>Console.Write()</code> →</strong> Imprime e permanece na mesma linha.</li>
+</ul>
+
+<h4>✅ Exemplo:</h4>
+
+<pre><code>Console.Write("Este é um ");
+Console.Write("texto contínuo.");</code></pre>
+
+<p><strong>Saída:</strong></p>
+
+<pre><code>Este é um texto contínuo.</code></pre>
+
+<h3>🚀 Conclusão</h3>
+
+<p>Os métodos <code>Console.WriteLine()</code> e <code>Console.ReadLine()</code> são <strong>fundamentais para a entrada e saída de dados</strong> no console em C#. Eles são o primeiro passo para criar programas interativos!</p>
+
+<p>👉 Se você está começando, pratique bastante com esses comandos e faça pequenos projetos de entrada e saída para pegar o jeito.</p>
+
+<p><strong>Curtiu a explicação? Ficou com dúvida? Deixa um comentário aí! 😄</strong></p>

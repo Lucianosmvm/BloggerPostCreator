@@ -1,0 +1,336 @@
+<!-- Backup de 2024-10-09 | id 3284671905348859146 | https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html
+     Título: Funções (Métodos) em C#: O Guia Completo para Iniciantes!
+     Marcadores: C#, condicionais, dicas -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f4f6f9;
+
+            color: #333;
+
+            line-height: 1.6;
+
+            padding: 20px;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #2c3e50;
+
+        }
+
+        .box {
+
+            background-color: #e8f0fe;
+
+            border-left: 5px solid #4285f4;
+
+            padding: 10px 15px;
+
+            margin: 20px 0;
+
+        }
+
+        pre {
+
+            background-color: #272822;
+
+            color: #f8f8f2;
+
+            padding: 10px;
+
+            overflow-x: auto;
+
+            border-radius: 5px;
+
+        }
+
+        .highlight {
+
+            background-color: #dff0d8;
+
+            border-left: 5px solid #4caf50;
+
+            padding: 10px 15px;
+
+            margin: 20px 0;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+  
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjslxwQeVWmYJX3GVKtWTF6jFl6_fs0_kcnBk1adUDAP7D4nL8w3HQzRTmeLV39LCECPdAgNplQ99uXlvoIXLu_ve5cjK0waUkMY8mQYPPOVH92pwqTOihdxfHKNLim2ghEwJ6y58uQ1OTUjm-ssPvPfIleVAxyxrntk3mfPD7A8Wnbo0U93xJ-BujC7DwC/s1024/1000090423.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjslxwQeVWmYJX3GVKtWTF6jFl6_fs0_kcnBk1adUDAP7D4nL8w3HQzRTmeLV39LCECPdAgNplQ99uXlvoIXLu_ve5cjK0waUkMY8mQYPPOVH92pwqTOihdxfHKNLim2ghEwJ6y58uQ1OTUjm-ssPvPfIleVAxyxrntk3mfPD7A8Wnbo0U93xJ-BujC7DwC/s320/1000090423.png"/></a></div>
+
+    <p>Se você está começando no mundo da programação com C#, prepare-se! Hoje vamos mergulhar no universo das <strong>funções</strong> (ou métodos) de forma simples, prática e com muitos exemplos para você não ter mais dúvidas!</p>
+
+    <h2>🚀 O Que é uma Função?</h2>
+
+    <div class="box">
+
+        <p>Uma <strong>função</strong> (ou método) é um bloco de código que executa uma tarefa específica dentro do seu programa. Pode retornar um valor ou apenas realizar uma ação.</p>
+
+    </div>
+
+    <p>Elas são a alma da programação! Permitem <strong>reutilizar código</strong>, <strong>organizar melhor</strong> seus projetos e <strong>evitar repetição desnecessária</strong>.</p>
+
+    <h2>🧱 Estrutura Básica de uma Função em C#</h2>
+
+    <ul>
+
+        <li><strong>Modificador de acesso</strong> (ex.: public, private...)</li>
+
+        <li><strong>Tipo de retorno</strong> (ex.: int, void, string...)</li>
+
+        <li><strong>Nome da função</strong></li>
+
+        <li><strong>Parâmetros</strong> (se houver)</li>
+
+        <li><strong>Corpo da função</strong> (entre { })</li>
+
+    </ul>
+
+    <h3>📌 Exemplo simples:</h3>
+
+    <pre>
+
+public int Soma(int a, int b)
+
+{
+
+    return a + b;
+
+}
+
+    </pre>
+
+    <p><strong>Explicando:</strong> Modificador: <code>public</code> | Retorno: <code>int</code> | Nome: <code>Soma</code> | Parâmetros: <code>a</code> e <code>b</code></p>
+
+    <h2>🔑 Modificadores de Acesso</h2>
+
+    <p>Controlam <strong>quem pode acessar</strong> o método:</p>
+
+    <ul>
+
+        <li><strong>public:</strong> Acesso livre de qualquer lugar.</li>
+
+        <li><strong>private:</strong> Acesso apenas dentro da mesma classe.</li>
+
+        <li><strong>protected:</strong> Acesso na classe e nas herdeiras.</li>
+
+    </ul>
+
+    <h3>✅ Exemplo de método privado:</h3>
+
+    <pre>
+
+private void ExibirMensagem()
+
+{
+
+    Console.WriteLine("Olá, mundo!");
+
+}
+
+    </pre>
+
+    <h2>📤 Tipos de Retorno</h2>
+
+    <p>O tipo de retorno indica <strong>o que a função devolve</strong> após ser executada.</p>
+
+    <h3>Exemplo de método que não retorna valor (<code>void</code>):</h3>
+
+    <pre>
+
+public void ExibirMensagem()
+
+{
+
+    Console.WriteLine("Olá, bem-vindo ao C#!");
+
+}
+
+    </pre>
+
+    <h3>Exemplo de método que retorna uma <code>string</code>:</h3>
+
+    <pre>
+
+public string Saudacao(string nome)
+
+{
+
+    return "Olá, " + nome + "!";
+
+}
+
+    </pre>
+
+    <h2>🎯 Parâmetros e Argumentos</h2>
+
+    <p><strong>Parâmetros:</strong> São as variáveis que a função espera receber.</p>
+
+    <p><strong>Argumentos:</strong> São os valores que você passa ao chamar a função.</p>
+
+    <h3>📌 Exemplo:</h3>
+
+    <pre>
+
+public void Multiplicar(int a, int b)
+
+{
+
+    int resultado = a * b;
+
+    Console.WriteLine("Resultado: " + resultado);
+
+}
+
+Multiplicar(5, 3);  // Saída: Resultado: 15
+
+    </pre>
+
+    <h2>🌀 Sobrecarga de Métodos (Method Overloading)</h2>
+
+    <p>Sim! Você pode ter <strong>vários métodos com o mesmo nome</strong>, desde que mudem o número ou tipo de parâmetros.</p>
+
+    <pre>
+
+public void ExibirInformacao(string nome)
+
+{
+
+    Console.WriteLine("Nome: " + nome);
+
+}
+
+public void ExibirInformacao(string nome, int idade)
+
+{
+
+    Console.WriteLine("Nome: " + nome + ", Idade: " + idade);
+
+}
+
+// Chamadas:
+
+ExibirInformacao("Maria");
+
+ExibirInformacao("João", 25);
+
+    </pre>
+
+    <h2>⚙️ Métodos Estáticos</h2>
+
+    <p><strong>Métodos estáticos</strong> pertencem à classe, não a um objeto.</p>
+
+    <pre>
+
+public static void MostrarHoraAtual()
+
+{
+
+    Console.WriteLine(DateTime.Now);
+
+}
+
+// Chamando:
+
+MinhaClasse.MostrarHoraAtual();
+
+    </pre>
+
+    <h2>👥 Métodos de Instância</h2>
+
+    <p>Para métodos de instância, você precisa <strong>criar um objeto</strong> da classe primeiro.</p>
+
+    <pre>
+
+public class Calculadora
+
+{
+
+    public int Somar(int a, int b)
+
+    {
+
+        return a + b;
+
+    }
+
+}
+
+// Chamando:
+
+Calculadora calc = new Calculadora();
+
+int resultado = calc.Somar(10, 20);
+
+Console.WriteLine("Resultado: " + resultado);
+
+    </pre>
+
+    <h2>🆚 Void x Métodos com Retorno</h2>
+
+    <div class="highlight">
+
+        <h3>Método void:</h3>
+
+        <pre>
+
+public void ExibirMensagem()
+
+{
+
+    Console.WriteLine("Este método não retorna valor.");
+
+}
+
+        </pre>
+
+        <h3>Método que retorna um valor:</h3>
+
+        <pre>
+
+public int Dobrar(int numero)
+
+{
+
+    return numero * 2;
+
+}
+
+        </pre>
+
+    </div>
+
+    <h2>✅ Conclusão</h2>
+
+    <p>Agora você está por dentro dos conceitos básicos e essenciais sobre <strong>funções em C#</strong>! 🎉</p>
+
+    <p>Com esse conhecimento, já dá pra criar códigos mais organizados, limpos e fáceis de manter!</p>
+
+    <p><strong>👉 Pratique bastante!</strong> Quanto mais você criar e testar funções, melhor vai entender como elas funcionam no mundo real da programação.</p>
+
+    <p>Se quiser, comenta aqui embaixo: <em>Qual foi sua maior dúvida sobre métodos em C#?</em> 👇</p>
+
+</body>
+
+</html>

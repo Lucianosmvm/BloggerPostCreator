@@ -1,0 +1,291 @@
+<!-- Backup de 2024-10-14 | id 1914732615241644491 | https://devsnapratica.blogspot.com/2024/10/introducao-arrays-e-colecoes-em-c.html
+     Título: Introdução a Arrays e Coleções em C#
+     Marcadores: array, C#, coleção, dictionary, list, lista -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Arrays vs Coleções em C# - Entenda a Diferença!</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background-color: #f0f8ff;
+
+            margin: 0;
+
+            padding: 20px;
+
+            color: #333;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #0b3d91;
+
+        }
+
+        h1 {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+
+        }
+
+        code {
+
+            background-color: #e8f4fd;
+
+            padding: 2px 6px;
+
+            border-radius: 4px;
+
+            color: #c7254e;
+
+            font-weight: bold;
+
+        }
+
+        .box {
+
+            background-color: #ffffff;
+
+            border-left: 5px solid #0b3d91;
+
+            padding: 15px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+            border-radius: 8px;
+
+        }
+
+        ul {
+
+            list-style-type: square;
+
+            padding-left: 20px;
+
+        }
+
+        pre {
+
+            background-color: #f9f9f9;
+
+            padding: 10px;
+
+            border-left: 4px solid #0b3d91;
+
+            overflow-x: auto;
+
+        }
+
+        strong {
+
+            color: #0b3d91;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnAlQSXKLYwmf9QYekBQXMmACA6UP9YNs5_LesnmK7IpMHUDuTuNmVVqwArp3CwdX5IgEdQcNxC1HG3tkspVEvPgRd7Quxjac_kxm__hWOchVfjn69Z-HXhRUvb0dVTtkHsY2LqgbJ9aDSQUVEKhhUR5kql60NNHHhT9_qQuVqT8JLBkNKpS2xdafPiWX_/s1024/1000090636.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnAlQSXKLYwmf9QYekBQXMmACA6UP9YNs5_LesnmK7IpMHUDuTuNmVVqwArp3CwdX5IgEdQcNxC1HG3tkspVEvPgRd7Quxjac_kxm__hWOchVfjn69Z-HXhRUvb0dVTtkHsY2LqgbJ9aDSQUVEKhhUR5kql60NNHHhT9_qQuVqT8JLBkNKpS2xdafPiWX_/s320/1000090636.png"/></a></div>
+
+    <div class="box">
+
+        <p>No mundo da programação, uma das tarefas mais comuns é armazenar e manipular conjuntos de dados. Em <strong>C#</strong>, temos duas formas super populares de lidar com isso: os <strong>Arrays</strong> e as <strong>Coleções</strong>.</p>
+
+        <p>Apesar de ambos servirem para agrupar dados, eles têm características bem diferentes. Bora entender?</p>
+
+    </div>
+
+    <h2>O que é um Array?</h2>
+
+    <div class="box">
+
+        <p>Um <strong>Array</strong> é uma estrutura de dados que armazena um conjunto <strong>fixo</strong> de elementos do mesmo tipo.</p>
+
+        <p>Cada item é acessado por um índice que começa em <code>0</code>.</p>
+
+        <h3>Como Declarar um Array:</h3>
+
+        <pre><code>int[] numeros = new int[5]; // Array de inteiros com 5 posições</code></pre>
+
+        <p>Todos os elementos iniciam com o valor padrão do tipo escolhido. No caso de <code>int</code>, o valor inicial é <strong>0</strong>.</p>
+
+        <h3>Inicializando com Valores:</h3>
+
+        <pre><code>int[] numeros = new int[] { 1, 2, 3, 4, 5 };</code></pre>
+
+        <h3>Acessando e Modificando:</h3>
+
+        <pre><code>Console.WriteLine(numeros[0]); // Exibe 1
+
+Console.WriteLine(numeros[4]); // Exibe 5
+
+numeros[0] = 10;
+
+Console.WriteLine(numeros[0]); // Agora exibe 10</code></pre>
+
+        <p><strong>Limitação:</strong> O tamanho é fixo! Se quiser adicionar mais itens... vai precisar criar um novo array.</p>
+
+    </div>
+
+    <h2>O que são Coleções?</h2>
+
+    <div class="box">
+
+        <p><strong>Coleções</strong> são estruturas de dados mais flexíveis. Elas permitem que você adicione e remova elementos de forma dinâmica!</p>
+
+        <p>As coleções fazem parte das namespaces <code>System.Collections</code> e <code>System.Collections.Generic</code>.</p>
+
+        <h3>Principais Tipos de Coleções:</h3>
+
+        <ul>
+
+            <li><strong>List&lt;T&gt;</strong></li>
+
+            <li><strong>Dictionary&lt;TKey, TValue&gt;</strong></li>
+
+            <li><strong>Queue&lt;T&gt;</strong></li>
+
+            <li><strong>Stack&lt;T&gt;</strong></li>
+
+        </ul>
+
+    </div>
+
+    <h3>1. List&lt;T&gt;</h3>
+
+    <div class="box">
+
+        <p>Uma <strong>List&lt;T&gt;</strong> é uma lista de elementos de um tipo específico, mas com tamanho dinâmico!</p>
+
+        <pre><code>List&lt;int&gt; listaNumeros = new List&lt;int&gt;();
+
+listaNumeros.Add(10);
+
+listaNumeros.Add(20);
+
+listaNumeros.Add(30);
+
+Console.WriteLine(listaNumeros[0]); // Exibe 10
+
+listaNumeros.Remove(20);
+
+foreach (int numero in listaNumeros)
+
+{
+
+    Console.WriteLine(numero);
+
+}</code></pre>
+
+        <p><strong>Principais métodos:</strong> <code>Add()</code>, <code>Remove()</code>, <code>Count</code>, <code>Clear()</code></p>
+
+    </div>
+
+    <h3>2. Dictionary&lt;TKey, TValue&gt;</h3>
+
+    <div class="box">
+
+        <p>O <strong>Dictionary</strong> trabalha com <strong>pares chave/valor</strong>, super útil quando queremos buscar um item por uma chave única.</p>
+
+        <pre><code>Dictionary&lt;int, string&gt; produtos = new Dictionary&lt;int, string&gt;();
+
+produtos.Add(1, "Teclado");
+
+produtos.Add(2, "Mouse");
+
+produtos.Add(3, "Monitor");
+
+Console.WriteLine(produtos[2]); // Exibe "Mouse"</code></pre>
+
+        <p><strong>Principais métodos:</strong> <code>Add()</code>, <code>Remove()</code>, <code>ContainsKey()</code>, <code>TryGetValue()</code></p>
+
+    </div>
+
+    <h3>3. Queue&lt;T&gt;</h3>
+
+    <div class="box">
+
+        <p>Uma <strong>Queue</strong> funciona como uma fila: o primeiro a entrar é o primeiro a sair (<strong>FIFO</strong>).</p>
+
+        <pre><code>Queue&lt;string&gt; fila = new Queue&lt;string&gt;();
+
+fila.Enqueue("Primeiro");
+
+fila.Enqueue("Segundo");
+
+fila.Enqueue("Terceiro");
+
+Console.WriteLine(fila.Dequeue()); // Exibe "Primeiro"</code></pre>
+
+        <p><strong>Principais métodos:</strong> <code>Enqueue()</code>, <code>Dequeue()</code>, <code>Peek()</code></p>
+
+    </div>
+
+    <h3>4. Stack&lt;T&gt;</h3>
+
+    <div class="box">
+
+        <p>A <strong>Stack</strong> é o contrário da fila: o último a entrar é o primeiro a sair (<strong>LIFO</strong>).</p>
+
+        <pre><code>Stack&lt;string&gt; pilha = new Stack&lt;string&gt;();
+
+pilha.Push("Primeiro");
+
+pilha.Push("Segundo");
+
+pilha.Push("Terceiro");
+
+Console.WriteLine(pilha.Pop()); // Exibe "Terceiro"</code></pre>
+
+        <p><strong>Principais métodos:</strong> <code>Push()</code>, <code>Pop()</code>, <code>Peek()</code></p>
+
+    </div>
+
+    <h2>Quando Usar Arrays ou Coleções?</h2>
+
+    <div class="box">
+
+        <ul>
+
+            <li><strong>Use Arrays</strong> quando souber exatamente o tamanho fixo do seu conjunto de dados.</li>
+
+            <li><strong>Use Coleções</strong> quando precisar de flexibilidade e manipulação dinâmica.</li>
+
+        </ul>
+
+    </div>
+
+    <h2>Conclusão</h2>
+
+    <div class="box">
+
+        <p><strong>Arrays</strong> são ótimos para situações simples e fixas.</p>
+
+        <p><strong>Coleções</strong> são ideais quando os dados podem mudar de tamanho.</p>
+
+        <p>Agora que você conhece as diferenças, escolha a estrutura certa e bora codar!</p>
+
+    </div>
+
+</body>
+
+</html>

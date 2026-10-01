@@ -1,0 +1,288 @@
+<!-- Backup de 2024-10-09 | id 340485301367464912 | https://devsnapratica.blogspot.com/2024/10/introducao-sobrecarga-de-metodos-em-c.html
+     Título: Introdução à Sobrecarga de Métodos em C#
+     Marcadores: C# -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sobrecarga de Métodos em C# - Guia Completo</title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            line-height: 1.6;
+
+            margin: 0;
+
+            padding: 0 15px;
+
+            background-color: #f9f9f9;
+
+            color: #333;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #0056b3;
+
+        }
+
+        .highlight {
+
+            background-color: #e0f0ff;
+
+            border-left: 5px solid #007acc;
+
+            padding: 10px;
+
+            margin: 15px 0;
+
+        }
+
+        pre {
+
+            background-color: #272822;
+
+            color: #f8f8f2;
+
+            padding: 10px;
+
+            overflow-x: auto;
+
+            border-radius: 5px;
+
+        }
+
+        code {
+
+            color: #66d9ef;
+
+        }
+
+        @media (max-width: 768px) {
+
+            h1 {
+
+                font-size: 1.8em;
+
+            }
+
+            h2 {
+
+                font-size: 1.5em;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh5mibMn2wrCHLOCENkal5U0Q_7KvKrJ4HJd2THXkb1auLWlRWoCW-r51tGEgsS5K5PCr31aSK6mcT0wI20GcY8vdOk6MezS4-PNI-61OYERvWblfxq7RMOY5teXu2xVtr68OGn7MYlzB6eRQeSQe6pW8gueb6vqgixMurLNBfc2VjSd1VTxGQKXQ57bP1M/s1536/1000090466.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" height="320" data-original-height="1536" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh5mibMn2wrCHLOCENkal5U0Q_7KvKrJ4HJd2THXkb1auLWlRWoCW-r51tGEgsS5K5PCr31aSK6mcT0wI20GcY8vdOk6MezS4-PNI-61OYERvWblfxq7RMOY5teXu2xVtr68OGn7MYlzB6eRQeSQe6pW8gueb6vqgixMurLNBfc2VjSd1VTxGQKXQ57bP1M/s320/1000090466.png"/></a></div>
+<h1>🚀 Sobrecarga de Métodos em C# – Deixe Seu Código Mais Inteligente!</h1>
+
+<p>A <strong>sobrecarga de métodos</strong> (ou <em>method overloading</em>) é uma das ferramentas mais legais da <strong>programação orientada a objetos</strong>! Ela permite que uma mesma classe tenha <span style="color:#d63384;">vários métodos com o mesmo nome</span>, mas com assinaturas diferentes. Isso torna o código mais limpo, organizado e fácil de entender. 👨‍💻✨</p>
+
+<h2>🔎 Por que usar a sobrecarga de métodos?</h2>
+
+<div class="highlight">
+
+    <p>Imagine precisar criar diferentes versões de um mesmo método para trabalhar com quantidades ou tipos de dados diferentes... Em vez de inventar vários nomes confusos, você usa a sobrecarga e mantém tudo organizado!</p>
+
+</div>
+
+<p>Exemplo clássico: cálculo de áreas de diferentes formas geométricas, mas tudo com o mesmo nome de método!</p>
+
+<h2>✅ Regras básicas da sobrecarga de métodos em C#</h2>
+
+<ul>
+
+    <li>✔️ Os métodos devem estar na mesma classe.</li>
+
+    <li>✔️ O <strong>nome do método</strong> tem que ser o mesmo.</li>
+
+    <li>✔️ A <strong>diferença</strong> precisa estar no <strong>número</strong>, na <strong>ordem</strong> ou no <strong>tipo dos parâmetros</strong>.</li>
+
+    <li>❌ O tipo de retorno <strong>não</strong> é considerado para diferenciar métodos.</li>
+
+</ul>
+
+<h2>🧑‍💻 Exemplo prático de sobrecarga</h2>
+
+<h3>Exemplo 1: Somando números de diferentes formas</h3>
+
+<pre><code>using System;
+
+class Calculadora
+
+{
+
+    public int Somar(int a, int b)
+
+    {
+
+        return a + b;
+
+    }
+
+    public int Somar(int a, int b, int c)
+
+    {
+
+        return a + b + c;
+
+    }
+
+    public double Somar(double a, double b)
+
+    {
+
+        return a + b;
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        Calculadora calc = new Calculadora();
+
+        Console.WriteLine(calc.Somar(5, 10));     // Resultado: 15
+
+        Console.WriteLine(calc.Somar(5, 10, 15)); // Resultado: 30
+
+        Console.WriteLine(calc.Somar(5.5, 10.2)); // Resultado: 15.7
+
+    }
+
+}</code></pre>
+
+<p><strong>🔔 Resultado:</strong></p>
+
+<ul>
+
+    <li>15</li>
+
+    <li>30</li>
+
+    <li>15.7</li>
+
+</ul>
+
+<h2>📋 Exemplo 2: Sobrecarga com tipos diferentes de parâmetros</h2>
+
+<pre><code>using System;
+
+class ExibirMensagem
+
+{
+
+    public void Mostrar(string mensagem)
+
+    {
+
+        Console.WriteLine("Mensagem: " + mensagem);
+
+    }
+
+    public void Mostrar(int numero)
+
+    {
+
+        Console.WriteLine("Número: " + numero);
+
+    }
+
+    public void Mostrar(string mensagem, int numero)
+
+    {
+
+        Console.WriteLine("Mensagem: " + mensagem + ", Número: " + numero);
+
+    }
+
+}
+
+class Program
+
+{
+
+    static void Main()
+
+    {
+
+        ExibirMensagem exibir = new ExibirMensagem();
+
+        exibir.Mostrar("Olá mundo");
+
+        exibir.Mostrar(42);
+
+        exibir.Mostrar("Olá", 123);
+
+    }
+
+}</code></pre>
+
+<p><strong>🔔 Resultado:</strong></p>
+
+<ul>
+
+    <li>Mensagem: Olá mundo</li>
+
+    <li>Número: 42</li>
+
+    <li>Mensagem: Olá, Número: 123</li>
+
+</ul>
+
+<h2>🎯 Benefícios da sobrecarga de métodos</h2>
+
+<ul>
+
+    <li><span style="color:green;">✔ Reutilização de código</span></li>
+
+    <li><span style="color:green;">✔ Melhor organização</span></li>
+
+    <li><span style="color:green;">✔ Código mais limpo e intuitivo</span></li>
+
+    <li><span style="color:green;">✔ Flexibilidade para trabalhar com diferentes entradas</span></li>
+
+</ul>
+
+<h2>💡 Dicas de ouro!</h2>
+
+<ul>
+
+    <li>✅ Mantenha os métodos sobrecarregados com um comportamento lógico e consistente.</li>
+
+    <li>✅ Use tipos de parâmetros bem diferentes quando possível, para evitar confusão.</li>
+
+    <li>⚠️ Cuidado com sobrecargas muito parecidas que podem deixar o compilador (e você) confuso na hora de chamar.</li>
+
+</ul>
+
+<h2>🚀 Conclusão</h2>
+
+<p>A <strong>sobrecarga de métodos em C#</strong> é uma super aliada na hora de criar <span style="color:#d63384;">códigos mais limpos, organizados e fáceis de manter</span>. Agora que você entendeu como ela funciona, aproveite para aplicá-la nos seus projetos e leve sua programação para o próximo nível! 🔥💻</p>
+
+</body>
+
+</html>

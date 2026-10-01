@@ -1,0 +1,390 @@
+<!-- Backup de 2024-10-25 | id 5202873871104829838 | https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html
+     Título: Classes e Objetos em C# - Entenda de Forma Fácil!
+     Marcadores: C# -->
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #f0f8ff;
+
+            color: #333;
+
+            margin: 0;
+
+            padding: 0 15px;
+
+            line-height: 1.6;
+
+        }
+
+        h1, h2, h3 {
+
+            color: #007acc;
+
+        }
+
+        pre {
+
+            background: #272822;
+
+            color: #f8f8f2;
+
+            padding: 10px;
+
+            overflow-x: auto;
+
+            border-radius: 5px;
+
+        }
+
+        .box {
+
+            background: #ffffff;
+
+            border-radius: 8px;
+
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+            padding: 20px;
+
+            margin: 20px 0;
+
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding: 10px;
+
+            }
+
+        }
+
+        .highlight {
+
+            color: #d6336c;
+
+            font-weight: bold;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+  <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgUA2kkkYOmYZ0hIF8YkaBmB2VPW0NCglPDxUGWJKYOZov83P2h1-a-NkP2o2xMjpWlFZ720Prv672pevVnUf6lQti4SI0XdyFi4N9_tNTkJz0Voj2p_XQFcncXh0k5PzWEslmlBgHkfinVwZuVIUbWO2luRKup3IJMa9PDfnutaMLTaJ1aK41FyNXfCYVr/s1024/1000090933.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgUA2kkkYOmYZ0hIF8YkaBmB2VPW0NCglPDxUGWJKYOZov83P2h1-a-NkP2o2xMjpWlFZ720Prv672pevVnUf6lQti4SI0XdyFi4N9_tNTkJz0Voj2p_XQFcncXh0k5PzWEslmlBgHkfinVwZuVIUbWO2luRKup3IJMa9PDfnutaMLTaJ1aK41FyNXfCYVr/s320/1000090933.png"/></a></div>
+  
+    <h1>🚀 Classes e Objetos em C#: Aprenda de Forma Simples e Visual!</h1>
+
+    <p>Se você está começando com <strong>C#</strong> e programação orientada a objetos, entender o conceito de <strong>classes</strong> e <strong>objetos</strong> é essencial! Bora deixar esse assunto fácil de vez? 🎯</p>
+
+    <div class="box">
+
+        <h2>🔎 O que é uma Classe?</h2>
+
+        <p>Imagine uma <span class="highlight">classe</span> como uma planta de construção 🏗️. Ela descreve como um objeto será, mas ainda não é uma casa de verdade. Uma classe define os <strong>atributos</strong> (características) e os <strong>métodos</strong> (ações) de um objeto.</p>
+
+        <h3>🌱 Exemplo Básico de Classe em C#:</h3>
+
+        <pre>
+
+public class Pessoa
+
+{
+
+    public string Nome;
+
+    public int Idade;
+
+    public void ExibirInformacoes()
+
+    {
+
+        Console.WriteLine($"Nome: {Nome}, Idade: {Idade}");
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>👉 Propriedades:</strong> Nome e Idade.<br>
+
+        <strong>👉 Método:</strong> ExibirInformacoes(), que imprime os dados da pessoa.</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>👤 O que é um Objeto?</h2>
+
+        <p>Um <span class="highlight">objeto</span> é como construir uma casa real a partir da planta! 🏠 Ou seja, é uma instância da classe. Ele ocupa memória e tem valores próprios.</p>
+
+        <h3>🛠️ Criando um Objeto:</h3>
+
+        <pre>
+
+class Program
+
+{
+
+    static void Main(string[] args)
+
+    {
+
+        Pessoa pessoa1 = new Pessoa();
+
+        pessoa1.Nome = "João";
+
+        pessoa1.Idade = 30;
+
+        pessoa1.ExibirInformacoes();
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>Saída:</strong><br>
+
+        Nome: João, Idade: 30</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>✨ Construtores: Inicializando Objetos com Estilo</h2>
+
+        <p>Ao invés de definir valores manualmente, podemos usar um <span class="highlight">construtor</span>! Ele é um método especial chamado automaticamente na criação do objeto.</p>
+
+        <h3>Exemplo com Construtor:</h3>
+
+        <pre>
+
+public class Pessoa
+
+{
+
+    public string Nome;
+
+    public int Idade;
+
+    public Pessoa(string nome, int idade)
+
+    {
+
+        Nome = nome;
+
+        Idade = idade;
+
+    }
+
+    public void ExibirInformacoes()
+
+    {
+
+        Console.WriteLine($"Nome: {Nome}, Idade: {Idade}");
+
+    }
+
+}
+
+        </pre>
+
+        <h3>Uso do Construtor:</h3>
+
+        <pre>
+
+class Program
+
+{
+
+    static void Main(string[] args)
+
+    {
+
+        Pessoa pessoa1 = new Pessoa("Maria", 25);
+
+        pessoa1.ExibirInformacoes();
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>Saída:</strong><br>
+
+        Nome: Maria, Idade: 25</p>
+
+        <h3>🎯 Benefícios dos Construtores:</h3>
+
+        <ul>
+
+            <li>✅ Código mais limpo e objetivo</li>
+
+            <li>✅ Permite adicionar validações na criação do objeto</li>
+
+        </ul>
+
+    </div>
+
+    <div class="box">
+
+        <h2>🔐 Encapsulamento: Protegendo seus Dados!</h2>
+
+        <p>O <span class="highlight">encapsulamento</span> é um dos pilares da OOP. Ele protege os dados da sua classe, evitando que qualquer um altere os valores sem controle.</p>
+
+        <h3>Classe com Encapsulamento:</h3>
+
+        <pre>
+
+public class Pessoa
+
+{
+
+    private string nome;
+
+    private int idade;
+
+    public Pessoa(string nome, int idade)
+
+    {
+
+        this.nome = nome;
+
+        this.idade = idade;
+
+    }
+
+    public string GetNome()
+
+    {
+
+        return nome;
+
+    }
+
+    public void SetNome(string nome)
+
+    {
+
+        this.nome = nome;
+
+    }
+
+    public int GetIdade()
+
+    {
+
+        return idade;
+
+    }
+
+    public void SetIdade(int idade)
+
+    {
+
+        if (idade >= 0)
+
+        {
+
+            this.idade = idade;
+
+        }
+
+        else
+
+        {
+
+            Console.WriteLine("Idade inválida!");
+
+        }
+
+    }
+
+    public void ExibirInformacoes()
+
+    {
+
+        Console.WriteLine($"Nome: {nome}, Idade: {idade}");
+
+    }
+
+}
+
+        </pre>
+
+        <h3>Usando o Encapsulamento:</h3>
+
+        <pre>
+
+class Program
+
+{
+
+    static void Main(string[] args)
+
+    {
+
+        Pessoa pessoa1 = new Pessoa("Carlos", 40);
+
+        pessoa1.SetNome("Carla");
+
+        pessoa1.SetIdade(-5); // Tentando definir idade inválida
+
+        pessoa1.ExibirInformacoes();
+
+    }
+
+}
+
+        </pre>
+
+        <p><strong>Saída:</strong><br>
+
+        Idade inválida!<br>
+
+        Nome: Carla, Idade: 40</p>
+
+    </div>
+
+    <div class="box">
+
+        <h2>✅ Resumo Rápido:</h2>
+
+        <ul>
+
+            <li><strong>Classe:</strong> O molde, define os atributos e métodos.</li>
+
+            <li><strong>Objeto:</strong> A instância real, com valores próprios.</li>
+
+            <li><strong>Construtor:</strong> Facilita e organiza a criação de objetos.</li>
+
+            <li><strong>Encapsulamento:</strong> Garante proteção e controle dos dados.</li>
+
+        </ul>
+
+        <p>Agora que você entendeu o básico, bora praticar! 💪</p>
+
+    </div>
+
+</body>
+
+</html>
