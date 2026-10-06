@@ -71,6 +71,7 @@ function perfilBlog() {
     tom: p.tom || "", regras: p.regras || "", rodape: p.rodape || "", cor: corValida(p.cor),
     marcadoresBlog: Array.isArray(p.marcadoresBlog) ? p.marcadoresBlog : [],
     marcadoresFixos: Array.isArray(p.marcadoresFixos) ? p.marcadoresFixos : [],
+    modoSobrevivente: p.modoSobrevivente === true, mascote: p.mascote || MASCOTE_PADRAO, canalUrl: p.canalUrl || "",
   };
 }
 function salvarConfig(parcial) { armazenamento.gravar("bs.config", { ...cfg(), ...parcial }); }
@@ -221,7 +222,8 @@ function montarInstrucoes(cat, perfil) {
       ? `- Marcadores permitidos (escolha de 2 a 4 desta lista, com a mesma grafia, e não crie outros): ${perfil.marcadoresFixos.join("; ")}`
       : perfil.marcadoresBlog?.length && `- Marcadores que o blog já usa (reaproveite os que servirem, com a mesma grafia, antes de criar novos): ${perfil.marcadoresBlog.slice(0, 40).join("; ")}`,
   ].filter(Boolean).join("\n");
-  return [SISTEMA_BASE, perfilTexto && `Perfil do blog:\n${perfilTexto}`, cat.instrucoes].filter(Boolean).join("\n\n");
+  return [SISTEMA_BASE, perfilTexto && `Perfil do blog:\n${perfilTexto}`, cat.instrucoes, perfil.modoSobrevivente && INSTRUCOES_SOBREVIVENTE]
+    .filter(Boolean).join("\n\n");
 }
 
 function linhasPerfil(perfil) {
@@ -335,7 +337,8 @@ async function gerarPost(entrada, esboco = null) {
   post.marcadores = separarMarcadores(post.marcadores.map(m => doBlog.get(chave(m)) || m).join(","));
   post.marcadores = aplicarMarcadoresFixos(post.marcadores, perfil.marcadoresFixos, categoria(entrada.categoria).marcador);
   if (!post.titulo || !post.conteudo.trim()) throw new ErroApp("O Gemini devolveu um post vazio. Tente de novo.");
-  return { ...post, categoria: entrada.categoria, dados: estruturado };
+  const cenas = perfil.modoSobrevivente ? cenasDasSecoes(estruturado.secoes) : [];
+  return { ...post, categoria: entrada.categoria, dados: estruturado, ...(cenas.length ? { cenas } : {}) };
 }
 
 const SISTEMA_CHECAGEM = `Você é um checador de fatos de um blog. Use a Pesquisa Google para verificar as afirmações objetivas do post: datas, versões, preços, especificações, nomes, números, requisitos, compatibilidade e lançamentos.
@@ -1311,6 +1314,7 @@ function telaEditor(id) {
           </div>` : `
           <button type="button" class="btn largo" id="capa-trocar">🖼️ Adicionar imagem de capa</button>`}
       </div>
+      ${editorSobreviventeHtml(post)}
       <div class="editor-ferramentas">
         <div class="segmentado editor-modo" role="tablist">
           <button type="button" role="tab" data-modo="editar">Editar HTML</button>
@@ -1344,7 +1348,7 @@ function telaEditor(id) {
         titulo: campos.titulo.value,
         conteudo: campos.conteudo.value,
         marcadores: separarMarcadores(campos.marcadores.value),
-      });
+      }, { previa: true });
       previa.srcdoc = `<meta name="viewport" content="width=device-width,initial-scale=1"><style>
         body{font:17px/1.65 Georgia,serif;color:#222;margin:0;padding:16px;overflow-wrap:anywhere}
         h1,h2,h3{font-family:system-ui,sans-serif;line-height:1.25}img{max-width:100%;height:auto}</style>
@@ -1673,6 +1677,8 @@ function telaEditor(id) {
     enviar("rascunho");
   };
 
+  ligarEditorSobrevivente(main, post, { salvarAgora, atualizarPrevia: aplicarModo });
+
   // Capa
   $("#capa-trocar", main).onclick = async () => {
     salvarAgora();
@@ -1878,6 +1884,7 @@ function telaAjustes() {
             <input type="color" name="cor" value="${esc(perfilBlog().cor)}">
             <small>Usada nas caixas de resumo, fichas e tabelas.</small>
           </label>
+          ${ajustesSobreviventeHtml(pf)}
           <button class="btn primario largo">Salvar perfil</button>
         </form>
       </section>
@@ -2040,10 +2047,17 @@ function telaAjustes() {
     e.preventDefault();
     const dados = Object.fromEntries([...new FormData(e.target)].map(([k, v]) => [k, String(v).trim()]));
     dados.marcadoresFixos = separarMarcadores(dados.marcadoresFixos);
+    // Interruptor desligado não vai no FormData: grava o false para não manter o valor antigo.
+    dados.modoSobrevivente = e.target.modoSobrevivente.checked;
     salvarPerfil({ ...perfilSalvo(), ...dados });
     toast(dados.marcadoresFixos.length
       ? `Perfil salvo. Os posts gerados vão usar só os ${dados.marcadoresFixos.length} marcadores da lista.`
       : "Perfil do blog salvo.", "ok");
+  });
+  $("#ficha-mascote", main)?.addEventListener("click", () => {
+    if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini primeiro.", "erro"); return; }
+    const mascote = $('#form-perfil [name="mascote"]', main).value.trim() || MASCOTE_PADRAO;
+    criarFichaMascote(cfg().blogId, mascote);
   });
   $("#sugerir-marcadores", main)?.addEventListener("click", () => {
     if (!cfg().geminiKey) { toast("Cadastre a chave do Gemini primeiro.", "erro"); return; }

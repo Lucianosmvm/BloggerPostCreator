@@ -34,6 +34,13 @@ posts, em vez de dezenas de marcadores com um post cada.
 **Capa automática:** com a chave do Pexels cadastrada, cada post gerado já vem com foto de capa
 (dá para trocar no editor ou desligar em **Ajustes → 4 · Imagens**).
 
+**Modo Sobrevivente:** ligado por blog em **Ajustes → 3 · Perfil do blog**. Os posts de Tecnologia
+saem com exemplos de jogo de sobrevivência, 2 a 4 cenas com o mascote no meio do texto e os
+exercícios num card **DESAFIO**. No editor, a caixa **Vídeo e cenas** recebe o link do YouTube
+(embutido no topo do post, com link do canal) e o link de cada imagem. Cena sem link não vai para
+o Blogger. O botão **Ficha de referência do mascote** gera frente, perfil, costas e poses para
+baixar e usar nos vídeos; guardada, ela é enviada junto ao gerar cada cena para manter o personagem igual.
+
 **Links entre posts:** todo post enviado ao Blogger termina com um bloco **Leia também** com até
 3 posts do mesmo blog, escolhidos pelos marcadores em comum e pelas palavras do título. A lista de
 posts do blog é lida junto com o perfil, cresce a cada publicação e pode ser atualizada na hora em

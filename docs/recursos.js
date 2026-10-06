@@ -182,8 +182,14 @@ function capaHtml(capa) {
   return `<div style="margin:0 0 24px;"><img src="${esc(capa.url)}" alt="${esc(capa.alt || "")}" style="width:100%;height:auto;border-radius:8px;display:block;">${credito}</div>`;
 }
 
-/** Conteúdo final enviado ao Blogger: capa + texto + links para outros posts. */
-function conteudoFinal(post) { return capaHtml(post.capa) + semBlocoLeiaTambem(post.conteudo) + blocoLeiaTambem(post); }
+/**
+ * Conteúdo final enviado ao Blogger: capa + vídeo + texto (com as cenas) + links para outros posts.
+ * previa: mantém visíveis os lugares de cena ainda sem imagem.
+ */
+function conteudoFinal(post, { previa = false } = {}) {
+  return capaHtml(post.capa) + videoHtml(post, perfilSalvo(blogDoPost(post))) +
+    aplicarCenas(semBlocoLeiaTambem(post.conteudo), post.cenas, { previa }) + blocoLeiaTambem(post);
+}
 
 /** Tira um bloco "Leia também" que já esteja no texto (ex.: HTML copiado e colado de volta). */
 function semBlocoLeiaTambem(html) {

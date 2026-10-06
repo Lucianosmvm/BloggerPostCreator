@@ -409,3 +409,12 @@ input[type="datetime-local"] { min-height: 48px; }
 .grupo-blog .secao-titulo { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
 .grupo-blog .secao-titulo span { font-weight: 600; background: var(--superficie-2); border-radius: 99px; padding: 1px 8px; letter-spacing: 0; }
 .grupo-blog:first-child .secao-titulo { margin-top: 4px; }
+
+/* Modo Sobrevivente */
+.grupo-sobrevivente { min-width: 0; border: 1px solid var(--borda); border-radius: 12px; padding: 12px 14px; margin: 16px 0; }
+.grupo-sobrevivente legend { padding: 0 6px; font-weight: 600; }
+.sobrevivente-editor { margin: 16px 0; }
+.sobrevivente-editor summary { cursor: pointer; }
+.cena-editor { border-top: 1px solid var(--borda); padding-top: 12px; margin-top: 12px; }
+.cena-editor p { margin: 0 0 6px; }
+.cena-editor img { width: 100%; height: auto; border-radius: 8px; margin: 6px 0 10px; display: block; }

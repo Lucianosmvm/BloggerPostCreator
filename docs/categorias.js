@@ -18,6 +18,7 @@ const ESTILO_CELULA = "padding:8px 12px;border:1px solid rgba(128,128,128,.35);t
 const ESTILO_PRE = "background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;";
 const TAGS_REMOVER = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "FORM", "INPUT", "BUTTON", "TEMPLATE", "SVG", "MATH"]);
 const TAGS_LAYOUT = new Set(["DIV", "SPAN", "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "PRE", "H2", "DETAILS", "SUMMARY"]);
+const MARCA_CENA = "data-bs-cena";
 const ESTILO_PERIGOSO = /url\s*\(|expression|javascript:|@import|behavior|position\s*:\s*fixed/i;
 
 /**
@@ -46,7 +47,8 @@ function limparHtml(html, { permitirH2 = false, manterEstilo = false, envolverP 
       for (const atributo of [...el.attributes]) {
         const linkValido = el.tagName === "A" && atributo.name === "href" && /^https?:\/\//i.test(atributo.value.trim());
         const estiloValido = manterEstilo && atributo.name === "style" && !ESTILO_PERIGOSO.test(atributo.value);
-        if (!linkValido && !estiloValido) el.removeAttribute(atributo.name);
+        const cenaValida = manterEstilo && atributo.name === MARCA_CENA && /^\d+$/.test(atributo.value);
+        if (!linkValido && !estiloValido && !cenaValida) el.removeAttribute(atributo.name);
       }
       if (el.tagName === "A") { el.setAttribute("target", "_blank"); el.setAttribute("rel", "noopener"); }
     }
@@ -148,17 +150,35 @@ const Bloco = {
   },
   /** Seções do post. Campos extras (tabela, código, saída, observação) só aparecem se a IA preencher. */
   secoes(secoes, { comCodigo = false, cor = "" } = {}) {
+    let cena = 0;
     return (secoes || []).filter(s => s?.titulo || s?.conteudo_html).map(s =>
       (s.titulo ? Bloco.h2(s.titulo) : "") + limparHtml(s.conteudo_html) +
+      (s.cena?.trim() ? Bloco.cena(++cena, s.cena.trim()) : "") +
       (s.tabela?.titulo?.trim() && s.tabela?.colunas?.length ? `<p style="margin:20px 0 -12px;font-weight:bold;">${esc(s.tabela.titulo.trim())}</p>` : "") +
       Bloco.tabela(s.tabela?.colunas, s.tabela?.linhas, cor) +
       (comCodigo ? Bloco.codigo(s.codigo, s.linguagem) + Bloco.saida(s.saida) : "") +
       (s.observacao?.trim() ? Bloco.caixa("", `<p style="margin:0;">${esc(s.observacao.trim())}</p>`, cor) : "")).join("");
   },
-  /** Exercícios com a resposta escondida (o leitor tenta antes de ver). */
-  exercicios(itens) {
+  /**
+   * Lugar de uma ilustração (modo Sobrevivente). No envio vira a imagem, se o autor colou o link,
+   * ou some (ver aplicarCenas). Fica no texto para acompanhar edições e reescritas.
+   */
+  cena(n, descricao) {
+    return `<div ${MARCA_CENA}="${n}" style="border:2px dashed rgba(128,128,128,.5);border-radius:8px;padding:12px 16px;margin:20px 0;font-size:14px;opacity:.8;">` +
+      `🎬 Cena ${n}: ${esc(descricao)}</div>`;
+  },
+  /** Exercícios com a resposta escondida (o leitor tenta antes de ver). No modo Sobrevivente vira o card "Desafio". */
+  exercicios(itens, desafio = false) {
     const validos = (itens || []).filter(i => i?.pergunta?.trim() && i?.resposta?.trim());
     if (!validos.length) return "";
+    if (desafio) {
+      return `<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;">` +
+        `<p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p>` +
+        `<p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>` +
+        validos.map(i => `<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">${esc(i.pergunta.trim())}</p>` +
+          `<details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary>` +
+          `<div style="margin-top:8px;">${limparHtml(i.resposta)}</div></details></li>`).join("") + `</ol></div>`;
+    }
     return Bloco.h2("Exercícios para praticar") + `<ol>` + validos.map(i =>
       `<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">${esc(i.pergunta.trim())}</p>` +
       `<details><summary style="cursor:pointer;font-weight:bold;">Ver resposta</summary>` +
@@ -279,6 +299,7 @@ const CATEGORIAS = {
         linguagem: S.texto("Linguagem do código, ou 'Cálculo' para contas (opcional)"),
         saida: S.texto("Saída esperada ao executar o código ou comando (opcional)"),
         observacao: S.texto("Dica ou atenção curta sobre esta seção (opcional)"),
+        cena: S.texto("Ilustração desta seção, só quando o blog pedir cenas (opcional)"),
       }),
       comparativo: {
         type: "object", description: "Tabela comparativa final entre opções (opcional)",
@@ -300,7 +321,7 @@ const CATEGORIAS = {
         Bloco.secoes(d.secoes, { comCodigo: true, cor: perfil.cor }) +
         Bloco.tabela(d.comparativo?.colunas, d.comparativo?.linhas, perfil.cor) +
         Bloco.prosContras(d.pros, d.contras) +
-        Bloco.exercicios(d.exercicios) +
+        Bloco.exercicios(d.exercicios, perfil.modoSobrevivente) +
         Bloco.faq(d.faq) +
         Bloco.h2("Conclusão") + limparHtml(d.conclusao_html) +
         `<p style="font-size:13px;opacity:.7;margin-top:24px;">Atualizado em ${dataHoje()}.</p>`;
