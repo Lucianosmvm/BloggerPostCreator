@@ -1,0 +1,112 @@
+<!--
+POST NOVO (não existe post só de operadores no Devs na Prática)
+Título: Operadores em C#: aritméticos, de comparação e lógicos com exemplos de jogo
+Marcadores: C#, programação, Tecnologia
+Descrição de pesquisa: Aprenda os operadores do C# (aritméticos, de comparação e lógicos) com exemplos de jogo de sobrevivência, código comentado e um desafio no final.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO abaixo pelo código de incorporação do YouTube.
+CENAS (gerar com o mascote, subir no Blogger e trocar cada comentário CENA pela imagem):
+  1. Mascote na frente da lousa com "vida = vida - dano;" e uma barra de vida diminuindo.
+  2. Mascote diante de uma porta trancada pensando em "temChave && municao > 0".
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/operadores-em-csharp/capa.jpg" alt="Mascote do Devs na Prática apontando para o título Operadores em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Operadores aritméticos fazem contas: +, -, *, / e %.</li><li>Operadores de comparação respondem sim ou não: ==, !=, &gt;, &lt;, &gt;= e &lt;=.</li><li>Operadores lógicos juntam condições: &amp;&amp; (e), || (ou) e ! (não).</li><li>Divisão entre dois int descarta a parte decimal: 7 / 2 dá 3.</li><li>Os atalhos +=, -= e ++ deixam o código mais curto.</li></ul></div>
+
+<p>Num jogo de sobrevivência, tudo é conta e decisão: quanto de vida sobrou depois do ataque, se ainda tem munição, se dá para abrir a porta. No código é igual. Quem faz esse trabalho são os <strong>operadores</strong>.</p>
+<p>Neste post você vai ver os três grupos de operadores que mais aparecem no C#, sempre com um exemplo de jogo e o resultado que aparece na tela.</p>
+
+<h2>Operadores aritméticos: as contas do jogo</h2>
+<p>São os operadores de matemática. Eles pegam dois valores e devolvem um novo valor.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Operador</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">O que faz</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Exemplo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Resultado</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">+</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Soma</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">80 + 20</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">100</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">-</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Subtração</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">100 - 35</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">65</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">*</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Multiplicação</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">3 * 15</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">45</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">/</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Divisão</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">7 / 2</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">3 (entre int)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">%</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Resto da divisão</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">17 % 5</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">2</td></tr>
+</tbody></table></div>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/operadores-em-csharp/cena-1.jpg" alt="Mascote surpreso ao lado do código vida = vida - dano" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Veja um ataque tirando vida do personagem e a munição sendo dividida em pentes:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 100;
+int dano = 35;
+vida = vida - dano;
+Console.WriteLine($"Vida depois do ataque: {vida}");
+
+int balas = 17;
+int tamanhoDoPente = 5;
+Console.WriteLine($"Pentes cheios: {balas / tamanhoDoPente}");
+Console.WriteLine($"Balas soltas: {balas % tamanhoDoPente}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Vida depois do ataque: 65
+Pentes cheios: 3
+Balas soltas: 2</code></pre>
+<p>O <strong>%</strong> parece estranho no começo, mas é muito útil: ele diz o que <em>sobra</em> de uma divisão. 17 balas em pentes de 5 dão 3 pentes cheios (15 balas) e sobram 2.</p>
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0;">⚠️ Cuidado com a divisão entre dois <code>int</code>: <code>7 / 2</code> dá <code>3</code>, porque o C# joga fora a parte decimal. Para ter <code>3.5</code>, pelo menos um dos lados precisa ser <code>double</code>: <code>7.0 / 2</code>.</p></div>
+
+<h2>Atalhos de atribuição: +=, -= e ++</h2>
+<p>Escrever <code>vida = vida - dano</code> o tempo todo cansa. O C# tem atalhos que fazem a mesma coisa:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 100;
+vida -= 35;   // mesmo que vida = vida - 35
+vida += 20;   // erva verde: vida = vida + 20
+
+int inimigosDerrotados = 0;
+inimigosDerrotados++;   // soma 1
+
+Console.WriteLine($"Vida: {vida} | Inimigos: {inimigosDerrotados}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Vida: 85 | Inimigos: 1</code></pre>
+
+<h2>Operadores de comparação: a pergunta de sim ou não</h2>
+<p>Esses operadores comparam dois valores e sempre devolvem um <code>bool</code>: <code>true</code> (verdadeiro) ou <code>false</code> (falso). São eles que vão alimentar o <code>if</code> no próximo post da série.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Operador</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Pergunta</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Exemplo (vida = 30)</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Resultado</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">==</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É igual?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida == 30</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">true</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">!=</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É diferente?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida != 0</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">true</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">&gt;</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É maior?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &gt; 50</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">false</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">&lt;</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É menor?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &lt; 50</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">true</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">&gt;=</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É maior ou igual?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &gt;= 30</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">true</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">&lt;=</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">É menor ou igual?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &lt;= 29</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">false</td></tr>
+</tbody></table></div>
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0;">⚠️ Erro clássico: <code>=</code> guarda um valor, <code>==</code> compara. <code>vida = 0</code> mata o personagem; <code>vida == 0</code> só pergunta se ele morreu.</p></div>
+
+<h2>Operadores lógicos: juntando condições</h2>
+<p>Muitas decisões dependem de mais de uma coisa. Para abrir a porta do castelo você precisa ter a chave <strong>e</strong> estar vivo. Para isso existem os operadores lógicos:</p>
+<ul><li><strong>&amp;&amp; (e):</strong> só é <code>true</code> se as duas condições forem verdadeiras.</li><li><strong>|| (ou):</strong> é <code>true</code> se pelo menos uma for verdadeira.</li><li><strong>! (não):</strong> inverte o valor: <code>!true</code> vira <code>false</code>.</li></ul>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/operadores-em-csharp/cena-2.jpg" alt="Mascote pensando diante da condição temChave &amp;&amp; municao &gt; 0" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>bool temChave = true;
+int vida = 30;
+int municao = 0;
+
+bool podeAbrirPorta = temChave &amp;&amp; vida &gt; 0;
+bool precisaDeAjuda = vida &lt; 50 || municao == 0;
+bool estaDesarmado = !(municao &gt; 0);
+
+Console.WriteLine($"Pode abrir a porta? {podeAbrirPorta}");
+Console.WriteLine($"Precisa de ajuda? {precisaDeAjuda}");
+Console.WriteLine($"Está desarmado? {estaDesarmado}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Pode abrir a porta? True
+Precisa de ajuda? True
+Está desarmado? True</code></pre>
+<p>Repare que o C# escreve <code>True</code> e <code>False</code> com letra maiúscula quando mostra um <code>bool</code> na tela, mas no código você escreve <code>true</code> e <code>false</code> em minúsculas.</p>
+
+<h2>Ordem das operações</h2>
+<p>Assim como na matemática, o C# resolve primeiro <code>*</code>, <code>/</code> e <code>%</code>, depois <code>+</code> e <code>-</code>, depois as comparações e só no fim <code>&amp;&amp;</code> e <code>||</code>. Na dúvida, use parênteses: eles deixam a intenção clara para quem lê.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int pontos = 10 + 5 * 2;     // 20, não 30
+int pontos2 = (10 + 5) * 2;  // 30
+Console.WriteLine($"{pontos} e {pontos2}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>20 e 30</code></pre>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Você tem 23 balas e cada pente leva 6. Quantos pentes cheios e quantas balas sobram?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>23 / 6</code> = 3 pentes cheios e <code>23 % 6</code> = 5 balas sobrando.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Com <code>vida = 40</code> e <code>temErva = false</code>, quanto vale <code>vida &lt; 50 &amp;&amp; temErva</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>false</code>. A primeira parte é verdadeira, mas o <code>&amp;&amp;</code> exige as duas.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva uma linha que aumente <code>vida</code> em 25 usando um atalho.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>vida += 25;</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com os operadores você já consegue fazer as contas do jogo e transformar situações em perguntas de sim ou não. O próximo passo é usar essas respostas para o programa tomar decisões, e isso é trabalho do <code>if</code>.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>.</p>

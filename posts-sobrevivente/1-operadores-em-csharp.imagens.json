@@ -1,0 +1,4 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"Operadores em *C#* com exemplos de jogo","pose":"apontando","alt":"Mascote do Devs na Prática apontando para o título Operadores em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Levou dano!","codigo":["int vida = 100;","int dano = 35;","vida = vida - dano; // 65"],"subtitulo":"Aritméticos fazem as contas do jogo","pose":"surpreso","alt":"Mascote surpreso ao lado do código vida = vida - dano"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"A porta abre?","codigo":["if (temChave && municao > 0)","    AbrirPorta();"],"subtitulo":"&& só libera se as duas forem true","pose":"pensando","alt":"Mascote pensando diante da condição temChave && municao > 0"}]}

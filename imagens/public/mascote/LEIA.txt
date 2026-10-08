@@ -1,0 +1,2 @@
+Poses do mascote copiadas de VSCreatorApp/remotion/public/mascote (recortes de MascoteRef/mascote.jpeg).
+Pose nova feita para os vídeos: copiar o PNG para cá e incluir o nome na lista do CLAUDE.md.

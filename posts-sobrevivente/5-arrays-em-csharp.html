@@ -1,0 +1,127 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html
+Título: Arrays em C#: o inventário do seu programa (guia para iniciantes)
+Marcadores: manter os atuais (array, C#)
+Descrição de pesquisa: Aprenda arrays em C# usando uma maleta de sobrevivência: criar, acessar pelo índice, alterar, percorrer com for e foreach e evitar o IndexOutOfRangeException.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote abrindo uma maleta dividida em compartimentos numerados 0, 1, 2, 3.
+  2. Mascote assustado diante de um compartimento "4" que não existe, com um aviso de erro na lousa.
+-->
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Um array guarda vários valores do mesmo tipo numa única variável.</li><li>O tamanho é definido na criação e não muda depois.</li><li>As posições (índices) começam em 0: o último é <code>Length - 1</code>.</li><li>Acessar uma posição que não existe gera <code>IndexOutOfRangeException</code>.</li><li>Para percorrer, use <code>for</code> (quando precisa do índice) ou <code>foreach</code>.</li></ul></div>
+
+<p>Num jogo de sobrevivência, você não carrega uma variável para cada item. Você tem uma <strong>maleta</strong> com compartimentos. No C#, essa maleta é o <strong>array</strong>: uma variável que guarda vários valores do mesmo tipo, lado a lado.</p>
+<p>Este post usa laços para percorrer o array. Se ainda não viu, comece por <a href="https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html" target="_blank" rel="noopener">Laços de repetição em C#</a>.</p>
+
+<h2>Criando um array</h2>
+<p>Existem duas formas comuns. Quando você já sabe os itens, liste entre chaves. Quando só sabe o tamanho, use <code>new</code>.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>// Com os itens já definidos
+string[] maleta = { "pistola", "erva verde", "granada", "faca" };
+
+// Só com o tamanho: 3 compartimentos, todos começam com 0
+int[] municaoPorArma = new int[3];
+
+Console.WriteLine($"A maleta tem {maleta.Length} itens.");
+Console.WriteLine($"Munição da primeira arma: {municaoPorArma[0]}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>A maleta tem 4 itens.
+Munição da primeira arma: 0</code></pre>
+<p>Os colchetes <code>[]</code> depois do tipo dizem "isto é um array de". Um <code>int[]</code> só aceita <code>int</code>; um <code>string[]</code> só aceita <code>string</code>.</p>
+
+<h2>Índices: o compartimento começa no zero</h2>
+<!-- CENA 1 -->
+<p>Cada item fica numa posição numerada, chamada <strong>índice</strong>. E aqui está a pegadinha de todo iniciante: o primeiro índice é <strong>0</strong>, não 1.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Índice</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">0</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">1</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">2</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">3</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">maleta[índice]</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">pistola</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">erva verde</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">granada</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">faca</td></tr>
+</tbody></table></div>
+<p>Com 4 itens, os índices vão de 0 a 3. Por isso o último item está sempre em <code>Length - 1</code>.</p>
+
+<h2>Lendo e trocando itens</h2>
+<p>Para ler ou alterar um item, use o nome do array e o índice entre colchetes:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada", "faca" };
+
+Console.WriteLine($"Primeiro item: {maleta[0]}");
+Console.WriteLine($"Último item: {maleta[maleta.Length - 1]}");
+
+// Usou a granada e pegou uma lanterna no lugar
+maleta[2] = "lanterna";
+Console.WriteLine($"Agora o compartimento 2 tem: {maleta[2]}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Primeiro item: pistola
+Último item: faca
+Agora o compartimento 2 tem: lanterna</code></pre>
+
+<h2>O erro mais comum: passar do fim</h2>
+<!-- CENA 2 -->
+<p>Tentar usar um índice que não existe derruba o programa com <code>IndexOutOfRangeException</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada", "faca" };
+Console.WriteLine(maleta[4]); // não existe compartimento 4!</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.</code></pre>
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0;">⚠️ Em laços, use <code>i &lt; maleta.Length</code> e nunca <code>i &lt;= maleta.Length</code>. O <code>&lt;=</code> tenta ler uma posição a mais e cai exatamente nesse erro.</p></div>
+
+<h2>Percorrendo o array</h2>
+<p>Use <code>for</code> quando precisa saber a posição de cada item, e <code>foreach</code> quando só quer cada item:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada" };
+
+for (int i = 0; i &lt; maleta.Length; i++)
+{
+    Console.WriteLine($"[{i}] {maleta[i]}");
+}
+
+int[] municao = { 12, 0, 6 };
+int total = 0;
+foreach (int balas in municao)
+{
+    total += balas;
+}
+Console.WriteLine($"Total de munição: {total}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>[0] pistola
+[1] erva verde
+[2] granada
+Total de munição: 18</code></pre>
+
+<h2>Procurando um item</h2>
+<p>Para saber se algo está na maleta, o C# já tem pronto o <code>Array.IndexOf</code>. Ele devolve o índice do item, ou <code>-1</code> se não encontrar:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada" };
+
+int posicao = Array.IndexOf(maleta, "erva verde");
+
+if (posicao &gt;= 0)
+{
+    Console.WriteLine($"Erva verde no compartimento {posicao}.");
+}
+else
+{
+    Console.WriteLine("Sem erva verde. Cuidado!");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Erva verde no compartimento 1.</code></pre>
+
+<h2>E se a maleta precisar crescer?</h2>
+<p>O array tem tamanho fixo: depois de criado com 4 compartimentos, ele terá 4 para sempre. Quando você precisa adicionar e remover itens à vontade, use uma <code>List&lt;string&gt;</code>, que cresce sozinha. Ela é o assunto do post <a href="https://devsnapratica.blogspot.com/2025/06/list-dictionary-e-hashset-em-c-guia.html" target="_blank" rel="noopener">List, Dictionary e HashSet em C#</a>.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Num array com 6 itens, qual é o índice do último?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>5, porque os índices vão de 0 a <code>Length - 1</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie um array <code>int[] danos = { 10, 40, 60 };</code> e mostre o maior dano usando um laço.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0;white-space:pre;"><code>int[] danos = { 10, 40, 60 };
+int maior = danos[0];
+foreach (int d in danos)
+{
+    if (d &gt; maior) maior = d;
+}
+Console.WriteLine(maior); // 60</code></pre></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">O que está errado aqui? <code>for (int i = 0; i &lt;= maleta.Length; i++)</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>O <code>&lt;=</code> faz o laço tentar ler <code>maleta[maleta.Length]</code>, que não existe, e o programa para com <code>IndexOutOfRangeException</code>. O certo é <code>i &lt; maleta.Length</code>.</p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Agora você sabe criar a maleta, acessar cada compartimento pelo índice, trocar itens, percorrer tudo e escapar do erro de índice fora do limite. Com operadores, decisões, laços e arrays, você já tem as ferramentas para escrever seus primeiros programas completos em C#.</p>
+<p>📖 Próximo passo: <a href="https://devsnapratica.blogspot.com/2025/06/list-dictionary-e-hashset-em-c-guia.html" target="_blank" rel="noopener">List, Dictionary e HashSet em C#</a>.</p>

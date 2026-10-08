@@ -1,0 +1,125 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html
+Título: If, else e else if em C#: como o programa toma decisões
+Marcadores: manter os atuais (C#, condicionais, if, else if, dicas...)
+Descrição de pesquisa: Aprenda if, else e else if em C# com exemplos de jogo de sobrevivência: curar quando a vida está baixa, abrir portas e escolher ações. Com desafio no final.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote numa bifurcação de corredor com placas "if" e "else".
+  2. Mascote olhando uma barra de vida vermelha e uma erva verde na mão; lousa com "if (vida < 30)".
+-->
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>O <code>if</code> executa um bloco só quando a condição é verdadeira.</li><li>O <code>else</code> é o caminho quando a condição é falsa.</li><li>O <code>else if</code> testa outras condições em sequência; só o primeiro caminho verdadeiro roda.</li><li>A condição sempre resulta em <code>bool</code>, geralmente vinda de operadores de comparação.</li></ul></div>
+
+<p>Todo jogo de sobrevivência é feito de decisões: a vida está baixa? Cure. A porta está trancada? Procure a chave. No código, quem toma essas decisões é o <strong>if</strong>.</p>
+<p>Se você ainda não viu os operadores de comparação (<code>&gt;</code>, <code>==</code>, <code>&amp;&amp;</code>...), dê uma olhada no post anterior da série: <a href="https://devsnapratica.blogspot.com/search/label/C%23" target="_blank" rel="noopener">Operadores em C#</a>. Eles são o combustível do <code>if</code>.</p>
+
+<h2>O if: só entra se for verdade</h2>
+<!-- CENA 1 -->
+<p>A estrutura é sempre a mesma: a palavra <code>if</code>, uma condição entre parênteses e um bloco entre chaves. O bloco só roda se a condição for <code>true</code>.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 25;
+
+if (vida &lt; 30)
+{
+    Console.WriteLine("Vida baixa! Use uma erva verde.");
+}
+
+Console.WriteLine("Fim do turno.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Vida baixa! Use uma erva verde.
+Fim do turno.</code></pre>
+<p>Se <code>vida</code> fosse 80, o aviso não apareceria e o programa iria direto para "Fim do turno.".</p>
+
+<h2>O else: o outro caminho</h2>
+<p>Quando você quer fazer uma coisa se a condição for verdadeira e <em>outra</em> se for falsa, use o <code>else</code>. Exatamente um dos dois blocos vai rodar.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>bool temChave = false;
+
+if (temChave)
+{
+    Console.WriteLine("A porta do castelo abriu.");
+}
+else
+{
+    Console.WriteLine("Trancada. Procure a chave.");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Trancada. Procure a chave.</code></pre>
+<p>Repare que <code>if (temChave)</code> funciona sem <code>== true</code>: a variável já é um <code>bool</code>.</p>
+
+<h2>O else if: várias faixas de decisão</h2>
+<!-- CENA 2 -->
+<p>Às vezes há mais de dois caminhos. A barra de vida do jogo, por exemplo, pode ser verde, amarela ou vermelha. O <code>else if</code> testa as condições <strong>de cima para baixo</strong> e para no primeiro que der verdadeiro.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 45;
+
+if (vida &gt;= 70)
+{
+    Console.WriteLine("Barra verde: tudo certo.");
+}
+else if (vida &gt;= 30)
+{
+    Console.WriteLine("Barra amarela: cuidado.");
+}
+else
+{
+    Console.WriteLine("Barra vermelha: cure agora!");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Barra amarela: cuidado.</code></pre>
+<p>Com 45 de vida, o primeiro teste (<code>&gt;= 70</code>) falha, o segundo (<code>&gt;= 30</code>) passa e o resto é ignorado. Não precisa escrever <code>vida &gt;= 30 &amp;&amp; vida &lt; 70</code>: se chegou no segundo teste, já se sabe que a vida é menor que 70.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">vida</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Primeiro teste verdadeiro</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Mensagem</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">90</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &gt;= 70</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Barra verde</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">70</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &gt;= 70</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Barra verde</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">45</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida &gt;= 30</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Barra amarela</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">10</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">nenhum (cai no else)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Barra vermelha</td></tr>
+</tbody></table></div>
+
+<h2>Condições compostas com &amp;&amp; e ||</h2>
+<p>Dá para juntar várias condições num único <code>if</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int municao = 0;
+bool temFaca = true;
+
+if (municao &gt; 0)
+{
+    Console.WriteLine("Atire!");
+}
+else if (temFaca)
+{
+    Console.WriteLine("Sem balas. Use a faca.");
+}
+else
+{
+    Console.WriteLine("Sem nada. Corra!");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Sem balas. Use a faca.</code></pre>
+
+<h2>Erros comuns</h2>
+<ul>
+<li><strong>Usar = no lugar de ==:</strong> <code>if (vida = 0)</code> nem compila em C# para <code>int</code>. Comparação é <code>==</code>.</li>
+<li><strong>Ponto e vírgula depois do if:</strong> <code>if (vida &lt; 30);</code> encerra o <code>if</code> ali mesmo, e o bloco de baixo roda sempre.</li>
+<li><strong>Ordem errada no else if:</strong> se o teste mais amplo (<code>vida &gt;= 30</code>) vier antes do mais específico (<code>vida &gt;= 70</code>), a barra verde nunca aparece.</li>
+<li><strong>Esquecer as chaves:</strong> sem <code>{ }</code>, só a primeira linha depois do <code>if</code> faz parte dele. Use chaves sempre.</li>
+</ul>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um <code>if/else</code> que mostre "Pode comprar" se <code>dinheiro &gt;= preco</code> e "Dinheiro insuficiente" caso contrário.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0;white-space:pre;"><code>if (dinheiro &gt;= preco)
+{
+    Console.WriteLine("Pode comprar");
+}
+else
+{
+    Console.WriteLine("Dinheiro insuficiente");
+}</code></pre></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">No exemplo da barra de vida, o que aparece com <code>vida = 30</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>"Barra amarela: cuidado.", porque <code>30 &gt;= 30</code> é verdadeiro.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie um teste que diga "Pode abrir" só se o jogador tiver a chave <strong>e</strong> a vida for maior que zero.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>if (temChave &amp;&amp; vida &gt; 0) { Console.WriteLine("Pode abrir"); }</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com <code>if</code>, <code>else</code> e <code>else if</code> o seu programa deixa de seguir uma linha reta e passa a reagir à situação. Quando a decisão depende de um único valor com muitas opções, como um menu, existe uma forma mais organizada de escrever: o <code>switch</code>.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/compreendendo-o-uso-de-switch-em-c.html" target="_blank" rel="noopener">Switch em C#</a>.</p>

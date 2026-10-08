@@ -1,0 +1,148 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; o vídeo de Do While já aponta para ele):
+  https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html
+Título: Laços de repetição em C#: while, do while, for e foreach sem complicação
+Marcadores: manter os atuais (C#)
+Descrição de pesquisa: Aprenda while, do while, for e foreach em C# com exemplos de jogo: enfrentar inimigos, recarregar munição e percorrer o inventário. Com desafio.
+VÍDEO: este post serve aos vídeos "While e For em C#" e "Do While em C#". Incorpore o vídeo de While e For no topo e, se quiser, o de Do While na seção dele.
+CENAS:
+  1. Mascote em um corredor com vários inimigos em fila; lousa com "while (inimigos > 0)".
+  2. Mascote recarregando, com balas contadas 1, 2, 3, 4, 5 sobre a mesa.
+  3. Mascote abrindo a maleta e apontando item por item.
+-->
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li><code>while</code>: repete enquanto a condição for verdadeira; pode nem rodar.</li><li><code>do while</code>: roda pelo menos uma vez e depois testa.</li><li><code>for</code>: ideal quando você sabe quantas vezes vai repetir.</li><li><code>foreach</code>: percorre cada item de uma coleção, sem contador.</li><li>Todo laço precisa de algo que faça a condição ficar falsa, senão ele nunca para.</li></ul></div>
+
+<p>Imagine escrever <code>Console.WriteLine("Atirou!")</code> trinta vezes para trinta inimigos. Ninguém merece. Os <strong>laços de repetição</strong> fazem o programa repetir um bloco quantas vezes for preciso, com poucas linhas.</p>
+<p>Os laços usam condições, então vale ter visto antes o post <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>.</p>
+
+<h2>while: enquanto houver inimigos</h2>
+<!-- CENA 1 -->
+<p>O <code>while</code> testa a condição <strong>antes</strong> de cada volta. Se for verdadeira, roda o bloco e testa de novo. Quando ficar falsa, sai do laço.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int inimigos = 3;
+
+while (inimigos &gt; 0)
+{
+    Console.WriteLine($"Inimigo derrotado! Restam {inimigos - 1}.");
+    inimigos--;
+}
+
+Console.WriteLine("Área limpa.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Inimigo derrotado! Restam 2.
+Inimigo derrotado! Restam 1.
+Inimigo derrotado! Restam 0.
+Área limpa.</code></pre>
+<p>Se <code>inimigos</code> começasse em 0, o bloco nunca rodaria e o programa iria direto para "Área limpa.".</p>
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0;">⚠️ Sem o <code>inimigos--;</code>, a condição nunca fica falsa e o programa trava num <strong>laço infinito</strong>. Sempre confira o que muda a cada volta.</p></div>
+
+<h2>do while: age primeiro, pergunta depois</h2>
+<p>O <code>do while</code> roda o bloco <strong>uma vez</strong> e só depois testa a condição. É perfeito para menus: o menu precisa aparecer pelo menos uma vez antes de você saber se o jogador quer sair.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int opcao;
+
+do
+{
+    Console.WriteLine("1 - Continuar | 0 - Sair");
+    opcao = int.Parse(Console.ReadLine());
+} while (opcao != 0);
+
+Console.WriteLine("Jogo salvo. Até a próxima!");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada (digitando 1 e depois 0)</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>1 - Continuar | 0 - Sair
+1
+1 - Continuar | 0 - Sair
+0
+Jogo salvo. Até a próxima!</code></pre>
+<p>Repare no ponto e vírgula depois do <code>while (opcao != 0);</code>: no <code>do while</code> ele é obrigatório.</p>
+
+<h2>for: quando você sabe quantas vezes</h2>
+<!-- CENA 2 -->
+<p>O <code>for</code> junta três coisas numa linha só: onde o contador começa, até quando repete e como ele muda.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int capacidadeDoPente = 5;
+
+for (int bala = 1; bala &lt;= capacidadeDoPente; bala++)
+{
+    Console.WriteLine($"Colocando bala {bala}...");
+}
+
+Console.WriteLine("Pente cheio!");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Colocando bala 1...
+Colocando bala 2...
+Colocando bala 3...
+Colocando bala 4...
+Colocando bala 5...
+Pente cheio!</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Parte do for</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No exemplo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Quando roda</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Início</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">int bala = 1</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Uma vez, antes de tudo</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Condição</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">bala &lt;= capacidadeDoPente</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Antes de cada volta</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Passo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">bala++</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Depois de cada volta</td></tr>
+</tbody></table></div>
+
+<h2>foreach: item por item da maleta</h2>
+<!-- CENA 3 -->
+<p>Quando você tem uma coleção (um array ou uma lista) e quer passar por todos os itens, o <code>foreach</code> é o mais simples: não tem contador nem risco de passar do fim.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada", "faca" };
+
+foreach (string item in maleta)
+{
+    Console.WriteLine($"Na maleta: {item}");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Na maleta: pistola
+Na maleta: erva verde
+Na maleta: granada
+Na maleta: faca</code></pre>
+<p>Arrays são o assunto do próximo post da série, onde a maleta vira o exemplo principal.</p>
+
+<h2>break e continue: saindo antes ou pulando uma volta</h2>
+<ul>
+<li><strong>break</strong> sai do laço na hora. Ex.: achou a chave, para de procurar.</li>
+<li><strong>continue</strong> pula o resto desta volta e vai para a próxima. Ex.: ignore os itens quebrados.</li>
+</ul>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
+<pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] gavetas = { "vazia", "erva verde", "chave", "granada" };
+
+foreach (string conteudo in gavetas)
+{
+    if (conteudo == "vazia") continue;
+    Console.WriteLine($"Achou: {conteudo}");
+    if (conteudo == "chave") break;
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p>
+<pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Achou: erva verde
+Achou: chave</code></pre>
+
+<h2>Qual laço usar?</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Laço</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Use quando</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Exemplo do jogo</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">while</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Não sabe quantas vezes; depende de uma condição</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Lutar enquanto houver inimigos</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">do while</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Precisa rodar pelo menos uma vez</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Mostrar o menu até o jogador sair</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">for</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sabe o número de repetições</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Colocar 5 balas no pente</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">foreach</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Vai passar por todos os itens de uma coleção</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Listar a maleta</td></tr>
+</tbody></table></div>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um <code>for</code> que mostre a contagem regressiva de uma granada: 3, 2, 1 e depois "BOOM!".</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0;white-space:pre;"><code>for (int i = 3; i &gt;= 1; i--)
+{
+    Console.WriteLine(i);
+}
+Console.WriteLine("BOOM!");</code></pre></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Quantas vezes este laço roda? <code>int vida = 0; while (vida &gt; 0) { vida--; }</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Nenhuma. O <code>while</code> testa antes, e <code>0 &gt; 0</code> é falso. Com <code>do while</code>, rodaria uma vez.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Use <code>while</code> para curar o personagem de 10 em 10 até a vida chegar a 100, começando em 40. Quantas curas foram usadas?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0;white-space:pre;"><code>int vida = 40;
+int curas = 0;
+while (vida &lt; 100)
+{
+    vida += 10;
+    curas++;
+}
+Console.WriteLine(curas); // 6</code></pre></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com <code>while</code>, <code>do while</code>, <code>for</code> e <code>foreach</code> você repete tarefas sem copiar código. O <code>foreach</code> já deu uma prévia do próximo assunto: guardar vários valores numa única variável, o inventário do seu programa.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html" target="_blank" rel="noopener">Arrays em C#</a>.</p>
