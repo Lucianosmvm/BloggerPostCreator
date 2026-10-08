@@ -52,4 +52,5 @@ Campos (ver `imagens/src/PostImagem.tsx`):
   `subtitulo` (legenda), `pose`, `lado` (`esq`/`dir`, alternar), `placa` opcional (1–3 palavras).
 - Poses: frente, lado, costas, apontando, digitando, pensando, comemorando, surpreso,
   desconfiado, cocando, bracos, acenando, sentado, explicando, confiante, tapando, alcas,
-  lupa, cafe, triste, pulando, correndo, placa, ideia, animado, paz, perfil, neutro, feliz, determinado.
+  lupa, cafe, triste, pulando, correndo, placa, ideia, animado, paz, perfil.
+  Não usar as de busto (neutro, feliz, determinado): ficam gigantes na imagem.

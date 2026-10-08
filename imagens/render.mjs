@@ -27,7 +27,9 @@ const serveUrl = await bundle({ entryPoint: path.join(raiz, "src", "index.ts") }
 const browser = await openBrowser("chrome");
 for (const img of spec.imagens) {
   const { arquivo, ...props } = img;
-  const props2 = { marca: spec.marca, ...props };
+  // campo ausente vira null: senão o Remotion completa com o exemplo do Root.tsx
+  const vazios = Object.fromEntries(["titulo", "subtitulo", "placa", "codigo", "itens", "frase", "lado"].map((k) => [k, null]));
+  const props2 = { ...vazios, marca: spec.marca, ...props };
   const id = props.tipo === "capa" ? "PostCapa" : "PostCena";
   const composition = await selectComposition({ serveUrl, id, inputProps: props2, puppeteerInstance: browser });
   const destino = path.join(saida, arquivo);

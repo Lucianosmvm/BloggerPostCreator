@@ -9,6 +9,7 @@ CENAS:
   1. Mascote abrindo uma maleta dividida em compartimentos numerados 0, 1, 2, 3.
   2. Mascote assustado diante de um compartimento "4" que não existe, com um aviso de erro na lousa.
 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/arrays-em-csharp/capa.jpg" alt="Mascote do Devs na Prática segurando a mochila ao lado do título Arrays em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <!-- VIDEO -->
 
 <div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Um array guarda vários valores do mesmo tipo numa única variável.</li><li>O tamanho é definido na criação e não muda depois.</li><li>As posições (índices) começam em 0: o último é <code>Length - 1</code>.</li><li>Acessar uma posição que não existe gera <code>IndexOutOfRangeException</code>.</li><li>Para percorrer, use <code>for</code> (quando precisa do índice) ou <code>foreach</code>.</li></ul></div>
@@ -33,7 +34,7 @@ Munição da primeira arma: 0</code></pre>
 <p>Os colchetes <code>[]</code> depois do tipo dizem "isto é um array de". Um <code>int[]</code> só aceita <code>int</code>; um <code>string[]</code> só aceita <code>string</code>.</p>
 
 <h2>Índices: o compartimento começa no zero</h2>
-<!-- CENA 1 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/arrays-em-csharp/cena-1.jpg" alt="Mascote explicando um array maleta com índices começando em 0" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>Cada item fica numa posição numerada, chamada <strong>índice</strong>. E aqui está a pegadinha de todo iniciante: o primeiro índice é <strong>0</strong>, não 1.</p>
 <div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Índice</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">0</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">1</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">2</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">3</th></tr></thead><tbody>
 <tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">maleta[índice]</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">pistola</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">erva verde</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">granada</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">faca</td></tr>
@@ -57,7 +58,7 @@ Console.WriteLine($"Agora o compartimento 2 tem: {maleta[2]}");</code></pre>
 Agora o compartimento 2 tem: lanterna</code></pre>
 
 <h2>O erro mais comum: passar do fim</h2>
-<!-- CENA 2 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/arrays-em-csharp/cena-2.jpg" alt="Mascote tapando os olhos diante do erro IndexOutOfRangeException" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>Tentar usar um índice que não existe derruba o programa com <code>IndexOutOfRangeException</code>:</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada", "faca" };

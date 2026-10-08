@@ -9,6 +9,7 @@ CENAS:
   1. Mascote diante de uma barraca de mercador com placa de menu "1 Comprar / 2 Vender / 3 Sair".
   2. Mascote na lousa com uma escada de if/else if riscada e, ao lado, um switch organizado.
 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/switch-em-csharp/capa.jpg" alt="Mascote do Devs na Prática apresentando o título Switch em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <!-- VIDEO -->
 
 <div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>O <code>switch</code> escolhe um caminho comparando um valor com uma lista de opções (<code>case</code>).</li><li>Cada <code>case</code> termina com <code>break</code>.</li><li>O <code>default</code> roda quando nenhuma opção bate, como o <code>else</code>.</li><li>Vários <code>case</code> podem dividir o mesmo bloco.</li><li>A expressão switch (<code>=&gt;</code>) devolve um valor direto, em menos linhas.</li></ul></div>
@@ -17,7 +18,7 @@ CENAS:
 <p>Se ainda não viu o <code>if</code>, comece pelo post anterior da série: <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>.</p>
 
 <h2>A estrutura do switch</h2>
-<!-- CENA 1 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/switch-em-csharp/cena-1.jpg" alt="Mascote segurando a placa MENU ao lado de um switch com as opções do mercador" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>O <code>switch</code> recebe um valor e compara com cada <code>case</code>. Quando encontra o igual, executa aquele bloco até o <code>break</code>.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine("1 - Comprar | 2 - Vender | 3 - Melhorar arma | 4 - Sair");
@@ -92,7 +93,7 @@ Console.WriteLine($"Dano da {arma}: {dano}");</code></pre>
 <pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Dano da escopeta: 40</code></pre>
 
 <h2>Switch ou if: qual usar?</h2>
-<!-- CENA 2 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/switch-em-csharp/cena-2.jpg" alt="Mascote com uma ideia comparando quando usar switch e quando usar if" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Situação</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Melhor escolha</th></tr></thead><tbody>
 <tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Um valor com várias opções fixas (menu, tipo de item, dia da semana)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">switch</td></tr>
 <tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Faixas de valores (vida &gt;= 70, vida &gt;= 30...)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">if / else if</td></tr>

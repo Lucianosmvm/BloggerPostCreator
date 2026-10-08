@@ -9,6 +9,7 @@ CENAS:
   1. Mascote numa bifurcação de corredor com placas "if" e "else".
   2. Mascote olhando uma barra de vida vermelha e uma erva verde na mão; lousa com "if (vida < 30)".
 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/if-else-em-csharp/capa.jpg" alt="Mascote do Devs na Prática pensando ao lado do título If, else e else if em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <!-- VIDEO -->
 
 <div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>O <code>if</code> executa um bloco só quando a condição é verdadeira.</li><li>O <code>else</code> é o caminho quando a condição é falsa.</li><li>O <code>else if</code> testa outras condições em sequência; só o primeiro caminho verdadeiro roda.</li><li>A condição sempre resulta em <code>bool</code>, geralmente vinda de operadores de comparação.</li></ul></div>
@@ -17,7 +18,7 @@ CENAS:
 <p>Se você ainda não viu os operadores de comparação (<code>&gt;</code>, <code>==</code>, <code>&amp;&amp;</code>...), dê uma olhada no post anterior da série: <a href="https://devsnapratica.blogspot.com/search/label/C%23" target="_blank" rel="noopener">Operadores em C#</a>. Eles são o combustível do <code>if</code>.</p>
 
 <h2>O if: só entra se for verdade</h2>
-<!-- CENA 1 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/if-else-em-csharp/cena-1.jpg" alt="Mascote apontando para um if e else que escolhem o caminho" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>A estrutura é sempre a mesma: a palavra <code>if</code>, uma condição entre parênteses e um bloco entre chaves. O bloco só roda se a condição for <code>true</code>.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 25;
@@ -51,7 +52,7 @@ else
 <p>Repare que <code>if (temChave)</code> funciona sem <code>== true</code>: a variável já é um <code>bool</code>.</p>
 
 <h2>O else if: várias faixas de decisão</h2>
-<!-- CENA 2 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/if-else-em-csharp/cena-2.jpg" alt="Mascote surpreso diante de um else if que cura quando a vida está baixa" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>Às vezes há mais de dois caminhos. A barra de vida do jogo, por exemplo, pode ser verde, amarela ou vermelha. O <code>else if</code> testa as condições <strong>de cima para baixo</strong> e para no primeiro que der verdadeiro.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 45;

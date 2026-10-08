@@ -1,0 +1,4 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Switch* em C#: menos if, mais clareza","pose":"explicando","alt":"Mascote do Devs na Prática apresentando o título Switch em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Menu do mercador","codigo":["switch (opcao)","{","    case 1: Comprar(); break;","    case 2: Vender(); break;","    default: Sair(); break;","}"],"subtitulo":"Cada case é uma opção do menu","pose":"placa","placa":"MENU","alt":"Mascote segurando a placa MENU ao lado de um switch com as opções do mercador"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Switch ou if?","itens":["Um valor, várias opções: switch","Faixas e condições: if","Devolver um valor: switch =>"],"pose":"ideia","alt":"Mascote com uma ideia comparando quando usar switch e quando usar if"}]}

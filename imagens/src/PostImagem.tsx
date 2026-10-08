@@ -12,6 +12,7 @@ loadMono("normal", { weights: ["500", "700"], subsets: ["latin"] });
 //   cena: mascote ao lado de um quadro com código, lista ou frase, 1200x675
 export type PostImagemProps = {
   tipo: "capa" | "cena";
+  // pose de corpo inteiro; busto (neutro, feliz, determinado) fica gigante aqui
   titulo?: string;
   subtitulo?: string; // capa: linha pequena acima do título; cena: legenda do quadro
   pose: string;
@@ -80,7 +81,7 @@ const Quadro: React.FC<Pick<PostImagemProps, "codigo" | "itens" | "frase" | "sub
   >
     {titulo && <div style={{ fontFamily: "Poppins", fontWeight: 900, fontSize: 38, color: COR.texto, marginBottom: 16, lineHeight: 1.1 }}>{titulo}</div>}
     {codigo && (
-      <div style={{ fontFamily: "JetBrains Mono", fontWeight: 500, fontSize: codigo.length > 7 ? 24 : 30, lineHeight: 1.5, color: COR.texto, whiteSpace: "pre" }}>
+      <div style={{ fontFamily: "JetBrains Mono", fontVariantLigatures: "none", fontWeight: 500, fontSize: codigo.length > 7 ? 24 : 30, lineHeight: 1.5, color: COR.texto, whiteSpace: "pre" }}>
         {codigo.map((l, i) => (
           <div key={i}>{colorir(l)}</div>
         ))}

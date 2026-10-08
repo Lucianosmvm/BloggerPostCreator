@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"Laços em C#: *while, for* e foreach","pose":"correndo","alt":"Mascote do Devs na Prática correndo ao lado do título Laços de repetição em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Ainda tem inimigo?","codigo":["while (inimigos > 0)","{","    Atacar();","    inimigos--;","}"],"subtitulo":"Repete enquanto a condição for true","pose":"confiante","alt":"Mascote confiante ao lado de um while que repete até acabarem os inimigos"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Recarregando","codigo":["for (int i = 1; i <= 5; i++)","    Console.WriteLine(i);","// 1 2 3 4 5"],"subtitulo":"for: quando você sabe quantas vezes","pose":"digitando","alt":"Mascote ao lado de um for que conta as balas de 1 a 5"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Item por item","codigo":["foreach (var item in maleta)","    Console.WriteLine(item);"],"subtitulo":"foreach percorre a coleção inteira","pose":"lupa","alt":"Mascote com uma lupa ao lado de um foreach que percorre a maleta"}]}

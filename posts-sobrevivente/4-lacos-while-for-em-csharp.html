@@ -10,6 +10,7 @@ CENAS:
   2. Mascote recarregando, com balas contadas 1, 2, 3, 4, 5 sobre a mesa.
   3. Mascote abrindo a maleta e apontando item por item.
 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/lacos-while-for-em-csharp/capa.jpg" alt="Mascote do Devs na Prática correndo ao lado do título Laços de repetição em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <!-- VIDEO -->
 
 <div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li><code>while</code>: repete enquanto a condição for verdadeira; pode nem rodar.</li><li><code>do while</code>: roda pelo menos uma vez e depois testa.</li><li><code>for</code>: ideal quando você sabe quantas vezes vai repetir.</li><li><code>foreach</code>: percorre cada item de uma coleção, sem contador.</li><li>Todo laço precisa de algo que faça a condição ficar falsa, senão ele nunca para.</li></ul></div>
@@ -18,7 +19,7 @@ CENAS:
 <p>Os laços usam condições, então vale ter visto antes o post <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>.</p>
 
 <h2>while: enquanto houver inimigos</h2>
-<!-- CENA 1 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/lacos-while-for-em-csharp/cena-1.jpg" alt="Mascote determinado ao lado de um while que repete até acabarem os inimigos" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>O <code>while</code> testa a condição <strong>antes</strong> de cada volta. Se for verdadeira, roda o bloco e testa de novo. Quando ficar falsa, sai do laço.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int inimigos = 3;
@@ -59,7 +60,7 @@ Jogo salvo. Até a próxima!</code></pre>
 <p>Repare no ponto e vírgula depois do <code>while (opcao != 0);</code>: no <code>do while</code> ele é obrigatório.</p>
 
 <h2>for: quando você sabe quantas vezes</h2>
-<!-- CENA 2 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/lacos-while-for-em-csharp/cena-2.jpg" alt="Mascote ao lado de um for que conta as balas de 1 a 5" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>O <code>for</code> junta três coisas numa linha só: onde o contador começa, até quando repete e como ele muda.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int capacidadeDoPente = 5;
@@ -84,7 +85,7 @@ Pente cheio!</code></pre>
 </tbody></table></div>
 
 <h2>foreach: item por item da maleta</h2>
-<!-- CENA 3 -->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/lacos-while-for-em-csharp/cena-3.jpg" alt="Mascote com uma lupa ao lado de um foreach que percorre a maleta" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
 <p>Quando você tem uma coleção (um array ou uma lista) e quer passar por todos os itens, o <code>foreach</code> é o mais simples: não tem contador nem risco de passar do fim.</p>
 <p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>
 <pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] maleta = { "pistola", "erva verde", "granada", "faca" };

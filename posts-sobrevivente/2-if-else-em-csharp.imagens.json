@@ -1,0 +1,4 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*If, else* e else if em C#","pose":"pensando","alt":"Mascote do Devs na Prática pensando ao lado do título If, else e else if em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Vai por onde?","codigo":["if (temLanterna)","    EntrarNoTunel();","else","    VoltarPelaPorta();"],"subtitulo":"O if escolhe um dos caminhos","pose":"apontando","alt":"Mascote apontando para um if e else que escolhem o caminho"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Vida baixa!","codigo":["if (vida < 30)","    UsarErva();","else if (vida < 70)","    Descansar();","else","    Explorar();"],"subtitulo":"Só o primeiro caminho verdadeiro roda","pose":"surpreso","alt":"Mascote surpreso diante de um else if que cura quando a vida está baixa"}]}

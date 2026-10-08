@@ -1,0 +1,43 @@
+{
+ "imagens": [
+  {
+   "arquivo": "capa.jpg",
+   "tipo": "capa",
+   "subtitulo": "C# NA PRÁTICA",
+   "titulo": "*Arrays* em C#: o inventário do seu programa",
+   "pose": "alcas",
+   "alt": "Mascote do Devs na Prática segurando a mochila ao lado do título Arrays em C#"
+  },
+  {
+   "arquivo": "cena-1.jpg",
+   "tipo": "cena",
+   "cena": 1,
+   "titulo": "A maleta",
+   "codigo": [
+    "string[] maleta = {",
+    "  \"pistola\", \"erva verde\",",
+    "  \"granada\", \"faca\" };",
+    "",
+    "maleta[0] // \"pistola\"",
+    "maleta[3] // \"faca\""
+   ],
+   "subtitulo": "O primeiro compartimento é o 0",
+   "pose": "explicando",
+   "alt": "Mascote explicando o array maleta com índices de 0 a 3"
+  },
+  {
+   "arquivo": "cena-2.jpg",
+   "tipo": "cena",
+   "cena": 2,
+   "lado": "esq",
+   "titulo": "Compartimento 4?",
+   "codigo": [
+    "maleta[4]",
+    "// IndexOutOfRangeException"
+   ],
+   "subtitulo": "O último índice é Length - 1",
+   "pose": "tapando",
+   "alt": "Mascote tapando os olhos diante do erro IndexOutOfRangeException"
+  }
+ ]
+}
