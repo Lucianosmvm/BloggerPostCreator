@@ -1,0 +1,137 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/introducao-sobrecarga-de-metodos-em-c.html
+Título: Sobrecarga de métodos em C#: o mesmo nome para ações diferentes
+Marcadores: manter os atuais (C#)
+Descrição de pesquisa: Aprenda sobrecarga de métodos (overloading) em C# com um jogo de sobrevivência: mesmo nome, parâmetros diferentes, como o C# escolhe a versão e erros comuns.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote com três versões de Curar lado a lado.
+  2. Mascote pensando em qual versão o C# escolhe.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/sobrecarga-de-metodos-em-csharp/capa.jpg" alt="Mascote do Devs na Prática fazendo sinal de paz ao lado do título Sobrecarga de métodos em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Sobrecarga é ter vários métodos com o mesmo nome e parâmetros diferentes.</li><li>O que precisa mudar é a assinatura: quantidade, tipo ou ordem dos parâmetros.</li><li>Mudar só o tipo de retorno não conta como sobrecarga.</li><li>O C# escolhe a versão certa pelos argumentos que você passa.</li><li><code>Console.WriteLine</code> é sobrecarregado: por isso aceita texto, número e bool.</li></ul></div>
+
+<p>No jogo, curar pode acontecer de vários jeitos: com uma erva que cura um valor fixo, com uma quantidade escolhida, ou com um item que tem nome e potência. Criar <code>CurarComErva</code>, <code>CurarComQuantidade</code> e <code>CurarComItem</code> funciona, mas quem usa o código precisa decorar três nomes para a mesma ação.</p>
+<p>A <strong>sobrecarga de métodos</strong> (em inglês, <em>overloading</em>) deixa você usar um nome só, <code>Curar</code>, com versões diferentes. Se ainda não viu métodos, comece pelo <a href="https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html" target="_blank" rel="noopener">post de métodos em C#</a>.</p>
+
+<h2>Mesmo nome, parâmetros diferentes</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/sobrecarga-de-metodos-em-csharp/cena-1.jpg" alt="Mascote tomando café ao lado de três chamadas do método Curar" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>class Program
+{
+    static void Main()
+    {
+        int vida = 30;
+        vida = Curar(vida);
+        Console.WriteLine($"Erva comum: {vida}");
+
+        vida = Curar(vida, 40);
+        Console.WriteLine($"Kit médico: {vida}");
+
+        vida = Curar(vida, "Spray", 2);
+        Console.WriteLine($"Spray duplo: {vida}");
+    }
+
+    // versão 1: erva comum, cura 20
+    static int Curar(int vida)
+    {
+        return Math.Min(vida + 20, 100);
+    }
+
+    // versão 2: cura a quantidade escolhida
+    static int Curar(int vida, int quantidade)
+    {
+        return Math.Min(vida + quantidade, 100);
+    }
+
+    // versão 3: item com nome e potência
+    static int Curar(int vida, string item, int potencia)
+    {
+        Console.WriteLine($"Usando {item}...");
+        return Math.Min(vida + 10 * potencia, 100);
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Erva comum: 50
+Kit médico: 90
+Usando Spray...
+Spray duplo: 100</code></pre>
+<p>Os três métodos se chamam <code>Curar</code>, mas cada um tem uma lista de parâmetros diferente. O <code>Math.Min</code> devolve o menor de dois números: é o jeito curto de garantir que a vida não passe de 100.</p>
+<div style="border-left:4px solid #f5c518;background:rgba(245,197,24,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 6px;font-weight:bold;">💡 Por que class Program aqui</p><p style="margin:0;">No post de métodos os exemplos usavam código solto no topo do arquivo (top-level statements). Ali os métodos viram <em>funções locais</em>, e função local não aceita sobrecarga: o compilador reclama que <code>Curar</code> já existe. Por isso, para sobrecarregar, os métodos precisam estar dentro de uma classe, como o <code>class Program</code> com o <code>Main</code>.</p></div>
+
+<h2>Como o C# escolhe a versão</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/sobrecarga-de-metodos-em-csharp/cena-2.jpg" alt="Mascote pensando em qual versão sobrecarregada o C# escolhe" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Na hora de compilar, o C# olha os <strong>argumentos</strong> da chamada e procura a versão cuja lista de parâmetros combina:</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Chamada</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Argumentos</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Versão escolhida</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(vida)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">um <code>int</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(int vida)</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(vida, 40)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">dois <code>int</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(int vida, int quantidade)</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(vida, "Spray", 2)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>int</code>, <code>string</code>, <code>int</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar(int vida, string item, int potencia)</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar("Spray")</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">uma <code>string</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">nenhuma: erro de compilação</td></tr>
+</tbody></table></div>
+<p>O nome do método junto com os tipos dos parâmetros forma a <strong>assinatura</strong>. Duas versões podem ter o mesmo nome desde que as assinaturas sejam diferentes.</p>
+
+<h2>O que conta como diferente</h2>
+<p>A assinatura muda quando muda a <strong>quantidade</strong>, o <strong>tipo</strong> ou a <strong>ordem dos tipos</strong> dos parâmetros:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>class Program
+{
+    static void Main()
+    {
+        MostrarDano(15);
+        MostrarDano(15.5);
+        MostrarDano("Faca", 15);
+        MostrarDano(15, "Faca");
+    }
+
+    static void MostrarDano(int dano) =&gt; Console.WriteLine($"Dano inteiro: {dano}");
+    static void MostrarDano(double dano) =&gt; Console.WriteLine($"Dano decimal: {dano}");
+    static void MostrarDano(string arma, int dano) =&gt; Console.WriteLine($"{arma} causou {dano}");
+    static void MostrarDano(int dano, string arma) =&gt; Console.WriteLine($"{dano} de dano com {arma}");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Dano inteiro: 15
+Dano decimal: 15.5
+Faca causou 15
+15 de dano com Faca</code></pre>
+<p>O <code>=&gt;</code> é um atalho para métodos de uma linha só: <code>static void X() =&gt; algo;</code> é o mesmo que escrever o corpo entre chaves.</p>
+<p>Repare que <code>15</code> vai para a versão <code>int</code> e <code>15.5</code> para a versão <code>double</code>: o C# sempre prefere a versão que combina exatamente com o tipo do argumento.</p>
+
+<h2>O que NÃO conta: só o tipo de retorno</h2>
+<p>Mudar apenas o tipo de retorno não cria uma nova assinatura. O C# não teria como saber qual versão você quer:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>static int Dano(int forca) { return forca * 2; }
+static double Dano(int forca) { return forca * 2.5; }   // erro: já existe Dano(int)</code></pre>
+<p>Nomes de parâmetros diferentes também não contam: <code>Dano(int forca)</code> e <code>Dano(int nivel)</code> têm a mesma assinatura.</p>
+
+<h2>Você já usa sobrecarga</h2>
+<p>O <code>Console.WriteLine</code> que você usa desde o primeiro dia tem várias versões: uma para <code>string</code>, uma para <code>int</code>, uma para <code>bool</code>, uma para <code>double</code>... Por isso todas estas linhas funcionam:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine("Porta trancada");
+Console.WriteLine(42);
+Console.WriteLine(true);
+Console.WriteLine(3.75);</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Porta trancada
+42
+True
+3.75</code></pre>
+
+<h2>Sobrecarga ou valor padrão?</h2>
+<p>No post de métodos você viu parâmetros com valor padrão, que também deixam chamar o método com menos argumentos. Qual usar?</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Use</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Quando</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Valor padrão</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">a lógica é a mesma e só um valor muda (<code>CalcularDano(10)</code> e <code>CalcularDano(10, 3)</code>)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sobrecarga</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">cada versão faz algo diferente ou recebe tipos diferentes (<code>Curar(vida)</code> e <code>Curar(vida, "Spray", 2)</code>)</td></tr>
+</tbody></table></div>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Duas versões com a mesma assinatura.</strong> Mudar só o retorno ou o nome dos parâmetros gera erro de "já existe um membro com esses parâmetros".</p>
+<p><strong>2. Chamada ambígua.</strong> Se duas versões servem igualmente bem, o C# não escolhe e dá erro. Acontece mais com valores padrão misturados a sobrecargas: evite combinar os dois no mesmo nome.</p>
+<p><strong>3. Sobrecarregar no código solto do topo do arquivo.</strong> Funções locais não aceitam sobrecarga. Coloque os métodos dentro de uma classe.</p>
+<p><strong>4. Versões que fazem coisas sem relação.</strong> <code>Curar(int)</code> que cura e <code>Curar(string)</code> que salva o jogo confunde quem lê. Mesmo nome deve significar a mesma ação.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Estas duas versões podem existir juntas? <code>static void Atirar(int balas)</code> e <code>static void Atirar(int quantidade)</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Não. Os nomes dos parâmetros não contam; as duas têm a assinatura <code>Atirar(int)</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Qual versão roda em <code>MostrarDano(7.0)</code>, usando os quatro <code>MostrarDano</code> do post?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>MostrarDano(double dano)</code>, porque <code>7.0</code> é um <code>double</code>. A saída é <code>Dano decimal: 7</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva duas versões de <code>Recarregar</code>: uma sem parâmetros que recarrega 15 balas e outra que recebe a quantidade. As duas devolvem o número de balas.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>static int Recarregar() =&gt; 15;</code> e <code>static int Recarregar(int quantidade) =&gt; quantidade;</code>, dentro de uma classe (lembre: funções locais não aceitam sobrecarga).</p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com a sobrecarga, a mesma ação tem o mesmo nome, não importa como ela é chamada: quem usa o seu código só precisa lembrar de <code>Curar</code>. É uma ideia simples que você vai encontrar em toda a biblioteca do .NET.</p>
+<p>Até aqui, vida, balas e nome eram variáveis soltas. O próximo passo é juntar tudo isso num personagem de verdade, com classes e objetos.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">Classes e objetos em C#</a>.</p>

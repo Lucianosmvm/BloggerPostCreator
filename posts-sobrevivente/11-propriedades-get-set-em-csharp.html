@@ -1,0 +1,158 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html
+Título: Propriedades em C#: get e set para proteger a vida do personagem
+Marcadores: manter os atuais (C#)
+Descrição de pesquisa: Aprenda propriedades em C# (get, set, value, propriedades automáticas, private set e somente leitura) protegendo a vida e a munição de um personagem de jogo.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote desconfiado diante de "Vida = -500".
+  2. Mascote explicando o get e o set como um porteiro.
+  3. Mascote confiante com a propriedade automática.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/propriedades-get-set-em-csharp/capa.jpg" alt="Mascote do Devs na Prática de braços cruzados ao lado do título Propriedades em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Propriedade parece um campo por fora, mas por dentro tem código que controla a leitura e a escrita.</li><li><code>get</code> roda quando alguém lê o valor; <code>set</code> roda quando alguém muda.</li><li>Dentro do <code>set</code>, <code>value</code> é o valor que tentaram colocar.</li><li>Propriedade automática (<code>{ get; set; }</code>) é o atalho quando não há regra.</li><li><code>private set</code> deixa ler de fora, mas só a própria classe muda.</li></ul></div>
+
+<p>No <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">post de classes e objetos</a>, o personagem tinha um campo <code>public int Vida</code>. Funciona, mas qualquer parte do código pode fazer isto:</p>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/propriedades-get-set-em-csharp/cena-1.jpg" alt="Mascote desconfiado diante de vida negativa e munição infinita" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem();
+leon.Vida = -500;    // nada impede
+leon.Balas = 9999;   // nem isso
+Console.WriteLine($"Vida: {leon.Vida} | Balas: {leon.Balas}");
+
+class Personagem
+{
+    public int Vida = 100;
+    public int Balas = 6;
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Vida: -500 | Balas: 9999</code></pre>
+<p>Vida negativa e munição infinita: um bug esperando para acontecer. As <strong>propriedades</strong> colocam um porteiro na frente do dado, que confere tudo o que entra e sai.</p>
+
+<h2>get e set: o porteiro do dado</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/propriedades-get-set-em-csharp/cena-2.jpg" alt="Mascote explicando o get e o set de uma propriedade" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Uma propriedade tem um campo <code>private</code> guardando o valor de verdade e dois blocos que controlam o acesso:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem();
+leon.Vida = 150;
+Console.WriteLine($"Tentou 150, ficou {leon.Vida}");
+
+leon.Vida = -30;
+Console.WriteLine($"Tentou -30, ficou {leon.Vida}");
+
+class Personagem
+{
+    private int vida = 100;   // o dado de verdade, escondido
+
+    public int Vida           // a porta de entrada
+    {
+        get { return vida; }
+        set
+        {
+            if (value &gt; 100) vida = 100;
+            else if (value &lt; 0) vida = 0;
+            else vida = value;
+        }
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Tentou 150, ficou 100
+Tentou -30, ficou 0</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Parte</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Quando roda</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No exemplo</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>get</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">quando alguém lê: <code>leon.Vida</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">devolve o campo <code>vida</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>set</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">quando alguém escreve: <code>leon.Vida = 150</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">confere e guarda</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>value</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">dentro do <code>set</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o valor que tentaram colocar (150)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">campo <code>private</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">nunca é acessado de fora</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>vida</code>, com v minúsculo</td></tr>
+</tbody></table></div>
+<p>Por fora, <code>leon.Vida</code> continua parecendo um campo comum. Quem usa a classe nem percebe a regra, mas ela nunca deixa a vida sair de 0 a 100.</p>
+
+<h2>Propriedade automática</h2>
+<p>Quando não existe regra nenhuma, escrever campo + get + set é trabalho à toa. A <strong>propriedade automática</strong> faz tudo em uma linha; o C# cria o campo escondido sozinho:</p>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/propriedades-get-set-em-csharp/cena-3.jpg" alt="Mascote confiante ao lado de propriedades automáticas" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem jill = new Personagem();
+jill.Nome = "Jill";
+jill.Classe = "Sobrevivente";
+Console.WriteLine($"{jill.Nome}, {jill.Classe}");
+
+class Personagem
+{
+    public string Nome { get; set; } = "";
+    public string Classe { get; set; } = "Civil";
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Jill, Sobrevivente</code></pre>
+<p>O <code>= ""</code> e o <code>= "Civil"</code> no fim são valores iniciais. É o jeito mais comum de escrever dados de uma classe em C#: se depois aparecer uma regra, você troca a automática pela completa e quem usa a classe não precisa mudar nada.</p>
+
+<h2>private set: todo mundo lê, só a classe muda</h2>
+<p>A munição não deve ser alterada direto de fora. Ela só muda quando o personagem atira ou recarrega. O <code>private set</code> faz exatamente isso:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem();
+leon.Atirar();
+leon.Atirar();
+Console.WriteLine($"Balas: {leon.Balas}");
+
+leon.Recarregar();
+Console.WriteLine($"Depois de recarregar: {leon.Balas}");
+
+class Personagem
+{
+    public int Balas { get; private set; } = 6;
+
+    public void Atirar()
+    {
+        if (Balas &gt; 0) Balas--;
+    }
+
+    public void Recarregar()
+    {
+        Balas = 6;
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Balas: 4
+Depois de recarregar: 6</code></pre>
+<p>De fora, <code>leon.Balas = 9999;</code> agora dá erro de compilação. A única forma de mudar as balas é pelas ações do próprio personagem.</p>
+
+<h2>Propriedade calculada (só get)</h2>
+<p>Algumas propriedades não guardam nada: calculam o valor na hora a partir de outros dados. Elas só têm <code>get</code>, e o atalho <code>=&gt;</code> deixa tudo numa linha:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem claire = new Personagem { Vida = 25 };
+Console.WriteLine($"Ferida? {claire.EstaFerida}");
+Console.WriteLine(claire.BarraDeVida);
+
+class Personagem
+{
+    public int Vida { get; set; } = 100;
+
+    public bool EstaFerida =&gt; Vida &lt; 50;
+    public string BarraDeVida =&gt; "[" + new string('#', Vida / 10) + new string('.', 10 - Vida / 10) + "]";
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Ferida? True
+[##........]</code></pre>
+<p>O <code>new Personagem { Vida = 25 }</code> é um <strong>inicializador de objeto</strong>: cria o objeto e já preenche as propriedades públicas, sem precisar de construtor.</p>
+
+<h2>Quando usar cada tipo</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Você precisa</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Use</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Guardar um dado sem regra</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public int X { get; set; }</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Validar o valor que entra</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">propriedade completa com campo <code>private</code> e <code>set</code> com regra</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Deixar ler, mas mudar só por métodos da classe</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>{ get; private set; }</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Valor definido só na criação</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>{ get; init; }</code> ou <code>{ get; }</code> preenchido no construtor</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Valor calculado a partir de outros</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public bool X =&gt; ...;</code></td></tr>
+</tbody></table></div>
+
+<h2>Erros comuns</h2>
+<p><strong>1. A propriedade chamando a si mesma.</strong> Este é o clássico que trava o programa:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>public int Vida
+{
+    get { return Vida; }       // chama o get de novo, para sempre
+    set { Vida = value; }      // StackOverflowException
+}</code></pre>
+<p>O <code>get</code> e o <code>set</code> precisam usar o <strong>campo</strong> (<code>vida</code>, minúsculo), nunca a própria propriedade.</p>
+<p><strong>2. Campo público "porque é mais rápido".</strong> Comece com propriedade automática. O custo é zero e você pode colocar regra depois sem quebrar quem usa a classe.</p>
+<p><strong>3. Esquecer o <code>value</code>.</strong> Um <code>set { vida = 100; }</code> ignora o que tentaram colocar. Use <code>value</code> para pegar o valor novo.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva uma propriedade <code>Fome</code> com campo privado que nunca passe de 10 nem fique abaixo de 0.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>private int fome; public int Fome { get { return fome; } set { fome = Math.Clamp(value, 0, 10); } }</code>. O <code>Math.Clamp</code> prende o valor entre o mínimo e o máximo.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Com <code>public int Ervas { get; private set; }</code>, a linha <code>jogador.Ervas = 5;</code> fora da classe compila?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Não. O <code>set</code> é privado: só métodos da própria classe podem mudar <code>Ervas</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie uma propriedade calculada <code>PodeCorrer</code> que é <code>true</code> quando a vida é maior que 30.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>public bool PodeCorrer =&gt; Vida &gt; 30;</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com propriedades, o seu personagem se protege sozinho: a vida não fica negativa, a munição não aparece do nada e quem usa a classe nem precisa saber das regras. Isso é <strong>encapsulamento</strong>, um dos pilares da orientação a objetos.</p>
+<p>Você já viu <code>public</code> e <code>private</code> várias vezes por aqui. No próximo post eles ganham a explicação completa.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/modificadores-de-acesso-private-public.html" target="_blank" rel="noopener">Modificadores de acesso em C#</a>.</p>

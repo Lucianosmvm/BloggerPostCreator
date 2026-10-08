@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Métodos* em C#: pare de repetir código","pose":"ideia","alt":"Mascote do Devs na Prática com uma ideia ao lado do título Métodos em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"As partes do método","codigo":["static int Curar(int vida,","                 int qtd)","{","    return vida + qtd;","}"],"subtitulo":"retorno, nome, parâmetros e corpo","pose":"explicando","alt":"Mascote explicando as partes de um método Curar em C#"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Cada um com seu status","codigo":["MostrarStatus(\"Leon\", 100, 12);","MostrarStatus(\"Jill\", 35, 3);"],"subtitulo":"Mesmo método, valores diferentes","pose":"apontando","alt":"Mascote apontando para duas chamadas do método MostrarStatus"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Vida cheia!","codigo":["vida = Curar(vida, 50);","// return devolve 100"],"subtitulo":"O return entrega o resultado","pose":"comemorando","alt":"Mascote comemorando a vida devolvida pelo return do método Curar"}]}

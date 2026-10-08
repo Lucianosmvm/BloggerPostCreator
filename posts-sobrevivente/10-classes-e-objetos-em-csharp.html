@@ -1,0 +1,200 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html
+Título: Classes e objetos em C#: criando o seu personagem do jeito certo
+Marcadores: manter os atuais (C#); se quiser, adicionar POO
+Descrição de pesquisa: Aprenda classes e objetos em C# criando um personagem de jogo de sobrevivência: campos, métodos, new, construtor, this e vários objetos da mesma classe.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote segurando a "planta" (classe) do personagem.
+  2. Mascote ao lado de dois objetos criados com new.
+  3. Mascote explicando o construtor.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/classes-e-objetos-em-csharp/capa.jpg" alt="Mascote do Devs na Prática confiante ao lado do título Classes e objetos em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Classe é o molde: descreve os dados e as ações de algo, como um personagem.</li><li>Objeto é uma cópia de verdade criada a partir do molde, com <code>new</code>.</li><li>Campos guardam os dados do objeto; métodos são as ações dele.</li><li>O construtor roda quando o objeto nasce e define os valores iniciais.</li><li>Cada objeto tem os seus próprios valores: ferir um não fere o outro.</li></ul></div>
+
+<p>Até agora, o personagem do jogo era um monte de variáveis soltas: <code>nome</code>, <code>vida</code>, <code>balas</code>. Funciona para um personagem. Mas e quando aparecem dois jogadores, cinco inimigos e um cachorro? Você vai criar <code>vidaDoInimigo1</code>, <code>vidaDoInimigo2</code>... e se perder rapidinho.</p>
+<p>As <strong>classes</strong> resolvem isso: você descreve uma vez o que é um personagem e cria quantos quiser a partir dessa descrição. É a base da Programação Orientada a Objetos (POO).</p>
+
+<h2>Classe é o molde, objeto é o personagem</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/classes-e-objetos-em-csharp/cena-1.jpg" alt="Mascote explicando a classe Personagem como um molde" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Pense na ficha de personagem em branco de um RPG. Ela diz que todo personagem tem nome, vida e balas, mas ainda não é ninguém. Essa ficha em branco é a <strong>classe</strong>. Quando você preenche uma ficha para o Leon, ela vira um <strong>objeto</strong>.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Conceito</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No jogo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No código</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Classe</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">a ficha em branco de personagem</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>class Personagem { ... }</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Objeto</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">a ficha preenchida do Leon</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>new Personagem()</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Campo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">um dado da ficha: vida, balas</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public int Vida;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Método</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">uma ação: atacar, curar</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public void Curar() { ... }</code></td></tr>
+</tbody></table></div>
+
+<h2>Criando a primeira classe</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem();
+leon.Nome = "Leon";
+leon.Vida = 100;
+leon.Balas = 12;
+
+leon.MostrarStatus();
+
+class Personagem
+{
+    public string Nome = "";
+    public int Vida;
+    public int Balas;
+
+    public void MostrarStatus()
+    {
+        Console.WriteLine($"{Nome} | Vida: {Vida} | Balas: {Balas}");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon | Vida: 100 | Balas: 12</code></pre>
+<p>Passo a passo:</p>
+<ul>
+<li><code>class Personagem { ... }</code> cria o molde. Dentro ficam os <strong>campos</strong> (<code>Nome</code>, <code>Vida</code>, <code>Balas</code>) e os <strong>métodos</strong> (<code>MostrarStatus</code>).</li>
+<li><code>new Personagem()</code> cria um objeto de verdade na memória.</li>
+<li>O ponto acessa o que está dentro do objeto: <code>leon.Vida = 100</code> muda a vida <em>desse</em> personagem, e <code>leon.MostrarStatus()</code> chama a ação dele.</li>
+<li><code>public</code> deixa o campo ser usado de fora da classe. Vamos falar dele com calma no post de modificadores de acesso.</li>
+</ul>
+
+<h2>Vários objetos, cada um com seus valores</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/classes-e-objetos-em-csharp/cena-2.jpg" alt="Mascote surpreso ao lado de dois objetos criados com new" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>A mágica aparece quando você cria mais de um objeto. Cada um guarda os próprios valores:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem();
+leon.Nome = "Leon";
+leon.Vida = 100;
+
+Personagem zumbi = new Personagem();
+zumbi.Nome = "Zumbi";
+zumbi.Vida = 60;
+
+zumbi.ReceberDano(25);
+zumbi.ReceberDano(40);
+leon.ReceberDano(10);
+
+class Personagem
+{
+    public string Nome = "";
+    public int Vida;
+
+    public void ReceberDano(int dano)
+    {
+        Vida -= dano;
+        if (Vida &lt;= 0)
+        {
+            Vida = 0;
+            Console.WriteLine($"{Nome} caiu!");
+        }
+        else
+        {
+            Console.WriteLine($"{Nome} agora tem {Vida} de vida.");
+        }
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Zumbi agora tem 35 de vida.
+Zumbi caiu!
+Leon agora tem 90 de vida.</code></pre>
+<p>O método <code>ReceberDano</code> foi escrito uma vez só, mas age em cima do objeto que o chamou: <code>zumbi.ReceberDano(25)</code> mexe na vida do zumbi, nunca na do Leon.</p>
+
+<h2>Construtor: o personagem já nasce pronto</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/classes-e-objetos-em-csharp/cena-3.jpg" alt="Mascote comemorando ao lado de um construtor em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Criar o objeto e depois preencher campo por campo é repetitivo, e dá para esquecer algum. O <strong>construtor</strong> é um método especial que roda no momento do <code>new</code>. Ele tem o mesmo nome da classe e não tem tipo de retorno:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem("Leon", 100);
+Personagem jill = new Personagem("Jill", 80);
+
+leon.MostrarStatus();
+jill.MostrarStatus();
+
+class Personagem
+{
+    public string Nome;
+    public int Vida;
+    public int Balas;
+
+    public Personagem(string nome, int vida)
+    {
+        Nome = nome;
+        Vida = vida;
+        Balas = 6;   // todo personagem começa com 6 balas
+    }
+
+    public void MostrarStatus()
+    {
+        Console.WriteLine($"{Nome} | Vida: {Vida} | Balas: {Balas}");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon | Vida: 100 | Balas: 6
+Jill | Vida: 80 | Balas: 6</code></pre>
+<p>Agora é impossível criar um personagem sem nome e sem vida: o <code>new Personagem()</code> vazio nem compila, porque o único construtor exige os dois valores.</p>
+
+<h2>A palavra this</h2>
+<p>É comum o parâmetro do construtor ter o mesmo nome do campo. Para diferenciar, use <code>this</code>, que significa "este objeto":</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Arma pistola = new Arma("Pistola", 15);
+Console.WriteLine($"{pistola.nome} causa {pistola.dano} de dano.");
+
+class Arma
+{
+    public string nome;
+    public int dano;
+
+    public Arma(string nome, int dano)
+    {
+        this.nome = nome;   // campo do objeto = parâmetro
+        this.dano = dano;
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Pistola causa 15 de dano.</code></pre>
+<p>Sem o <code>this</code>, <code>nome = nome</code> só copiaria o parâmetro para ele mesmo e o campo ficaria vazio. Por isso muita gente prefere nomes diferentes, como no exemplo anterior (<code>Nome = nome</code>).</p>
+
+<h2>Juntando tudo: um combate</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem leon = new Personagem("Leon", 100, 15);
+Personagem zumbi = new Personagem("Zumbi", 45, 10);
+
+leon.Atacar(zumbi);
+zumbi.Atacar(leon);
+leon.Atacar(zumbi);
+leon.Atacar(zumbi);
+
+class Personagem
+{
+    public string Nome;
+    public int Vida;
+    public int Forca;
+
+    public Personagem(string nome, int vida, int forca)
+    {
+        Nome = nome;
+        Vida = vida;
+        Forca = forca;
+    }
+
+    public bool EstaVivo() =&gt; Vida &gt; 0;
+
+    public void Atacar(Personagem alvo)
+    {
+        if (!EstaVivo() || !alvo.EstaVivo()) return;
+        alvo.Vida = Math.Max(alvo.Vida - Forca, 0);
+        Console.WriteLine($"{Nome} ataca {alvo.Nome}: {alvo.Nome} fica com {alvo.Vida}.");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon ataca Zumbi: Zumbi fica com 30.
+Zumbi ataca Leon: Leon fica com 90.
+Leon ataca Zumbi: Zumbi fica com 15.
+Leon ataca Zumbi: Zumbi fica com 0.</code></pre>
+<p>Repare que um objeto pode receber outro objeto como parâmetro: <code>Atacar(Personagem alvo)</code>. É assim que as peças do jogo conversam entre si.</p>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Usar o objeto sem criar com <code>new</code>.</strong> <code>Personagem leon;</code> só declara a variável. Sem <code>new</code>, não existe objeto, e acessar <code>leon.Vida</code> dá erro.</p>
+<p><strong>2. Confundir classe e objeto.</strong> <code>Personagem.Vida = 100</code> não funciona: a vida é de cada personagem, não do molde. Use o objeto: <code>leon.Vida = 100</code>.</p>
+<p><strong>3. Construtor com tipo de retorno.</strong> <code>public void Personagem(...)</code> vira um método comum, não um construtor. Construtor não tem <code>void</code> nem outro tipo.</p>
+<p><strong>4. Esquecer o <code>public</code>.</strong> Sem ele, o campo fica <code>private</code> e não pode ser usado de fora da classe.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie uma classe <code>Item</code> com os campos <code>Nome</code> e <code>Peso</code> (double) e um construtor que recebe os dois.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>class Item { public string Nome; public double Peso; public Item(string nome, double peso) { Nome = nome; Peso = peso; } }</code></p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Depois de <code>Personagem a = new Personagem("A", 50); Personagem b = new Personagem("B", 50); a.Vida -= 20;</code>, qual a vida de <code>b</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>50</code>. Cada objeto tem os seus próprios campos; mexer em <code>a</code> não muda <code>b</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Adicione à classe <code>Personagem</code> um método <code>Curar(int quantidade)</code> que soma vida sem passar de 100.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>public void Curar(int quantidade) { Vida = Math.Min(Vida + quantidade, 100); }</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com classes, o seu jogo deixa de ser uma pilha de variáveis e vira um mundo de objetos: personagens, armas e inimigos, cada um com seus dados e suas ações. Escreveu o molde uma vez, cria quantos quiser.</p>
+<p>Mas do jeito que está, qualquer parte do código pode fazer <code>leon.Vida = -500</code>. Para proteger os dados do objeto existem as propriedades.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html" target="_blank" rel="noopener">Propriedades em C#: get e set</a>.</p>

@@ -1,0 +1,173 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html
+Título: Variáveis em C#: como guardar vida, munição e nome do personagem
+Marcadores: manter os atuais (C#, dicas, variáveis)
+Descrição de pesquisa: Aprenda variáveis em C# com um jogo de sobrevivência: tipos int, double, bool, string e char, var, constantes, nomes e erros comuns. Com desafio.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote ao lado das variáveis do personagem (vida, munição, nome).
+  2. Mascote com a tabela de tipos (int, double, bool, string).
+  3. Mascote desconfiado diante do erro de tipo.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Variável é um espaço com nome onde o programa guarda um valor.
+Em C# toda variável tem um tipo: `int`, `double`, `bool`, `string`, `char`...
+O tipo vem antes do nome: `int vida = 100;`.
+O valor pode mudar; o tipo, não.
+`var` deixa o compilador descobrir o tipo pelo valor.
+`const` cria um valor que nunca muda.
+</resumo>
+
+<p>Todo jogo de sobrevivência precisa lembrar das coisas: quanto de vida sobrou, quantas balas tem no pente, o nome do personagem, se a lanterna está ligada. No código, quem guarda essas informações são as <strong>variáveis</strong>.</p>
+<p>Neste post você vai criar as variáveis do seu personagem, conhecer os tipos mais usados do C# e ver os erros que mais aparecem no começo.</p>
+
+<h2>O que é uma variável</h2>
+<p>Pense numa variável como um compartimento da mochila com uma etiqueta. A etiqueta é o <strong>nome</strong>, o que está dentro é o <strong>valor</strong> e o formato do compartimento é o <strong>tipo</strong>: num compartimento de balas não cabe um mapa.</p>
+<p>Para criar uma variável em C#, você escreve o tipo, o nome e, se quiser, o valor inicial:</p>
+<!-- CENA 1 -->
+<codigo>
+int vida = 100;
+int municao = 12;
+string nome = "Leon";
+bool lanternaLigada = true;
+
+Console.WriteLine($"{nome} tem {vida} de vida e {municao} balas.");
+Console.WriteLine($"Lanterna ligada? {lanternaLigada}");
+</codigo>
+<saida>
+Leon tem 100 de vida e 12 balas.
+Lanterna ligada? True
+</saida>
+<p>O <code>$</code> antes das aspas permite colocar variáveis dentro do texto usando <code>{ }</code>. Isso se chama interpolação e você vai usar o tempo todo.</p>
+
+<h2>Os tipos mais usados</h2>
+<p>Cada tipo guarda um tipo de informação. Estes são os que você mais vai ver:</p>
+<tabela>
+Tipo | Guarda | Exemplo no jogo
+`int` | número inteiro | `int municao = 12;`
+`double` | número com casas decimais | `double peso = 3.5;`
+`float` | decimal mais leve (usa `f` no fim) | `float velocidade = 4.2f;`
+`decimal` | decimal exato, bom para dinheiro | `decimal moedas = 19.90m;`
+`bool` | verdadeiro ou falso | `bool temChave = false;`
+`char` | um único caractere (aspas simples) | `char rank = 'S';`
+`string` | texto (aspas duplas) | `string arma = "Pistola";`
+</tabela>
+<!-- CENA 2 -->
+<p>Repare que o C# usa <strong>ponto</strong> como separador decimal no código: <code>3.5</code>, nunca <code>3,5</code>. Na hora de mostrar na tela, ele usa o formato do seu computador.</p>
+<codigo>
+double pesoMochila = 7.5;
+char rank = 'A';
+decimal moedas = 120.50m;
+
+Console.WriteLine("Peso da mochila: " + pesoMochila + " kg");
+Console.WriteLine("Rank: " + rank);
+Console.WriteLine("Moedas: " + (moedas * 2));
+</codigo>
+<saida>
+Peso da mochila: 7.5 kg
+Rank: A
+Moedas: 241.00
+</saida>
+<dica titulo="Por que a saída pode mostrar vírgula">Se o Windows estiver em português, o mesmo código pode mostrar `7,5` e `241,00`. O valor é o mesmo; só muda a forma de exibir.</dica>
+
+<h2>Mudando o valor</h2>
+<p>Depois de criada, a variável pode receber outro valor quantas vezes for preciso. É só usar o <code>=</code> de novo, sem repetir o tipo:</p>
+<codigo>
+int vida = 100;
+Console.WriteLine($"Começo: {vida}");
+
+vida = 70;   // levou um ataque
+Console.WriteLine($"Depois do ataque: {vida}");
+
+vida = vida + 20;   // usou uma erva
+Console.WriteLine($"Depois da erva: {vida}");
+</codigo>
+<saida>
+Começo: 100
+Depois do ataque: 70
+Depois da erva: 90
+</saida>
+<p>Leia o <code>=</code> como "recebe": <code>vida = vida + 20</code> quer dizer "vida recebe o valor atual de vida mais 20".</p>
+
+<h2>var: deixando o C# descobrir o tipo</h2>
+<p>Quando o valor deixa o tipo óbvio, você pode trocar o tipo por <code>var</code>. O compilador olha o valor e decide sozinho:</p>
+<codigo>
+var inimigos = 5;          // int
+var arma = "Espingarda";   // string
+var alerta = false;        // bool
+
+Console.WriteLine(inimigos.GetType().Name);
+Console.WriteLine(arma.GetType().Name);
+Console.WriteLine(alerta.GetType().Name);
+</codigo>
+<saida>
+Int32
+String
+Boolean
+</saida>
+<p><code>var</code> não é uma variável "sem tipo". O tipo existe e fica fixo: uma variável criada como <code>int</code> continua sendo <code>int</code>. <code>Int32</code> e <code>Boolean</code> são os nomes completos de <code>int</code> e <code>bool</code> dentro do .NET.</p>
+
+<h2>Constantes: o que nunca muda</h2>
+<p>Algumas informações não devem mudar durante o jogo, como a vida máxima ou o tamanho do pente. Para isso existe o <code>const</code>:</p>
+<codigo>
+const int VidaMaxima = 100;
+const int TamanhoDoPente = 15;
+
+int vida = 40;
+int falta = VidaMaxima - vida;
+Console.WriteLine($"Faltam {falta} pontos para encher a vida.");
+Console.WriteLine($"Um pente cheio tem {TamanhoDoPente} balas.");
+</codigo>
+<saida>
+Faltam 60 pontos para encher a vida.
+Um pente cheio tem 15 balas.
+</saida>
+<p>Se alguém tentar escrever <code>VidaMaxima = 200;</code>, o código nem compila. A constante protege o valor contra mudanças por engano.</p>
+
+<h2>Como dar nomes às variáveis</h2>
+<tabela>
+Regra | Certo | Errado
+Começa com letra ou _ | `vida2` | `2vida`
+Sem espaços | `municaoExtra` | `municao extra`
+Não pode ser palavra reservada | `classe` | `class`
+Maiúsculas fazem diferença | `vida` e `Vida` são duas variáveis | —
+</tabela>
+<p>O costume no C# é o <strong>camelCase</strong> para variáveis: primeira palavra minúscula e as próximas começando com maiúscula, como <code>balasNoPente</code> e <code>temChaveDaPorta</code>. Constantes costumam usar <strong>PascalCase</strong>, como <code>VidaMaxima</code>. Prefira nomes que dizem o que a variável guarda: <code>x</code> não diz nada, <code>balasNoPente</code> diz tudo.</p>
+
+<h2>Erros comuns</h2>
+<!-- CENA 3 -->
+<p><strong>1. Guardar valor do tipo errado.</strong> Texto não cabe num <code>int</code>:</p>
+<codigo nao-roda>
+int municao = "doze";   // erro: não dá para converter string em int
+</codigo>
+<p><strong>2. Usar a variável antes de dar um valor.</strong> O C# não deixa ler uma variável local vazia:</p>
+<codigo nao-roda>
+int vida;
+Console.WriteLine(vida);   // erro: variável local não atribuída
+</codigo>
+<p><strong>3. Criar duas variáveis com o mesmo nome.</strong> No mesmo bloco, cada nome só pode existir uma vez. Para mudar o valor, não repita o tipo:</p>
+<codigo nao-roda>
+int vida = 100;
+int vida = 50;   // erro: 'vida' já foi declarada
+vida = 50;       // certo: só muda o valor
+</codigo>
+<p><strong>4. Esquecer o <code>f</code> ou o <code>m</code>.</strong> Um número com ponto é <code>double</code> por padrão. Para <code>float</code> use <code>4.2f</code> e para <code>decimal</code> use <code>19.90m</code>.</p>
+
+<desafio>
+<q>Crie as variáveis de um personagem com nome "Jill", 80 de vida, 3 ervas e a lanterna desligada. Use o tipo certo para cada uma.</q>
+<r>`string nome = "Jill";`, `int vida = 80;`, `int ervas = 3;` e `bool lanternaLigada = false;`.</r>
+<q>Qual é o tipo de `var peso = 2.5;`?</q>
+<r>`double`. Número com ponto e sem sufixo é `double`.</r>
+<q>O que aparece na tela? `int balas = 10; balas = balas - 4; Console.WriteLine(balas);`</q>
+<r>`6`. A variável começa com 10 e recebe 10 - 4.</r>
+<q>Por que `const int VidaMaxima = 100; VidaMaxima = 120;` não compila?</q>
+<r>Porque uma constante não pode receber outro valor depois de criada.</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Agora o seu personagem já tem memória: vida, munição, nome e tudo o que o jogo precisa lembrar. Escolher o tipo certo e um nome claro evita a maioria dos erros de quem está começando.</p>
+<p>O próximo passo é conversar com o jogador: mostrar informações na tela e ler o que ele digita.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/entrada-e-saida-em-c.html" target="_blank" rel="noopener">Console.WriteLine e Console.ReadLine em C#</a>.</p>

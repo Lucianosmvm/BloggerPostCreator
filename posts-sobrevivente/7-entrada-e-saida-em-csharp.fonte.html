@@ -1,0 +1,179 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/entrada-e-saida-em-c.html
+Título: Console.WriteLine e Console.ReadLine em C#: conversando com o jogador
+Marcadores: manter os atuais (C#, console, entrada, saida, write)
+Descrição de pesquisa: Aprenda Console.WriteLine, Console.Write e Console.ReadLine em C# criando a tela inicial de um jogo de sobrevivência. Com int.Parse, TryParse e desafio.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote acenando ao lado da mensagem de boas-vindas no console.
+  2. Mascote digitando o nome do personagem.
+  3. Mascote com lupa conferindo o TryParse.
+-->
+<!-- VIDEO -->
+
+<resumo>
+`Console.WriteLine` mostra um texto e pula para a próxima linha.
+`Console.Write` mostra o texto e continua na mesma linha.
+`Console.ReadLine` espera o jogador digitar e devolve o que ele escreveu como `string`.
+Para usar o que foi digitado como número, converta com `int.Parse` ou, melhor, `int.TryParse`.
+`$"..."` coloca variáveis no meio do texto.
+</resumo>
+
+<p>Um jogo que não fala com o jogador é só uma tela preta. Antes de ter gráficos, todo programa em C# começa conversando pelo <strong>console</strong>: mostra mensagens e lê o que a pessoa digita.</p>
+<p>Neste post você vai montar a tela inicial de um jogo de sobrevivência: dar as boas-vindas, perguntar o nome do personagem e quantas ervas ele leva na mochila.</p>
+
+<h2>Console.WriteLine: mostrando mensagens</h2>
+<p>O <code>Console.WriteLine</code> escreve o texto na tela e pula para a linha de baixo. Cada chamada vira uma linha:</p>
+<!-- CENA 1 -->
+<codigo>
+Console.WriteLine("=== CIDADE ABANDONADA ===");
+Console.WriteLine("Você acorda num hospital vazio.");
+Console.WriteLine("A porta está trancada.");
+</codigo>
+<saida>
+=== CIDADE ABANDONADA ===
+Você acorda num hospital vazio.
+A porta está trancada.
+</saida>
+<p>Você pode mostrar números e variáveis também. Para misturar texto e variável, use a interpolação com <code>$</code> e chaves:</p>
+<codigo>
+string nome = "Claire";
+int vida = 100;
+int balas = 9;
+
+Console.WriteLine($"Personagem: {nome}");
+Console.WriteLine($"Vida: {vida} | Balas: {balas}");
+Console.WriteLine($"Balas em dobro: {balas * 2}");
+</codigo>
+<saida>
+Personagem: Claire
+Vida: 100 | Balas: 9
+Balas em dobro: 18
+</saida>
+<p>Dentro das chaves pode ir uma conta inteira, como <code>{balas * 2}</code>. O C# calcula e coloca o resultado no texto.</p>
+
+<h2>Console.Write: na mesma linha</h2>
+<p>O <code>Console.Write</code> faz o mesmo, mas <strong>não pula linha</strong>. É útil para montar uma linha aos poucos, como uma barra de vida:</p>
+<codigo>
+Console.Write("Vida: ");
+Console.Write("[");
+Console.Write("#######");
+Console.Write("...");
+Console.WriteLine("]");
+Console.WriteLine("Cuidado, você está ferido.");
+</codigo>
+<saida>
+Vida: [#######...]
+Cuidado, você está ferido.
+</saida>
+<tabela>
+Comando | O que faz | Quando usar
+`Console.WriteLine("x")` | escreve e pula linha | mensagens normais
+`Console.Write("x")` | escreve sem pular linha | perguntas e barras
+`Console.WriteLine()` | só pula uma linha | separar blocos de texto
+`Console.ReadLine()` | lê uma linha digitada | respostas do jogador
+</tabela>
+
+<h2>Console.ReadLine: ouvindo o jogador</h2>
+<p>O <code>Console.ReadLine</code> para o programa e espera o jogador digitar algo e apertar Enter. O que ele escreveu volta como <code>string</code>, que você guarda numa variável:</p>
+<!-- CENA 2 -->
+<codigo entrada="Jill">
+Console.Write("Qual é o nome do seu personagem? ");
+string nome = Console.ReadLine();
+
+Console.WriteLine($"Boa sorte, {nome}. Não faça barulho.");
+</codigo>
+<saida>
+Qual é o nome do seu personagem? Jill
+Boa sorte, Jill. Não faça barulho.
+</saida>
+<p>Repare no truque: a pergunta usa <code>Console.Write</code>, então o cursor fica na mesma linha e o jogador digita logo depois do ponto de interrogação.</p>
+<dica titulo="Aviso amarelo no ReadLine">Em projetos novos o Visual Studio pode sublinhar o `Console.ReadLine()` com um aviso de que ele pode devolver `null`. Para quem está começando, o código funciona normalmente. Se quiser tirar o aviso, use `string nome = Console.ReadLine() ?? "";`.</dica>
+
+<h2>Lendo números: int.Parse</h2>
+<p>Tudo que vem do <code>ReadLine</code> é texto. Se você perguntar quantas ervas o jogador tem e tentar fazer conta direto, não vai funcionar: <code>"3" + 1</code> vira <code>"31"</code>, porque o C# junta textos. Para virar número, converta com <code>int.Parse</code>:</p>
+<codigo entrada="3">
+Console.Write("Quantas ervas você tem? ");
+string resposta = Console.ReadLine();
+int ervas = int.Parse(resposta);
+
+int cura = ervas * 25;
+Console.WriteLine($"Com {ervas} ervas você recupera {cura} de vida.");
+</codigo>
+<saida>
+Quantas ervas você tem? 3
+Com 3 ervas você recupera 75 de vida.
+</saida>
+<p>Para números com casas decimais existe o <code>double.Parse</code>, que funciona do mesmo jeito.</p>
+
+<h2>Quando o jogador digita errado: int.TryParse</h2>
+<p>O <code>int.Parse</code> tem um problema: se o jogador digitar "três" ou deixar em branco, o programa <strong>quebra</strong> com um erro (<code>FormatException</code>). Em jogo isso é game over sem motivo.</p>
+<p>O <code>int.TryParse</code> tenta converter e responde se deu certo, sem quebrar nada:</p>
+<!-- CENA 3 -->
+<codigo entrada="três">
+Console.Write("Quantas balas você quer carregar? ");
+string resposta = Console.ReadLine();
+
+if (int.TryParse(resposta, out int balas))
+{
+    Console.WriteLine($"Carregando {balas} balas...");
+}
+else
+{
+    Console.WriteLine("Isso não é um número. Digite só algarismos, como 6.");
+}
+</codigo>
+<saida>
+Quantas balas você quer carregar? três
+Isso não é um número. Digite só algarismos, como 6.
+</saida>
+<p>O <code>TryParse</code> devolve <code>true</code> ou <code>false</code>, e o número convertido sai pela variável depois do <code>out</code>. Por isso ele cabe direto dentro de um <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">if</a>.</p>
+
+<h2>Juntando tudo: a tela inicial do jogo</h2>
+<codigo entrada="Leon|2">
+Console.WriteLine("=== CIDADE ABANDONADA ===");
+Console.WriteLine();
+
+Console.Write("Nome do personagem: ");
+string nome = Console.ReadLine();
+
+Console.Write("Quantas ervas na mochila? ");
+int.TryParse(Console.ReadLine(), out int ervas);
+
+int vida = 50 + ervas * 25;
+Console.WriteLine();
+Console.WriteLine($"{nome} começa com {vida} de vida.");
+Console.WriteLine("Pressione Enter para entrar na cidade.");
+</codigo>
+<saida>
+=== CIDADE ABANDONADA ===
+
+Nome do personagem: Leon
+Quantas ervas na mochila? 2
+
+Leon começa com 100 de vida.
+Pressione Enter para entrar na cidade.
+</saida>
+<p>Se o jogador digitar algo que não é número na segunda pergunta, o <code>TryParse</code> deixa <code>ervas</code> valendo 0 e o jogo segue com 50 de vida, sem quebrar.</p>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Fazer conta com o texto do ReadLine.</strong> <code>Console.ReadLine() + 1</code> junta textos. Converta antes.</p>
+<p><strong>2. Esquecer o <code>$</code>.</strong> Sem ele, <code>"Vida: {vida}"</code> aparece na tela com as chaves e tudo.</p>
+<p><strong>3. Usar <code>int.Parse</code> com entrada do jogador.</strong> Funciona até alguém digitar errado. Prefira <code>int.TryParse</code>.</p>
+<p><strong>4. Programa que fecha sozinho.</strong> Se a janela some antes de você ler, coloque um <code>Console.ReadLine();</code> no final para ela esperar um Enter.</p>
+
+<desafio>
+<q>O que aparece na tela? `Console.Write("A"); Console.Write("B"); Console.WriteLine("C"); Console.WriteLine("D");`</q>
+<r>`ABC` na primeira linha e `D` na segunda. Só o `WriteLine` pula linha.</r>
+<q>O jogador digitou `5`. Quanto vale `Console.ReadLine() + 5`?</q>
+<r>O texto `"55"`. O `ReadLine` devolve string e o `+` junta textos. Converta com `int.Parse` ou `int.TryParse` antes.</r>
+<q>Escreva o código que pergunta a vida atual do personagem e mostra quanto falta para 100, sem quebrar se a pessoa digitar letras.</q>
+<r>`Console.Write("Vida atual: ");` e depois `if (int.TryParse(Console.ReadLine(), out int vida)) Console.WriteLine($"Faltam {100 - vida}"); else Console.WriteLine("Digite um número.");`</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Com <code>WriteLine</code>, <code>Write</code> e <code>ReadLine</code> o seu programa já conversa com o jogador. E com o <code>TryParse</code> ele não cai quando alguém digita bobagem, o que já coloca o seu código à frente de muito iniciante.</p>
+<p>Agora que você lê números do jogador, o próximo passo é fazer contas e comparações com eles.</p>
+<!-- LINK: quando o post de operadores for publicado, troque o link abaixo pelo endereço dele. -->
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>.</p>

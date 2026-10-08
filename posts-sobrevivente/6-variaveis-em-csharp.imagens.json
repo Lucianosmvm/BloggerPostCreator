@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Variáveis* em C#: a memória do seu personagem","pose":"alcas","alt":"Mascote do Devs na Prática segurando a mochila ao lado do título Variáveis em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Ficha do personagem","codigo":["int vida = 100;","int municao = 12;","string nome = \"Leon\";","bool lanternaLigada = true;"],"subtitulo":"tipo, nome e valor","pose":"explicando","alt":"Mascote explicando as variáveis vida, munição, nome e lanterna"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Cada coisa no seu lugar","itens":["int: 12 balas","double: 7.5 kg","bool: true / false","char: 'S'","string: \"Pistola\""],"pose":"confiante","alt":"Mascote confiante ao lado da lista de tipos int, double, bool, char e string"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Não cabe!","codigo":["int municao = \"doze\";","// erro: string não vira int"],"subtitulo":"O tipo decide o que a variável aceita","pose":"desconfiado","alt":"Mascote desconfiado diante do erro de colocar texto numa variável int"}]}

@@ -11,9 +11,19 @@ Padrão: blog **Devs na Prática** (https://devsnapratica.blogspot.com), **modo 
 
 ## Fluxo (tema → post)
 
-1. **Escrever o HTML** em `posts-sobrevivente/<n>-<slug>.html` (`n` = próximo número da pasta).
-   Modelo de estrutura e estilos inline: `posts-sobrevivente/1-operadores-em-csharp.html`
-   (copiar os mesmos `style=` das caixas, tabelas, código, saída e card DESAFIO).
+1. **Escrever a fonte** em `posts-sobrevivente/<n>-<slug>.fonte.html` (`n` = próximo número da
+   pasta) com as tags enxutas (`<resumo>`, `<codigo>`, `<saida>`, `<tabela>`, `<dica>`, `<desafio>`;
+   lista completa no topo de `ferramentas/montar_post.py`). Modelo: `6-variaveis-em-csharp.fonte.html`.
+   Montar e **verificar o código**:
+   ```bash
+   python ferramentas/montar_post.py posts-sobrevivente/<n>-<slug>.fonte.html
+   ```
+   Roda cada `<codigo>` com `dotnet run` e compara com o `<saida>` seguinte; só gera o `.html`
+   se tudo bater. Cada bloco precisa rodar sozinho (top-level statements). Atenção: métodos no
+   código solto do topo viram funções locais e **não aceitam sobrecarga** — use `class Program`.
+   Trecho que não compila de propósito: `<codigo nao-roda>`; com `Console.ReadLine`:
+   `<codigo entrada="Leon|2">` e, na saída, o que foi digitado como aparece no terminal.
+   Rodar o montar_post de novo **apaga as imagens do .html**: rode o passo 3 depois.
 2. **Escrever o spec das imagens** em `posts-sobrevivente/<n>-<slug>.imagens.json`:
    uma capa + 2 a 4 cenas, cada cena com `"cena": n` igual ao `<!-- CENA n -->` do HTML e `alt`.
 3. **Gerar e encaixar as imagens**:

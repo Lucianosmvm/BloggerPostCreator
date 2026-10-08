@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Propriedades* em C#: get e set sem mistério","pose":"bracos","alt":"Mascote do Devs na Prática de braços cruzados ao lado do título Propriedades em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Isso não pode!","codigo":["leon.Vida = -500;","leon.Balas = 9999;"],"subtitulo":"Campo público aceita qualquer coisa","pose":"desconfiado","alt":"Mascote desconfiado diante de vida negativa e munição infinita"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"O porteiro","codigo":["public int Vida","{","    get { return vida; }","    set { vida = Math.Clamp(","        value, 0, 100); }","}"],"subtitulo":"set confere tudo o que entra","pose":"explicando","alt":"Mascote explicando o get e o set de uma propriedade"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Uma linha só","codigo":["public string Nome","    { get; set; }","public int Balas","    { get; private set; }"],"subtitulo":"Propriedades automáticas","pose":"confiante","alt":"Mascote confiante ao lado de propriedades automáticas"}]}

@@ -1,0 +1,190 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html
+Título: Propriedades em C#: get e set para proteger a vida do personagem
+Marcadores: manter os atuais (C#)
+Descrição de pesquisa: Aprenda propriedades em C# (get, set, value, propriedades automáticas, private set e somente leitura) protegendo a vida e a munição de um personagem de jogo.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote desconfiado diante de "Vida = -500".
+  2. Mascote explicando o get e o set como um porteiro.
+  3. Mascote confiante com a propriedade automática.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Propriedade parece um campo por fora, mas por dentro tem código que controla a leitura e a escrita.
+`get` roda quando alguém lê o valor; `set` roda quando alguém muda.
+Dentro do `set`, `value` é o valor que tentaram colocar.
+Propriedade automática (`{ get; set; }`) é o atalho quando não há regra.
+`private set` deixa ler de fora, mas só a própria classe muda.
+</resumo>
+
+<p>No <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">post de classes e objetos</a>, o personagem tinha um campo <code>public int Vida</code>. Funciona, mas qualquer parte do código pode fazer isto:</p>
+<!-- CENA 1 -->
+<codigo>
+Personagem leon = new Personagem();
+leon.Vida = -500;    // nada impede
+leon.Balas = 9999;   // nem isso
+Console.WriteLine($"Vida: {leon.Vida} | Balas: {leon.Balas}");
+
+class Personagem
+{
+    public int Vida = 100;
+    public int Balas = 6;
+}
+</codigo>
+<saida>
+Vida: -500 | Balas: 9999
+</saida>
+<p>Vida negativa e munição infinita: um bug esperando para acontecer. As <strong>propriedades</strong> colocam um porteiro na frente do dado, que confere tudo o que entra e sai.</p>
+
+<h2>get e set: o porteiro do dado</h2>
+<!-- CENA 2 -->
+<p>Uma propriedade tem um campo <code>private</code> guardando o valor de verdade e dois blocos que controlam o acesso:</p>
+<codigo>
+Personagem leon = new Personagem();
+leon.Vida = 150;
+Console.WriteLine($"Tentou 150, ficou {leon.Vida}");
+
+leon.Vida = -30;
+Console.WriteLine($"Tentou -30, ficou {leon.Vida}");
+
+class Personagem
+{
+    private int vida = 100;   // o dado de verdade, escondido
+
+    public int Vida           // a porta de entrada
+    {
+        get { return vida; }
+        set
+        {
+            if (value > 100) vida = 100;
+            else if (value < 0) vida = 0;
+            else vida = value;
+        }
+    }
+}
+</codigo>
+<saida>
+Tentou 150, ficou 100
+Tentou -30, ficou 0
+</saida>
+<tabela>
+Parte | Quando roda | No exemplo
+`get` | quando alguém lê: `leon.Vida` | devolve o campo `vida`
+`set` | quando alguém escreve: `leon.Vida = 150` | confere e guarda
+`value` | dentro do `set` | o valor que tentaram colocar (150)
+campo `private` | nunca é acessado de fora | `vida`, com v minúsculo
+</tabela>
+<p>Por fora, <code>leon.Vida</code> continua parecendo um campo comum. Quem usa a classe nem percebe a regra, mas ela nunca deixa a vida sair de 0 a 100.</p>
+
+<h2>Propriedade automática</h2>
+<p>Quando não existe regra nenhuma, escrever campo + get + set é trabalho à toa. A <strong>propriedade automática</strong> faz tudo em uma linha; o C# cria o campo escondido sozinho:</p>
+<!-- CENA 3 -->
+<codigo>
+Personagem jill = new Personagem();
+jill.Nome = "Jill";
+jill.Classe = "Sobrevivente";
+Console.WriteLine($"{jill.Nome}, {jill.Classe}");
+
+class Personagem
+{
+    public string Nome { get; set; } = "";
+    public string Classe { get; set; } = "Civil";
+}
+</codigo>
+<saida>
+Jill, Sobrevivente
+</saida>
+<p>O <code>= ""</code> e o <code>= "Civil"</code> no fim são valores iniciais. É o jeito mais comum de escrever dados de uma classe em C#: se depois aparecer uma regra, você troca a automática pela completa e quem usa a classe não precisa mudar nada.</p>
+
+<h2>private set: todo mundo lê, só a classe muda</h2>
+<p>A munição não deve ser alterada direto de fora. Ela só muda quando o personagem atira ou recarrega. O <code>private set</code> faz exatamente isso:</p>
+<codigo>
+Personagem leon = new Personagem();
+leon.Atirar();
+leon.Atirar();
+Console.WriteLine($"Balas: {leon.Balas}");
+
+leon.Recarregar();
+Console.WriteLine($"Depois de recarregar: {leon.Balas}");
+
+class Personagem
+{
+    public int Balas { get; private set; } = 6;
+
+    public void Atirar()
+    {
+        if (Balas > 0) Balas--;
+    }
+
+    public void Recarregar()
+    {
+        Balas = 6;
+    }
+}
+</codigo>
+<saida>
+Balas: 4
+Depois de recarregar: 6
+</saida>
+<p>De fora, <code>leon.Balas = 9999;</code> agora dá erro de compilação. A única forma de mudar as balas é pelas ações do próprio personagem.</p>
+
+<h2>Propriedade calculada (só get)</h2>
+<p>Algumas propriedades não guardam nada: calculam o valor na hora a partir de outros dados. Elas só têm <code>get</code>, e o atalho <code>=&gt;</code> deixa tudo numa linha:</p>
+<codigo>
+Personagem claire = new Personagem { Vida = 25 };
+Console.WriteLine($"Ferida? {claire.EstaFerida}");
+Console.WriteLine(claire.BarraDeVida);
+
+class Personagem
+{
+    public int Vida { get; set; } = 100;
+
+    public bool EstaFerida => Vida < 50;
+    public string BarraDeVida => "[" + new string('#', Vida / 10) + new string('.', 10 - Vida / 10) + "]";
+}
+</codigo>
+<saida>
+Ferida? True
+[##........]
+</saida>
+<p>O <code>new Personagem { Vida = 25 }</code> é um <strong>inicializador de objeto</strong>: cria o objeto e já preenche as propriedades públicas, sem precisar de construtor.</p>
+
+<h2>Quando usar cada tipo</h2>
+<tabela>
+Você precisa | Use
+Guardar um dado sem regra | `public int X { get; set; }`
+Validar o valor que entra | propriedade completa com campo `private` e `set` com regra
+Deixar ler, mas mudar só por métodos da classe | `{ get; private set; }`
+Valor definido só na criação | `{ get; init; }` ou `{ get; }` preenchido no construtor
+Valor calculado a partir de outros | `public bool X => ...;`
+</tabela>
+
+<h2>Erros comuns</h2>
+<p><strong>1. A propriedade chamando a si mesma.</strong> Este é o clássico que trava o programa:</p>
+<codigo nao-roda>
+public int Vida
+{
+    get { return Vida; }       // chama o get de novo, para sempre
+    set { Vida = value; }      // StackOverflowException
+}
+</codigo>
+<p>O <code>get</code> e o <code>set</code> precisam usar o <strong>campo</strong> (<code>vida</code>, minúsculo), nunca a própria propriedade.</p>
+<p><strong>2. Campo público "porque é mais rápido".</strong> Comece com propriedade automática. O custo é zero e você pode colocar regra depois sem quebrar quem usa a classe.</p>
+<p><strong>3. Esquecer o <code>value</code>.</strong> Um <code>set { vida = 100; }</code> ignora o que tentaram colocar. Use <code>value</code> para pegar o valor novo.</p>
+
+<desafio>
+<q>Escreva uma propriedade `Fome` com campo privado que nunca passe de 10 nem fique abaixo de 0.</q>
+<r>`private int fome; public int Fome { get { return fome; } set { fome = Math.Clamp(value, 0, 10); } }`. O `Math.Clamp` prende o valor entre o mínimo e o máximo.</r>
+<q>Com `public int Ervas { get; private set; }`, a linha `jogador.Ervas = 5;` fora da classe compila?</q>
+<r>Não. O `set` é privado: só métodos da própria classe podem mudar `Ervas`.</r>
+<q>Crie uma propriedade calculada `PodeCorrer` que é `true` quando a vida é maior que 30.</q>
+<r>`public bool PodeCorrer => Vida > 30;`</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Com propriedades, o seu personagem se protege sozinho: a vida não fica negativa, a munição não aparece do nada e quem usa a classe nem precisa saber das regras. Isso é <strong>encapsulamento</strong>, um dos pilares da orientação a objetos.</p>
+<p>Você já viu <code>public</code> e <code>private</code> várias vezes por aqui. No próximo post eles ganham a explicação completa.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/modificadores-de-acesso-private-public.html" target="_blank" rel="noopener">Modificadores de acesso em C#</a>.</p>

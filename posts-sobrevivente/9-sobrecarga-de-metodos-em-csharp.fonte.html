@@ -1,0 +1,161 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/introducao-sobrecarga-de-metodos-em-c.html
+Título: Sobrecarga de métodos em C#: o mesmo nome para ações diferentes
+Marcadores: manter os atuais (C#)
+Descrição de pesquisa: Aprenda sobrecarga de métodos (overloading) em C# com um jogo de sobrevivência: mesmo nome, parâmetros diferentes, como o C# escolhe a versão e erros comuns.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote com três versões de Curar lado a lado.
+  2. Mascote pensando em qual versão o C# escolhe.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Sobrecarga é ter vários métodos com o mesmo nome e parâmetros diferentes.
+O que precisa mudar é a assinatura: quantidade, tipo ou ordem dos parâmetros.
+Mudar só o tipo de retorno não conta como sobrecarga.
+O C# escolhe a versão certa pelos argumentos que você passa.
+`Console.WriteLine` é sobrecarregado: por isso aceita texto, número e bool.
+</resumo>
+
+<p>No jogo, curar pode acontecer de vários jeitos: com uma erva que cura um valor fixo, com uma quantidade escolhida, ou com um item que tem nome e potência. Criar <code>CurarComErva</code>, <code>CurarComQuantidade</code> e <code>CurarComItem</code> funciona, mas quem usa o código precisa decorar três nomes para a mesma ação.</p>
+<p>A <strong>sobrecarga de métodos</strong> (em inglês, <em>overloading</em>) deixa você usar um nome só, <code>Curar</code>, com versões diferentes. Se ainda não viu métodos, comece pelo <a href="https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html" target="_blank" rel="noopener">post de métodos em C#</a>.</p>
+
+<h2>Mesmo nome, parâmetros diferentes</h2>
+<!-- CENA 1 -->
+<codigo>
+class Program
+{
+    static void Main()
+    {
+        int vida = 30;
+        vida = Curar(vida);
+        Console.WriteLine($"Erva comum: {vida}");
+
+        vida = Curar(vida, 40);
+        Console.WriteLine($"Kit médico: {vida}");
+
+        vida = Curar(vida, "Spray", 2);
+        Console.WriteLine($"Spray duplo: {vida}");
+    }
+
+    // versão 1: erva comum, cura 20
+    static int Curar(int vida)
+    {
+        return Math.Min(vida + 20, 100);
+    }
+
+    // versão 2: cura a quantidade escolhida
+    static int Curar(int vida, int quantidade)
+    {
+        return Math.Min(vida + quantidade, 100);
+    }
+
+    // versão 3: item com nome e potência
+    static int Curar(int vida, string item, int potencia)
+    {
+        Console.WriteLine($"Usando {item}...");
+        return Math.Min(vida + 10 * potencia, 100);
+    }
+}
+</codigo>
+<saida>
+Erva comum: 50
+Kit médico: 90
+Usando Spray...
+Spray duplo: 100
+</saida>
+<p>Os três métodos se chamam <code>Curar</code>, mas cada um tem uma lista de parâmetros diferente. O <code>Math.Min</code> devolve o menor de dois números: é o jeito curto de garantir que a vida não passe de 100.</p>
+<dica titulo="Por que class Program aqui">No post de métodos os exemplos usavam código solto no topo do arquivo (top-level statements). Ali os métodos viram <em>funções locais</em>, e função local não aceita sobrecarga: o compilador reclama que `Curar` já existe. Por isso, para sobrecarregar, os métodos precisam estar dentro de uma classe, como o `class Program` com o `Main`.</dica>
+
+<h2>Como o C# escolhe a versão</h2>
+<!-- CENA 2 -->
+<p>Na hora de compilar, o C# olha os <strong>argumentos</strong> da chamada e procura a versão cuja lista de parâmetros combina:</p>
+<tabela>
+Chamada | Argumentos | Versão escolhida
+`Curar(vida)` | um `int` | `Curar(int vida)`
+`Curar(vida, 40)` | dois `int` | `Curar(int vida, int quantidade)`
+`Curar(vida, "Spray", 2)` | `int`, `string`, `int` | `Curar(int vida, string item, int potencia)`
+`Curar("Spray")` | uma `string` | nenhuma: erro de compilação
+</tabela>
+<p>O nome do método junto com os tipos dos parâmetros forma a <strong>assinatura</strong>. Duas versões podem ter o mesmo nome desde que as assinaturas sejam diferentes.</p>
+
+<h2>O que conta como diferente</h2>
+<p>A assinatura muda quando muda a <strong>quantidade</strong>, o <strong>tipo</strong> ou a <strong>ordem dos tipos</strong> dos parâmetros:</p>
+<codigo>
+class Program
+{
+    static void Main()
+    {
+        MostrarDano(15);
+        MostrarDano(15.5);
+        MostrarDano("Faca", 15);
+        MostrarDano(15, "Faca");
+    }
+
+    static void MostrarDano(int dano) => Console.WriteLine($"Dano inteiro: {dano}");
+    static void MostrarDano(double dano) => Console.WriteLine($"Dano decimal: {dano}");
+    static void MostrarDano(string arma, int dano) => Console.WriteLine($"{arma} causou {dano}");
+    static void MostrarDano(int dano, string arma) => Console.WriteLine($"{dano} de dano com {arma}");
+}
+</codigo>
+<saida>
+Dano inteiro: 15
+Dano decimal: 15.5
+Faca causou 15
+15 de dano com Faca
+</saida>
+<p>O <code>=&gt;</code> é um atalho para métodos de uma linha só: <code>static void X() =&gt; algo;</code> é o mesmo que escrever o corpo entre chaves.</p>
+<p>Repare que <code>15</code> vai para a versão <code>int</code> e <code>15.5</code> para a versão <code>double</code>: o C# sempre prefere a versão que combina exatamente com o tipo do argumento.</p>
+
+<h2>O que NÃO conta: só o tipo de retorno</h2>
+<p>Mudar apenas o tipo de retorno não cria uma nova assinatura. O C# não teria como saber qual versão você quer:</p>
+<codigo nao-roda>
+static int Dano(int forca) { return forca * 2; }
+static double Dano(int forca) { return forca * 2.5; }   // erro: já existe Dano(int)
+</codigo>
+<p>Nomes de parâmetros diferentes também não contam: <code>Dano(int forca)</code> e <code>Dano(int nivel)</code> têm a mesma assinatura.</p>
+
+<h2>Você já usa sobrecarga</h2>
+<p>O <code>Console.WriteLine</code> que você usa desde o primeiro dia tem várias versões: uma para <code>string</code>, uma para <code>int</code>, uma para <code>bool</code>, uma para <code>double</code>... Por isso todas estas linhas funcionam:</p>
+<codigo>
+Console.WriteLine("Porta trancada");
+Console.WriteLine(42);
+Console.WriteLine(true);
+Console.WriteLine(3.75);
+</codigo>
+<saida>
+Porta trancada
+42
+True
+3.75
+</saida>
+
+<h2>Sobrecarga ou valor padrão?</h2>
+<p>No post de métodos você viu parâmetros com valor padrão, que também deixam chamar o método com menos argumentos. Qual usar?</p>
+<tabela>
+Use | Quando
+Valor padrão | a lógica é a mesma e só um valor muda (`CalcularDano(10)` e `CalcularDano(10, 3)`)
+Sobrecarga | cada versão faz algo diferente ou recebe tipos diferentes (`Curar(vida)` e `Curar(vida, "Spray", 2)`)
+</tabela>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Duas versões com a mesma assinatura.</strong> Mudar só o retorno ou o nome dos parâmetros gera erro de "já existe um membro com esses parâmetros".</p>
+<p><strong>2. Chamada ambígua.</strong> Se duas versões servem igualmente bem, o C# não escolhe e dá erro. Acontece mais com valores padrão misturados a sobrecargas: evite combinar os dois no mesmo nome.</p>
+<p><strong>3. Sobrecarregar no código solto do topo do arquivo.</strong> Funções locais não aceitam sobrecarga. Coloque os métodos dentro de uma classe.</p>
+<p><strong>4. Versões que fazem coisas sem relação.</strong> <code>Curar(int)</code> que cura e <code>Curar(string)</code> que salva o jogo confunde quem lê. Mesmo nome deve significar a mesma ação.</p>
+
+<desafio>
+<q>Estas duas versões podem existir juntas? `static void Atirar(int balas)` e `static void Atirar(int quantidade)`</q>
+<r>Não. Os nomes dos parâmetros não contam; as duas têm a assinatura `Atirar(int)`.</r>
+<q>Qual versão roda em `MostrarDano(7.0)`, usando os quatro `MostrarDano` do post?</q>
+<r>`MostrarDano(double dano)`, porque `7.0` é um `double`. A saída é `Dano decimal: 7`.</r>
+<q>Escreva duas versões de `Recarregar`: uma sem parâmetros que recarrega 15 balas e outra que recebe a quantidade. As duas devolvem o número de balas.</q>
+<r>`static int Recarregar() => 15;` e `static int Recarregar(int quantidade) => quantidade;`, dentro de uma classe (lembre: funções locais não aceitam sobrecarga).</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Com a sobrecarga, a mesma ação tem o mesmo nome, não importa como ela é chamada: quem usa o seu código só precisa lembrar de <code>Curar</code>. É uma ideia simples que você vai encontrar em toda a biblioteca do .NET.</p>
+<p>Até aqui, vida, balas e nome eram variáveis soltas. O próximo passo é juntar tudo isso num personagem de verdade, com classes e objetos.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">Classes e objetos em C#</a>.</p>

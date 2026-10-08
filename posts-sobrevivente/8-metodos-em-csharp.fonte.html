@@ -1,0 +1,181 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html
+Título: Métodos (funções) em C#: pare de repetir código no seu jogo
+Marcadores: manter os atuais (C#, dicas); trocar "condicionais" por "métodos" se quiser
+Descrição de pesquisa: Aprenda métodos em C# com um jogo de sobrevivência: void, parâmetros, retorno com return, valores padrão e quando criar um método. Com desafio no final.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote explicando a anatomia de um método.
+  2. Mascote recebendo dano: método com parâmetros.
+  3. Mascote comemorando o valor devolvido pelo return.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Método é um bloco de código com nome que você chama quando precisar.
+`void` significa que o método só faz algo e não devolve valor.
+Parâmetros são os valores que o método recebe entre parênteses.
+`return` devolve um resultado para quem chamou.
+Um bom método faz uma coisa só e tem nome de ação: `Curar`, `CalcularDano`.
+</resumo>
+
+<p>Imagine o seu jogo de sobrevivência com o código de cura escrito em dez lugares diferentes: na erva, no kit médico, no descanso, no checkpoint... Se a regra da cura mudar, você vai ter que achar e corrigir os dez. Uma hora esquece um.</p>
+<p>Os <strong>métodos</strong> (também chamados de funções) resolvem isso: você escreve a regra uma vez, dá um nome a ela e chama esse nome onde precisar.</p>
+
+<h2>Anatomia de um método</h2>
+<!-- CENA 1 -->
+<p>Todo método tem as mesmas partes:</p>
+<codigo nao-roda>
+static int Curar(int vida, int quantidade)
+{
+    return vida + quantidade;
+}
+</codigo>
+<tabela>
+Parte | No exemplo | O que significa
+modificador | `static` | pode ser chamado sem criar um objeto (por enquanto, use sempre)
+tipo de retorno | `int` | o tipo do valor que o método devolve; `void` se não devolve nada
+nome | `Curar` | um verbo em PascalCase, dizendo o que o método faz
+parâmetros | `(int vida, int quantidade)` | valores que o método recebe
+corpo | `{ ... }` | o código que roda quando o método é chamado
+</tabela>
+<p>Nos exemplos deste post o programa usa <strong>top-level statements</strong> (o código solto no começo do arquivo, sem <code>class Program</code>), que é o padrão dos projetos novos de console. Os métodos ficam no fim do arquivo.</p>
+
+<h2>Método void: só faz alguma coisa</h2>
+<p>O método mais simples não recebe nada e não devolve nada. Ele só executa um conjunto de passos:</p>
+<codigo>
+MostrarAlerta();
+Console.WriteLine("Você se esconde atrás do balcão.");
+MostrarAlerta();
+
+static void MostrarAlerta()
+{
+    Console.WriteLine("!!! Zumbi por perto !!!");
+}
+</codigo>
+<saida>
+!!! Zumbi por perto !!!
+Você se esconde atrás do balcão.
+!!! Zumbi por perto !!!
+</saida>
+<p>Chamar o método é escrever o nome dele com parênteses: <code>MostrarAlerta();</code>. Cada chamada roda o corpo inteiro de novo.</p>
+
+<h2>Parâmetros: passando informações</h2>
+<p>Um alerta fixo é limitado. Com <strong>parâmetros</strong>, o método recebe valores e se adapta:</p>
+<!-- CENA 2 -->
+<codigo>
+MostrarStatus("Leon", 100, 12);
+MostrarStatus("Jill", 35, 3);
+
+static void MostrarStatus(string nome, int vida, int balas)
+{
+    string estado = vida < 50 ? "FERIDO" : "ok";
+    Console.WriteLine($"{nome}: vida {vida} ({estado}), balas {balas}");
+}
+</codigo>
+<saida>
+Leon: vida 100 (ok), balas 12
+Jill: vida 35 (FERIDO), balas 3
+</saida>
+<p>Os valores da chamada entram na mesma ordem dos parâmetros: o primeiro vai para <code>nome</code>, o segundo para <code>vida</code>, o terceiro para <code>balas</code>. O <code>? :</code> é um if de uma linha: se <code>vida &lt; 50</code>, usa "FERIDO"; senão, "ok".</p>
+
+<h2>return: devolvendo um resultado</h2>
+<p>Muitas vezes você quer que o método <strong>calcule</strong> algo e entregue o resultado. Para isso, troque o <code>void</code> pelo tipo do resultado e use <code>return</code>:</p>
+<!-- CENA 3 -->
+<codigo>
+int vida = 40;
+vida = Curar(vida, 25);
+Console.WriteLine($"Depois da erva: {vida}");
+
+vida = Curar(vida, 50);
+Console.WriteLine($"Depois do kit médico: {vida}");
+
+static int Curar(int vidaAtual, int quantidade)
+{
+    int nova = vidaAtual + quantidade;
+    if (nova > 100)
+        return 100;   // a vida nunca passa do máximo
+    return nova;
+}
+</codigo>
+<saida>
+Depois da erva: 65
+Depois do kit médico: 100
+</saida>
+<p>O <code>return</code> encerra o método na hora. Por isso, quando a vida passaria de 100, ele devolve 100 e a última linha nem chega a rodar. A regra de "não passar do máximo" agora mora num lugar só.</p>
+
+<h2>Métodos que devolvem bool</h2>
+<p>Métodos que respondem "sim ou não" deixam os <code>if</code> muito mais fáceis de ler. Costumam começar com <code>Pode</code>, <code>Tem</code> ou <code>Esta</code>:</p>
+<codigo>
+int balas = 0;
+bool temFaca = true;
+
+if (PodeAtacar(balas, temFaca))
+    Console.WriteLine("Você ataca!");
+else
+    Console.WriteLine("Fuja!");
+
+static bool PodeAtacar(int balas, bool temFaca)
+{
+    return balas > 0 || temFaca;
+}
+</codigo>
+<saida>
+Você ataca!
+</saida>
+<p>Compare <code>if (PodeAtacar(balas, temFaca))</code> com <code>if (balas &gt; 0 || temFaca)</code>: o resultado é o mesmo, mas o primeiro explica a intenção.</p>
+
+<h2>Parâmetros com valor padrão</h2>
+<p>Se um parâmetro quase sempre recebe o mesmo valor, dê a ele um <strong>valor padrão</strong>. Quem chama pode omitir:</p>
+<codigo>
+Console.WriteLine(CalcularDano(10));
+Console.WriteLine(CalcularDano(10, 3));
+
+static int CalcularDano(int danoBase, int multiplicador = 1)
+{
+    return danoBase * multiplicador;
+}
+</codigo>
+<saida>
+10
+30
+</saida>
+<p>Os parâmetros com valor padrão sempre ficam no fim da lista.</p>
+
+<h2>Quando criar um método</h2>
+<tabela>
+Situação | Crie um método?
+O mesmo trecho aparece em dois ou mais lugares | Sim
+Um bloco grande faz uma tarefa que dá para nomear | Sim, mesmo que só apareça uma vez
+Uma condição longa num if | Sim, um método que devolve `bool`
+Uma linha simples usada uma vez | Não precisa
+</tabela>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Esquecer o <code>return</code>.</strong> Se o método promete devolver <code>int</code>, todo caminho precisa terminar num <code>return</code>, senão o código não compila.</p>
+<codigo nao-roda>
+static int Curar(int vida, int quantidade)
+{
+    int nova = vida + quantidade;
+}   // erro: nem todos os caminhos retornam um valor
+</codigo>
+<p><strong>2. Chamar o método e ignorar o resultado.</strong> <code>Curar(vida, 25);</code> calcula a vida nova e joga fora. O certo é <code>vida = Curar(vida, 25);</code>.</p>
+<p><strong>3. Trocar a ordem dos argumentos.</strong> <code>MostrarStatus(100, "Leon", 12)</code> não compila: o primeiro parâmetro é <code>string</code>.</p>
+<p><strong>4. Método que faz tudo.</strong> Um método <code>Jogar()</code> com 200 linhas é difícil de entender. Divida em métodos menores com nomes claros.</p>
+
+<desafio>
+<q>Escreva um método `void` chamado `Recarregar` que mostra "Recarregando..." na tela.</q>
+<r>`static void Recarregar() { Console.WriteLine("Recarregando..."); }` e chame com `Recarregar();`.</r>
+<q>Escreva um método que recebe as balas soltas e o tamanho do pente e devolve quantos pentes cheios dá para montar.</q>
+<r>`static int PentesCheios(int balas, int tamanho) { return balas / tamanho; }`. Com 23 balas e pente de 6, devolve 3.</r>
+<q>O que aparece na tela? `Console.WriteLine(Dobro(Dobro(3)));` com `static int Dobro(int x) { return x * 2; }`</q>
+<r>`12`. O `Dobro(3)` de dentro dá 6, e o `Dobro(6)` de fora dá 12.</r>
+<q>Por que `int vida = 40; Curar(vida, 25); Console.WriteLine(vida);` mostra 40?</q>
+<r>Porque o resultado do `Curar` não foi guardado. O método recebe uma cópia do valor; para mudar `vida`, faça `vida = Curar(vida, 25);`.</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Com métodos, o seu código deixa de ser uma lista enorme de comandos e vira um conjunto de ações com nome: <code>Curar</code>, <code>Atacar</code>, <code>MostrarStatus</code>. Fica mais curto, mais fácil de ler e uma regra muda num lugar só.</p>
+<p>E se você quiser o mesmo nome para versões diferentes de uma ação, como curar com uma erva ou com um kit médico? Isso é sobrecarga de métodos.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/introducao-sobrecarga-de-metodos-em-c.html" target="_blank" rel="noopener">Sobrecarga de métodos em C#</a>.</p>

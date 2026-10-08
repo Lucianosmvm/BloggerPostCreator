@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*public, private* e protected em C#","pose":"placa","placa":"PRIVATE","alt":"Mascote do Devs na Prática segurando a placa PRIVATE ao lado do título Modificadores de acesso em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Quem pode ver?","itens":["public: todo mundo","private: só a classe","protected: classe e filhas","internal: o projeto"],"pose":"explicando","alt":"Mascote explicando quem acessa public, private, protected e internal"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Não dá para ver","codigo":["leon.ComerRacao();  // ok","leon.fome = 0;","// erro: 'fome' é private"],"subtitulo":"O private fica escondido de fora","pose":"tapando","alt":"Mascote tapando os olhos diante de um campo private inacessível"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Herança","codigo":["class Soldado : Personagem","{","    void Treinar()","        => vida += 20;","}"],"subtitulo":"protected: a classe filha enxerga","pose":"apontando","alt":"Mascote apontando para a classe Soldado que herda de Personagem"}]}

@@ -1,0 +1,4 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Sobrecarga* de métodos: um nome, várias versões","pose":"paz","alt":"Mascote do Devs na Prática fazendo sinal de paz ao lado do título Sobrecarga de métodos em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Três jeitos de curar","codigo":["Curar(vida);","Curar(vida, 40);","Curar(vida, \"Spray\", 2);"],"subtitulo":"Mesmo nome, parâmetros diferentes","pose":"cafe","alt":"Mascote tomando café ao lado de três chamadas do método Curar"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Qual versão roda?","itens":["15 → MostrarDano(int)","15.5 → MostrarDano(double)","\"Faca\", 15 → (string, int)"],"subtitulo":"O C# escolhe pelos argumentos","pose":"pensando","alt":"Mascote pensando em qual versão sobrecarregada o C# escolhe"}]}

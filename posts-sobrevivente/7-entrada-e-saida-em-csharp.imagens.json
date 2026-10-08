@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*WriteLine* e *ReadLine*: conversando com o jogador","pose":"acenando","alt":"Mascote do Devs na Prática acenando ao lado do título Console.WriteLine e Console.ReadLine em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Bem-vindo!","codigo":["Console.WriteLine(","    \"=== CIDADE ABANDONADA ===\");"],"subtitulo":"WriteLine escreve e pula linha","pose":"acenando","alt":"Mascote acenando ao lado de um Console.WriteLine de boas-vindas"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Qual é o seu nome?","codigo":["Console.Write(\"Nome: \");","string nome = Console.ReadLine();"],"subtitulo":"ReadLine espera o jogador digitar","pose":"digitando","alt":"Mascote digitando no notebook o nome do personagem"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Isso é número?","codigo":["if (int.TryParse(texto,","        out int balas))","    Carregar(balas);"],"subtitulo":"TryParse confere antes de converter","pose":"lupa","alt":"Mascote com lupa conferindo um int.TryParse"}]}

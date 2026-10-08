@@ -1,0 +1,135 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html
+Título: Variáveis em C#: como guardar vida, munição e nome do personagem
+Marcadores: manter os atuais (C#, dicas, variáveis)
+Descrição de pesquisa: Aprenda variáveis em C# com um jogo de sobrevivência: tipos int, double, bool, string e char, var, constantes, nomes e erros comuns. Com desafio.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote ao lado das variáveis do personagem (vida, munição, nome).
+  2. Mascote com a tabela de tipos (int, double, bool, string).
+  3. Mascote desconfiado diante do erro de tipo.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/variaveis-em-csharp/capa.jpg" alt="Mascote do Devs na Prática segurando a mochila ao lado do título Variáveis em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Variável é um espaço com nome onde o programa guarda um valor.</li><li>Em C# toda variável tem um tipo: <code>int</code>, <code>double</code>, <code>bool</code>, <code>string</code>, <code>char</code>...</li><li>O tipo vem antes do nome: <code>int vida = 100;</code>.</li><li>O valor pode mudar; o tipo, não.</li><li><code>var</code> deixa o compilador descobrir o tipo pelo valor.</li><li><code>const</code> cria um valor que nunca muda.</li></ul></div>
+
+<p>Todo jogo de sobrevivência precisa lembrar das coisas: quanto de vida sobrou, quantas balas tem no pente, o nome do personagem, se a lanterna está ligada. No código, quem guarda essas informações são as <strong>variáveis</strong>.</p>
+<p>Neste post você vai criar as variáveis do seu personagem, conhecer os tipos mais usados do C# e ver os erros que mais aparecem no começo.</p>
+
+<h2>O que é uma variável</h2>
+<p>Pense numa variável como um compartimento da mochila com uma etiqueta. A etiqueta é o <strong>nome</strong>, o que está dentro é o <strong>valor</strong> e o formato do compartimento é o <strong>tipo</strong>: num compartimento de balas não cabe um mapa.</p>
+<p>Para criar uma variável em C#, você escreve o tipo, o nome e, se quiser, o valor inicial:</p>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/variaveis-em-csharp/cena-1.jpg" alt="Mascote explicando as variáveis vida, munição, nome e lanterna" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 100;
+int municao = 12;
+string nome = "Leon";
+bool lanternaLigada = true;
+
+Console.WriteLine($"{nome} tem {vida} de vida e {municao} balas.");
+Console.WriteLine($"Lanterna ligada? {lanternaLigada}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon tem 100 de vida e 12 balas.
+Lanterna ligada? True</code></pre>
+<p>O <code>$</code> antes das aspas permite colocar variáveis dentro do texto usando <code>{ }</code>. Isso se chama interpolação e você vai usar o tempo todo.</p>
+
+<h2>Os tipos mais usados</h2>
+<p>Cada tipo guarda um tipo de informação. Estes são os que você mais vai ver:</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Tipo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Guarda</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Exemplo no jogo</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>int</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">número inteiro</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>int municao = 12;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>double</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">número com casas decimais</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>double peso = 3.5;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>float</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">decimal mais leve (usa <code>f</code> no fim)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>float velocidade = 4.2f;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>decimal</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">decimal exato, bom para dinheiro</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>decimal moedas = 19.90m;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>bool</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">verdadeiro ou falso</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>bool temChave = false;</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>char</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">um único caractere (aspas simples)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>char rank = 'S';</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>string</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">texto (aspas duplas)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>string arma = "Pistola";</code></td></tr>
+</tbody></table></div>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/variaveis-em-csharp/cena-2.jpg" alt="Mascote confiante ao lado da lista de tipos int, double, bool, char e string" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Repare que o C# usa <strong>ponto</strong> como separador decimal no código: <code>3.5</code>, nunca <code>3,5</code>. Na hora de mostrar na tela, ele usa o formato do seu computador.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>double pesoMochila = 7.5;
+char rank = 'A';
+decimal moedas = 120.50m;
+
+Console.WriteLine("Peso da mochila: " + pesoMochila + " kg");
+Console.WriteLine("Rank: " + rank);
+Console.WriteLine("Moedas: " + (moedas * 2));</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Peso da mochila: 7.5 kg
+Rank: A
+Moedas: 241.00</code></pre>
+<div style="border-left:4px solid #f5c518;background:rgba(245,197,24,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 6px;font-weight:bold;">💡 Por que a saída pode mostrar vírgula</p><p style="margin:0;">Se o Windows estiver em português, o mesmo código pode mostrar <code>7,5</code> e <code>241,00</code>. O valor é o mesmo; só muda a forma de exibir.</p></div>
+
+<h2>Mudando o valor</h2>
+<p>Depois de criada, a variável pode receber outro valor quantas vezes for preciso. É só usar o <code>=</code> de novo, sem repetir o tipo:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 100;
+Console.WriteLine($"Começo: {vida}");
+
+vida = 70;   // levou um ataque
+Console.WriteLine($"Depois do ataque: {vida}");
+
+vida = vida + 20;   // usou uma erva
+Console.WriteLine($"Depois da erva: {vida}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Começo: 100
+Depois do ataque: 70
+Depois da erva: 90</code></pre>
+<p>Leia o <code>=</code> como "recebe": <code>vida = vida + 20</code> quer dizer "vida recebe o valor atual de vida mais 20".</p>
+
+<h2>var: deixando o C# descobrir o tipo</h2>
+<p>Quando o valor deixa o tipo óbvio, você pode trocar o tipo por <code>var</code>. O compilador olha o valor e decide sozinho:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>var inimigos = 5;          // int
+var arma = "Espingarda";   // string
+var alerta = false;        // bool
+
+Console.WriteLine(inimigos.GetType().Name);
+Console.WriteLine(arma.GetType().Name);
+Console.WriteLine(alerta.GetType().Name);</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Int32
+String
+Boolean</code></pre>
+<p><code>var</code> não é uma variável "sem tipo". O tipo existe e fica fixo: uma variável criada como <code>int</code> continua sendo <code>int</code>. <code>Int32</code> e <code>Boolean</code> são os nomes completos de <code>int</code> e <code>bool</code> dentro do .NET.</p>
+
+<h2>Constantes: o que nunca muda</h2>
+<p>Algumas informações não devem mudar durante o jogo, como a vida máxima ou o tamanho do pente. Para isso existe o <code>const</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>const int VidaMaxima = 100;
+const int TamanhoDoPente = 15;
+
+int vida = 40;
+int falta = VidaMaxima - vida;
+Console.WriteLine($"Faltam {falta} pontos para encher a vida.");
+Console.WriteLine($"Um pente cheio tem {TamanhoDoPente} balas.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Faltam 60 pontos para encher a vida.
+Um pente cheio tem 15 balas.</code></pre>
+<p>Se alguém tentar escrever <code>VidaMaxima = 200;</code>, o código nem compila. A constante protege o valor contra mudanças por engano.</p>
+
+<h2>Como dar nomes às variáveis</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Regra</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Certo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Errado</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Começa com letra ou _</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>vida2</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>2vida</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sem espaços</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>municaoExtra</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>municao extra</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Não pode ser palavra reservada</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>classe</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>class</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Maiúsculas fazem diferença</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>vida</code> e <code>Vida</code> são duas variáveis</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">—</td></tr>
+</tbody></table></div>
+<p>O costume no C# é o <strong>camelCase</strong> para variáveis: primeira palavra minúscula e as próximas começando com maiúscula, como <code>balasNoPente</code> e <code>temChaveDaPorta</code>. Constantes costumam usar <strong>PascalCase</strong>, como <code>VidaMaxima</code>. Prefira nomes que dizem o que a variável guarda: <code>x</code> não diz nada, <code>balasNoPente</code> diz tudo.</p>
+
+<h2>Erros comuns</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/variaveis-em-csharp/cena-3.jpg" alt="Mascote desconfiado diante do erro de colocar texto numa variável int" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p><strong>1. Guardar valor do tipo errado.</strong> Texto não cabe num <code>int</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int municao = "doze";   // erro: não dá para converter string em int</code></pre>
+<p><strong>2. Usar a variável antes de dar um valor.</strong> O C# não deixa ler uma variável local vazia:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida;
+Console.WriteLine(vida);   // erro: variável local não atribuída</code></pre>
+<p><strong>3. Criar duas variáveis com o mesmo nome.</strong> No mesmo bloco, cada nome só pode existir uma vez. Para mudar o valor, não repita o tipo:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 100;
+int vida = 50;   // erro: 'vida' já foi declarada
+vida = 50;       // certo: só muda o valor</code></pre>
+<p><strong>4. Esquecer o <code>f</code> ou o <code>m</code>.</strong> Um número com ponto é <code>double</code> por padrão. Para <code>float</code> use <code>4.2f</code> e para <code>decimal</code> use <code>19.90m</code>.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie as variáveis de um personagem com nome "Jill", 80 de vida, 3 ervas e a lanterna desligada. Use o tipo certo para cada uma.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>string nome = "Jill";</code>, <code>int vida = 80;</code>, <code>int ervas = 3;</code> e <code>bool lanternaLigada = false;</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Qual é o tipo de <code>var peso = 2.5;</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>double</code>. Número com ponto e sem sufixo é <code>double</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">O que aparece na tela? <code>int balas = 10; balas = balas - 4; Console.WriteLine(balas);</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>6</code>. A variável começa com 10 e recebe 10 - 4.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Por que <code>const int VidaMaxima = 100; VidaMaxima = 120;</code> não compila?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Porque uma constante não pode receber outro valor depois de criada.</p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Agora o seu personagem já tem memória: vida, munição, nome e tudo o que o jogo precisa lembrar. Escolher o tipo certo e um nome claro evita a maioria dos erros de quem está começando.</p>
+<p>O próximo passo é conversar com o jogador: mostrar informações na tela e ler o que ele digita.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/entrada-e-saida-em-c.html" target="_blank" rel="noopener">Console.WriteLine e Console.ReadLine em C#</a>.</p>

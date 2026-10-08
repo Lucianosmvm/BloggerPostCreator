@@ -1,0 +1,141 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/modificadores-de-acesso-private-public.html
+Título: Modificadores de acesso em C#: public, private, protected e internal
+Marcadores: manter os atuais (C#, internal, private, protected, public)
+Descrição de pesquisa: Entenda public, private, protected e internal em C# com um jogo de sobrevivência: quem pode ver o quê, o padrão de cada membro e como escolher.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote com as portas public / private / protected.
+  2. Mascote tapando os olhos: o código de fora não vê o private.
+  3. Mascote apontando para a herança Personagem → Soldado (protected).
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/modificadores-de-acesso-em-csharp/capa.jpg" alt="Mascote do Devs na Prática segurando a placa PRIVATE ao lado do título Modificadores de acesso em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Modificadores de acesso dizem quem pode usar cada parte de uma classe.</li><li><code>public</code>: qualquer código pode usar.</li><li><code>private</code>: só a própria classe. É o padrão dos membros quando você não escreve nada.</li><li><code>protected</code>: a própria classe e as classes filhas (herança).</li><li><code>internal</code>: qualquer código do mesmo projeto. É o padrão das classes.</li><li>Regra de ouro: comece com <code>private</code> e abra só o necessário.</li></ul></div>
+
+<p>Num abrigo de sobreviventes, nem tudo fica à vista. O mapa da cidade está pregado na parede para todos. O diário do líder fica trancado no quarto dele. O depósito de armas, só os membros do grupo acessam. O C# tem a mesma ideia para o código: os <strong>modificadores de acesso</strong>.</p>
+<p>Você já viu <code>public</code> e <code>private</code> nos posts de <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">classes</a> e <a href="https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html" target="_blank" rel="noopener">propriedades</a>. Agora vamos entender todos de uma vez.</p>
+
+<h2>Os quatro principais</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/modificadores-de-acesso-em-csharp/cena-1.jpg" alt="Mascote explicando quem acessa public, private, protected e internal" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Modificador</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Quem acessa</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No abrigo</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">qualquer código, de qualquer lugar</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o mapa na parede</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>private</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">só a própria classe</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o diário trancado do líder</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>protected</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">a própria classe e as classes filhas</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o depósito do grupo</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>internal</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">qualquer código do mesmo projeto (assembly)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">a área comum do abrigo</td></tr>
+</tbody></table></div>
+<p>Existem ainda as combinações <code>protected internal</code> e <code>private protected</code>, usadas em casos bem específicos de bibliotecas. Para começar, os quatro acima resolvem quase tudo.</p>
+
+<h2>public e private na prática</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/modificadores-de-acesso-em-csharp/cena-2.jpg" alt="Mascote tapando os olhos diante de um campo private inacessível" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Sobrevivente leon = new Sobrevivente("Leon");
+leon.ComerRacao();
+leon.ComerRacao();
+leon.MostrarStatus();
+// leon.fome = 0;        // erro: 'fome' é private
+// leon.CalcularFome();  // erro: método private
+
+class Sobrevivente
+{
+    public string Nome;      // todo mundo pode ver
+    private int fome = 8;    // só a classe mexe
+
+    public Sobrevivente(string nome)
+    {
+        Nome = nome;
+    }
+
+    public void ComerRacao()
+    {
+        fome = CalcularFome(fome, 3);
+        Console.WriteLine($"{Nome} comeu. Fome: {fome}");
+    }
+
+    public void MostrarStatus()
+    {
+        Console.WriteLine(fome == 0 ? $"{Nome} está satisfeito." : $"{Nome} ainda tem fome.");
+    }
+
+    private int CalcularFome(int atual, int alimento)
+    {
+        return Math.Max(atual - alimento, 0);
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon comeu. Fome: 5
+Leon comeu. Fome: 2
+Leon ainda tem fome.</code></pre>
+<p>De fora, só dá para usar o que é <code>public</code>: <code>Nome</code>, <code>ComerRacao</code> e <code>MostrarStatus</code>. O campo <code>fome</code> e o método auxiliar <code>CalcularFome</code> são detalhes internos. Se você descomentar as duas últimas linhas do topo, o código não compila.</p>
+<p>Isso é ótimo: amanhã você pode mudar a forma de calcular a fome sem quebrar nenhum código que usa a classe, porque ninguém de fora dependia dela.</p>
+
+<h2>O padrão quando você não escreve nada</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Onde</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Sem modificador vira</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">campo, método ou propriedade dentro de uma classe</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>private</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">classe declarada direto no arquivo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>internal</code></td></tr>
+</tbody></table></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>class Arma            // internal
+{
+    int dano = 10;    // private
+    void Recarregar() { }   // private
+}</code></pre>
+<p>Por isso o erro mais comum de quem está começando é criar um campo sem <code>public</code> e não conseguir usar fora da classe. Mesmo assim, escrever o modificador sempre deixa a intenção clara para quem lê.</p>
+
+<h2>protected: herança no grupo</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/modificadores-de-acesso-em-csharp/cena-3.jpg" alt="Mascote apontando para a classe Soldado que herda de Personagem" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Uma classe pode <strong>herdar</strong> de outra com <code>:</code>, ganhando tudo o que a classe mãe tem. O <code>protected</code> deixa um membro escondido de fora, mas visível para as classes filhas:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Soldado jill = new Soldado();
+jill.Treinar();
+jill.MostrarVida();
+// jill.vida = 999;   // erro: protected não é visível aqui fora
+
+class Personagem
+{
+    protected int vida = 100;
+
+    public void MostrarVida()
+    {
+        Console.WriteLine($"Vida: {vida}");
+    }
+}
+
+class Soldado : Personagem
+{
+    public void Treinar()
+    {
+        vida += 20;   // a filha pode usar o protected
+        Console.WriteLine("Treino concluído: +20 de vida.");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Treino concluído: +20 de vida.
+Vida: 120</code></pre>
+<p><code>Soldado : Personagem</code> quer dizer "Soldado é um Personagem". Ele herda <code>vida</code> e <code>MostrarVida</code>, e como <code>vida</code> é <code>protected</code>, o <code>Treinar</code> pode mexer nela. O código lá de fora, não.</p>
+
+<h2>internal: dentro do mesmo projeto</h2>
+<p>Um projeto C# compilado vira um <strong>assembly</strong> (um .exe ou .dll). Algo <code>internal</code> é visível para tudo dentro desse projeto e invisível para outros projetos que usem a sua DLL.</p>
+<p>No dia a dia de um projeto só, <code>internal</code> e <code>public</code> se comportam igual. A diferença aparece quando você cria uma biblioteca: o que for <code>public</code> vira a "vitrine" que os outros projetos enxergam, e o resto fica <code>internal</code>.</p>
+
+<h2>Como escolher</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Pergunta</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Se sim</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Só a própria classe precisa disso?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>private</code> (comece sempre por aqui)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">As classes filhas precisam, mas o resto não?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>protected</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Outras classes do projeto precisam?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public</code> ou <code>internal</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Outros projetos vão usar?</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>public</code></td></tr>
+</tbody></table></div>
+<div style="border-left:4px solid #f5c518;background:rgba(245,197,24,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 6px;font-weight:bold;">💡 Campos privados, propriedades públicas</p><p style="margin:0;">O padrão em C# é deixar os campos <code>private</code> e expor os dados por propriedades <code>public</code>. Assim a classe controla o que entra, como você viu no post de propriedades.</p></div>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Tudo <code>public</code>.</strong> Funciona até alguém fazer <code>jogador.vida = -1</code> em outro canto do código. Abra só o necessário.</p>
+<p><strong>2. Esquecer que o padrão é <code>private</code>.</strong> Erro "inacessível devido ao seu nível de proteção" quase sempre é um membro sem <code>public</code>.</p>
+<p><strong>3. Usar <code>protected</code> sem herança.</strong> Se nenhuma classe herda da sua, <code>protected</code> se comporta igual a <code>private</code>. Prefira <code>private</code>.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Um campo declarado como <code>int municao;</code> dentro de uma classe, sem modificador, é public ou private?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>private</code>. Membros de classe sem modificador são privados.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Na classe <code>Personagem</code>, <code>vida</code> é <code>protected</code>. Quem consegue mexer nela: a classe <code>Soldado : Personagem</code>, o código do <code>Main</code>, ou os dois?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Só a classe <code>Soldado</code> (e o próprio <code>Personagem</code>). O código de fora, como o <code>Main</code>, não enxerga membros <code>protected</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Reescreva <code>public int Balas;</code> para que todo mundo possa ler as balas, mas só a própria classe possa mudar.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>public int Balas { get; private set; }</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Modificadores de acesso são as portas e trancas do seu código. Com <code>private</code> por padrão e <code>public</code> só no que precisa ser usado de fora, cada classe protege os próprios dados e o resto do jogo não depende dos detalhes internos dela.</p>
+<p>Com isso você fecha a trilha básica: variáveis, entrada e saída, operadores, decisões, laços, arrays, métodos, classes, propriedades e acesso. Já dá para montar um jogo de sobrevivência inteiro no console.</p>
+<p>📖 Volte ao começo da série: <a href="https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html" target="_blank" rel="noopener">Variáveis em C#</a>.</p>

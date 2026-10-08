@@ -1,0 +1,146 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html
+Título: Métodos (funções) em C#: pare de repetir código no seu jogo
+Marcadores: manter os atuais (C#, dicas); trocar "condicionais" por "métodos" se quiser
+Descrição de pesquisa: Aprenda métodos em C# com um jogo de sobrevivência: void, parâmetros, retorno com return, valores padrão e quando criar um método. Com desafio no final.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote explicando a anatomia de um método.
+  2. Mascote recebendo dano: método com parâmetros.
+  3. Mascote comemorando o valor devolvido pelo return.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/metodos-em-csharp/capa.jpg" alt="Mascote do Devs na Prática com uma ideia ao lado do título Métodos em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Método é um bloco de código com nome que você chama quando precisar.</li><li><code>void</code> significa que o método só faz algo e não devolve valor.</li><li>Parâmetros são os valores que o método recebe entre parênteses.</li><li><code>return</code> devolve um resultado para quem chamou.</li><li>Um bom método faz uma coisa só e tem nome de ação: <code>Curar</code>, <code>CalcularDano</code>.</li></ul></div>
+
+<p>Imagine o seu jogo de sobrevivência com o código de cura escrito em dez lugares diferentes: na erva, no kit médico, no descanso, no checkpoint... Se a regra da cura mudar, você vai ter que achar e corrigir os dez. Uma hora esquece um.</p>
+<p>Os <strong>métodos</strong> (também chamados de funções) resolvem isso: você escreve a regra uma vez, dá um nome a ela e chama esse nome onde precisar.</p>
+
+<h2>Anatomia de um método</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/metodos-em-csharp/cena-1.jpg" alt="Mascote explicando as partes de um método Curar em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Todo método tem as mesmas partes:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>static int Curar(int vida, int quantidade)
+{
+    return vida + quantidade;
+}</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Parte</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No exemplo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">O que significa</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">modificador</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>static</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">pode ser chamado sem criar um objeto (por enquanto, use sempre)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">tipo de retorno</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>int</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o tipo do valor que o método devolve; <code>void</code> se não devolve nada</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">nome</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Curar</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">um verbo em PascalCase, dizendo o que o método faz</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">parâmetros</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>(int vida, int quantidade)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">valores que o método recebe</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">corpo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>{ ... }</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o código que roda quando o método é chamado</td></tr>
+</tbody></table></div>
+<p>Nos exemplos deste post o programa usa <strong>top-level statements</strong> (o código solto no começo do arquivo, sem <code>class Program</code>), que é o padrão dos projetos novos de console. Os métodos ficam no fim do arquivo.</p>
+
+<h2>Método void: só faz alguma coisa</h2>
+<p>O método mais simples não recebe nada e não devolve nada. Ele só executa um conjunto de passos:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>MostrarAlerta();
+Console.WriteLine("Você se esconde atrás do balcão.");
+MostrarAlerta();
+
+static void MostrarAlerta()
+{
+    Console.WriteLine("!!! Zumbi por perto !!!");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>!!! Zumbi por perto !!!
+Você se esconde atrás do balcão.
+!!! Zumbi por perto !!!</code></pre>
+<p>Chamar o método é escrever o nome dele com parênteses: <code>MostrarAlerta();</code>. Cada chamada roda o corpo inteiro de novo.</p>
+
+<h2>Parâmetros: passando informações</h2>
+<p>Um alerta fixo é limitado. Com <strong>parâmetros</strong>, o método recebe valores e se adapta:</p>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/metodos-em-csharp/cena-2.jpg" alt="Mascote apontando para duas chamadas do método MostrarStatus" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>MostrarStatus("Leon", 100, 12);
+MostrarStatus("Jill", 35, 3);
+
+static void MostrarStatus(string nome, int vida, int balas)
+{
+    string estado = vida &lt; 50 ? "FERIDO" : "ok";
+    Console.WriteLine($"{nome}: vida {vida} ({estado}), balas {balas}");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Leon: vida 100 (ok), balas 12
+Jill: vida 35 (FERIDO), balas 3</code></pre>
+<p>Os valores da chamada entram na mesma ordem dos parâmetros: o primeiro vai para <code>nome</code>, o segundo para <code>vida</code>, o terceiro para <code>balas</code>. O <code>? :</code> é um if de uma linha: se <code>vida &lt; 50</code>, usa "FERIDO"; senão, "ok".</p>
+
+<h2>return: devolvendo um resultado</h2>
+<p>Muitas vezes você quer que o método <strong>calcule</strong> algo e entregue o resultado. Para isso, troque o <code>void</code> pelo tipo do resultado e use <code>return</code>:</p>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/metodos-em-csharp/cena-3.jpg" alt="Mascote comemorando a vida devolvida pelo return do método Curar" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 40;
+vida = Curar(vida, 25);
+Console.WriteLine($"Depois da erva: {vida}");
+
+vida = Curar(vida, 50);
+Console.WriteLine($"Depois do kit médico: {vida}");
+
+static int Curar(int vidaAtual, int quantidade)
+{
+    int nova = vidaAtual + quantidade;
+    if (nova &gt; 100)
+        return 100;   // a vida nunca passa do máximo
+    return nova;
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Depois da erva: 65
+Depois do kit médico: 100</code></pre>
+<p>O <code>return</code> encerra o método na hora. Por isso, quando a vida passaria de 100, ele devolve 100 e a última linha nem chega a rodar. A regra de "não passar do máximo" agora mora num lugar só.</p>
+
+<h2>Métodos que devolvem bool</h2>
+<p>Métodos que respondem "sim ou não" deixam os <code>if</code> muito mais fáceis de ler. Costumam começar com <code>Pode</code>, <code>Tem</code> ou <code>Esta</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int balas = 0;
+bool temFaca = true;
+
+if (PodeAtacar(balas, temFaca))
+    Console.WriteLine("Você ataca!");
+else
+    Console.WriteLine("Fuja!");
+
+static bool PodeAtacar(int balas, bool temFaca)
+{
+    return balas &gt; 0 || temFaca;
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Você ataca!</code></pre>
+<p>Compare <code>if (PodeAtacar(balas, temFaca))</code> com <code>if (balas &gt; 0 || temFaca)</code>: o resultado é o mesmo, mas o primeiro explica a intenção.</p>
+
+<h2>Parâmetros com valor padrão</h2>
+<p>Se um parâmetro quase sempre recebe o mesmo valor, dê a ele um <strong>valor padrão</strong>. Quem chama pode omitir:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine(CalcularDano(10));
+Console.WriteLine(CalcularDano(10, 3));
+
+static int CalcularDano(int danoBase, int multiplicador = 1)
+{
+    return danoBase * multiplicador;
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>10
+30</code></pre>
+<p>Os parâmetros com valor padrão sempre ficam no fim da lista.</p>
+
+<h2>Quando criar um método</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Situação</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Crie um método?</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">O mesmo trecho aparece em dois ou mais lugares</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sim</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Um bloco grande faz uma tarefa que dá para nomear</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sim, mesmo que só apareça uma vez</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Uma condição longa num if</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Sim, um método que devolve <code>bool</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Uma linha simples usada uma vez</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Não precisa</td></tr>
+</tbody></table></div>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Esquecer o <code>return</code>.</strong> Se o método promete devolver <code>int</code>, todo caminho precisa terminar num <code>return</code>, senão o código não compila.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>static int Curar(int vida, int quantidade)
+{
+    int nova = vida + quantidade;
+}   // erro: nem todos os caminhos retornam um valor</code></pre>
+<p><strong>2. Chamar o método e ignorar o resultado.</strong> <code>Curar(vida, 25);</code> calcula a vida nova e joga fora. O certo é <code>vida = Curar(vida, 25);</code>.</p>
+<p><strong>3. Trocar a ordem dos argumentos.</strong> <code>MostrarStatus(100, "Leon", 12)</code> não compila: o primeiro parâmetro é <code>string</code>.</p>
+<p><strong>4. Método que faz tudo.</strong> Um método <code>Jogar()</code> com 200 linhas é difícil de entender. Divida em métodos menores com nomes claros.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um método <code>void</code> chamado <code>Recarregar</code> que mostra "Recarregando..." na tela.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>static void Recarregar() { Console.WriteLine("Recarregando..."); }</code> e chame com <code>Recarregar();</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um método que recebe as balas soltas e o tamanho do pente e devolve quantos pentes cheios dá para montar.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>static int PentesCheios(int balas, int tamanho) { return balas / tamanho; }</code>. Com 23 balas e pente de 6, devolve 3.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">O que aparece na tela? <code>Console.WriteLine(Dobro(Dobro(3)));</code> com <code>static int Dobro(int x) { return x * 2; }</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>12</code>. O <code>Dobro(3)</code> de dentro dá 6, e o <code>Dobro(6)</code> de fora dá 12.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Por que <code>int vida = 40; Curar(vida, 25); Console.WriteLine(vida);</code> mostra 40?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Porque o resultado do <code>Curar</code> não foi guardado. O método recebe uma cópia do valor; para mudar <code>vida</code>, faça <code>vida = Curar(vida, 25);</code>.</p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com métodos, o seu código deixa de ser uma lista enorme de comandos e vira um conjunto de ações com nome: <code>Curar</code>, <code>Atacar</code>, <code>MostrarStatus</code>. Fica mais curto, mais fácil de ler e uma regra muda num lugar só.</p>
+<p>E se você quiser o mesmo nome para versões diferentes de uma ação, como curar com uma erva ou com um kit médico? Isso é sobrecarga de métodos.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/introducao-sobrecarga-de-metodos-em-c.html" target="_blank" rel="noopener">Sobrecarga de métodos em C#</a>.</p>

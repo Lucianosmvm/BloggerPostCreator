@@ -1,0 +1,163 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço):
+  https://devsnapratica.blogspot.com/2024/10/modificadores-de-acesso-private-public.html
+Título: Modificadores de acesso em C#: public, private, protected e internal
+Marcadores: manter os atuais (C#, internal, private, protected, public)
+Descrição de pesquisa: Entenda public, private, protected e internal em C# com um jogo de sobrevivência: quem pode ver o quê, o padrão de cada membro e como escolher.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote com as portas public / private / protected.
+  2. Mascote tapando os olhos: o código de fora não vê o private.
+  3. Mascote apontando para a herança Personagem → Soldado (protected).
+-->
+<!-- VIDEO -->
+
+<resumo>
+Modificadores de acesso dizem quem pode usar cada parte de uma classe.
+`public`: qualquer código pode usar.
+`private`: só a própria classe. É o padrão dos membros quando você não escreve nada.
+`protected`: a própria classe e as classes filhas (herança).
+`internal`: qualquer código do mesmo projeto. É o padrão das classes.
+Regra de ouro: comece com `private` e abra só o necessário.
+</resumo>
+
+<p>Num abrigo de sobreviventes, nem tudo fica à vista. O mapa da cidade está pregado na parede para todos. O diário do líder fica trancado no quarto dele. O depósito de armas, só os membros do grupo acessam. O C# tem a mesma ideia para o código: os <strong>modificadores de acesso</strong>.</p>
+<p>Você já viu <code>public</code> e <code>private</code> nos posts de <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">classes</a> e <a href="https://devsnapratica.blogspot.com/2024/10/como-usar-get-e-set-no-c.html" target="_blank" rel="noopener">propriedades</a>. Agora vamos entender todos de uma vez.</p>
+
+<h2>Os quatro principais</h2>
+<!-- CENA 1 -->
+<tabela>
+Modificador | Quem acessa | No abrigo
+`public` | qualquer código, de qualquer lugar | o mapa na parede
+`private` | só a própria classe | o diário trancado do líder
+`protected` | a própria classe e as classes filhas | o depósito do grupo
+`internal` | qualquer código do mesmo projeto (assembly) | a área comum do abrigo
+</tabela>
+<p>Existem ainda as combinações <code>protected internal</code> e <code>private protected</code>, usadas em casos bem específicos de bibliotecas. Para começar, os quatro acima resolvem quase tudo.</p>
+
+<h2>public e private na prática</h2>
+<!-- CENA 2 -->
+<codigo>
+Sobrevivente leon = new Sobrevivente("Leon");
+leon.ComerRacao();
+leon.ComerRacao();
+leon.MostrarStatus();
+// leon.fome = 0;        // erro: 'fome' é private
+// leon.CalcularFome();  // erro: método private
+
+class Sobrevivente
+{
+    public string Nome;      // todo mundo pode ver
+    private int fome = 8;    // só a classe mexe
+
+    public Sobrevivente(string nome)
+    {
+        Nome = nome;
+    }
+
+    public void ComerRacao()
+    {
+        fome = CalcularFome(fome, 3);
+        Console.WriteLine($"{Nome} comeu. Fome: {fome}");
+    }
+
+    public void MostrarStatus()
+    {
+        Console.WriteLine(fome == 0 ? $"{Nome} está satisfeito." : $"{Nome} ainda tem fome.");
+    }
+
+    private int CalcularFome(int atual, int alimento)
+    {
+        return Math.Max(atual - alimento, 0);
+    }
+}
+</codigo>
+<saida>
+Leon comeu. Fome: 5
+Leon comeu. Fome: 2
+Leon ainda tem fome.
+</saida>
+<p>De fora, só dá para usar o que é <code>public</code>: <code>Nome</code>, <code>ComerRacao</code> e <code>MostrarStatus</code>. O campo <code>fome</code> e o método auxiliar <code>CalcularFome</code> são detalhes internos. Se você descomentar as duas últimas linhas do topo, o código não compila.</p>
+<p>Isso é ótimo: amanhã você pode mudar a forma de calcular a fome sem quebrar nenhum código que usa a classe, porque ninguém de fora dependia dela.</p>
+
+<h2>O padrão quando você não escreve nada</h2>
+<tabela>
+Onde | Sem modificador vira
+campo, método ou propriedade dentro de uma classe | `private`
+classe declarada direto no arquivo | `internal`
+</tabela>
+<codigo nao-roda>
+class Arma            // internal
+{
+    int dano = 10;    // private
+    void Recarregar() { }   // private
+}
+</codigo>
+<p>Por isso o erro mais comum de quem está começando é criar um campo sem <code>public</code> e não conseguir usar fora da classe. Mesmo assim, escrever o modificador sempre deixa a intenção clara para quem lê.</p>
+
+<h2>protected: herança no grupo</h2>
+<!-- CENA 3 -->
+<p>Uma classe pode <strong>herdar</strong> de outra com <code>:</code>, ganhando tudo o que a classe mãe tem. O <code>protected</code> deixa um membro escondido de fora, mas visível para as classes filhas:</p>
+<codigo>
+Soldado jill = new Soldado();
+jill.Treinar();
+jill.MostrarVida();
+// jill.vida = 999;   // erro: protected não é visível aqui fora
+
+class Personagem
+{
+    protected int vida = 100;
+
+    public void MostrarVida()
+    {
+        Console.WriteLine($"Vida: {vida}");
+    }
+}
+
+class Soldado : Personagem
+{
+    public void Treinar()
+    {
+        vida += 20;   // a filha pode usar o protected
+        Console.WriteLine("Treino concluído: +20 de vida.");
+    }
+}
+</codigo>
+<saida>
+Treino concluído: +20 de vida.
+Vida: 120
+</saida>
+<p><code>Soldado : Personagem</code> quer dizer "Soldado é um Personagem". Ele herda <code>vida</code> e <code>MostrarVida</code>, e como <code>vida</code> é <code>protected</code>, o <code>Treinar</code> pode mexer nela. O código lá de fora, não.</p>
+
+<h2>internal: dentro do mesmo projeto</h2>
+<p>Um projeto C# compilado vira um <strong>assembly</strong> (um .exe ou .dll). Algo <code>internal</code> é visível para tudo dentro desse projeto e invisível para outros projetos que usem a sua DLL.</p>
+<p>No dia a dia de um projeto só, <code>internal</code> e <code>public</code> se comportam igual. A diferença aparece quando você cria uma biblioteca: o que for <code>public</code> vira a "vitrine" que os outros projetos enxergam, e o resto fica <code>internal</code>.</p>
+
+<h2>Como escolher</h2>
+<tabela>
+Pergunta | Se sim
+Só a própria classe precisa disso? | `private` (comece sempre por aqui)
+As classes filhas precisam, mas o resto não? | `protected`
+Outras classes do projeto precisam? | `public` ou `internal`
+Outros projetos vão usar? | `public`
+</tabela>
+<dica titulo="Campos privados, propriedades públicas">O padrão em C# é deixar os campos `private` e expor os dados por propriedades `public`. Assim a classe controla o que entra, como você viu no post de propriedades.</dica>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Tudo <code>public</code>.</strong> Funciona até alguém fazer <code>jogador.vida = -1</code> em outro canto do código. Abra só o necessário.</p>
+<p><strong>2. Esquecer que o padrão é <code>private</code>.</strong> Erro "inacessível devido ao seu nível de proteção" quase sempre é um membro sem <code>public</code>.</p>
+<p><strong>3. Usar <code>protected</code> sem herança.</strong> Se nenhuma classe herda da sua, <code>protected</code> se comporta igual a <code>private</code>. Prefira <code>private</code>.</p>
+
+<desafio>
+<q>Um campo declarado como `int municao;` dentro de uma classe, sem modificador, é public ou private?</q>
+<r>`private`. Membros de classe sem modificador são privados.</r>
+<q>Na classe `Personagem`, `vida` é `protected`. Quem consegue mexer nela: a classe `Soldado : Personagem`, o código do `Main`, ou os dois?</q>
+<r>Só a classe `Soldado` (e o próprio `Personagem`). O código de fora, como o `Main`, não enxerga membros `protected`.</r>
+<q>Reescreva `public int Balas;` para que todo mundo possa ler as balas, mas só a própria classe possa mudar.</q>
+<r>`public int Balas { get; private set; }`</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Modificadores de acesso são as portas e trancas do seu código. Com <code>private</code> por padrão e <code>public</code> só no que precisa ser usado de fora, cada classe protege os próprios dados e o resto do jogo não depende dos detalhes internos dela.</p>
+<p>Com isso você fecha a trilha básica: variáveis, entrada e saída, operadores, decisões, laços, arrays, métodos, classes, propriedades e acesso. Já dá para montar um jogo de sobrevivência inteiro no console.</p>
+<p>📖 Volte ao começo da série: <a href="https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html" target="_blank" rel="noopener">Variáveis em C#</a>.</p>
