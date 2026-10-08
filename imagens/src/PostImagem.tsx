@@ -102,7 +102,7 @@ const Quadro: React.FC<Pick<PostImagemProps, "codigo" | "itens" | "frase" | "sub
 );
 
 // realce simples: comentários, strings, números e palavras-chave do C#
-const CHAVES = /\b(int|float|double|bool|string|var|if|else|switch|case|break|for|while|do|return|true|false|new|void|public|static|class|foreach|in|const)\b/;
+const CHAVES = /\b(int|float|double|bool|string|var|if|else|switch|case|break|for|while|do|return|true|false|new|void|public|static|class|foreach|in|const|enum|readonly|private|protected|internal|null|this|using|namespace|out|is|and|or|not)\b/;
 function colorir(linha: string): React.ReactNode {
   const coment = linha.indexOf("//");
   const codigo = coment >= 0 ? linha.slice(0, coment) : linha;
