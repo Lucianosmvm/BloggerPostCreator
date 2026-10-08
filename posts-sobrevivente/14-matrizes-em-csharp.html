@@ -1,0 +1,177 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; vira um post específico de matrizes para não competir com o post completo de arrays):
+  https://devsnapratica.blogspot.com/2024/10/introducao-arrays-e-colecoes-em-c.html
+Título: Matrizes em C#: montando o mapa do jogo com arrays de duas dimensões
+Marcadores: manter "array" e "C#"; pode tirar "dictionary", "list" e "coleção" (já têm post próprio)
+Descrição de pesquisa: Aprenda matrizes (arrays bidimensionais) em C# montando o mapa de um jogo de sobrevivência: criar, acessar linha e coluna, percorrer com for aninhado e GetLength.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote ao lado do mapa em grade com linhas e colunas.
+  2. Mascote andando pelo mapa com for aninhado.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/matrizes-em-csharp/capa.jpg" alt="Mascote do Devs na Prática apontando para o título Matrizes em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Matriz é um array com duas dimensões: linhas e colunas, como um tabuleiro.</li><li>Cria com <code>int[,] mapa = new int[3, 4];</code> (3 linhas, 4 colunas).</li><li>Acessa com dois índices: <code>mapa[linha, coluna]</code>, ambos começando em 0.</li><li><code>GetLength(0)</code> dá o número de linhas e <code>GetLength(1)</code> o de colunas.</li><li>Para percorrer, use um <code>for</code> dentro de outro.</li></ul></div>
+
+<p>Um array comum é uma fila de compartimentos, como a maleta do post <a href="https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html" target="_blank" rel="noopener">Arrays em C#</a>. Mas o mapa de um jogo não é uma fila: é uma grade, com linhas e colunas. Para isso o C# tem as <strong>matrizes</strong>, ou arrays bidimensionais.</p>
+<p>Neste post você vai montar o mapa de um prédio abandonado, posicionar o jogador e os zumbis e desenhar tudo no console.</p>
+
+<h2>Criando a matriz</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/matrizes-em-csharp/cena-1.jpg" alt="Mascote explicando o mapa em grade com linhas e colunas" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>A vírgula dentro dos colchetes indica as duas dimensões. Você pode criar vazia, informando o tamanho, ou já com os valores:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>// 0 = chão, 1 = parede, 2 = zumbi
+int[,] mapa =
+{
+    { 1, 1, 1, 1, 1 },
+    { 1, 0, 0, 2, 1 },
+    { 1, 0, 1, 0, 1 },
+    { 1, 1, 1, 1, 1 }
+};
+
+Console.WriteLine($"Linhas: {mapa.GetLength(0)}");
+Console.WriteLine($"Colunas: {mapa.GetLength(1)}");
+Console.WriteLine($"Total de casas: {mapa.Length}");
+Console.WriteLine($"O que tem na linha 1, coluna 3? {mapa[1, 3]}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Linhas: 4
+Colunas: 5
+Total de casas: 20
+O que tem na linha 1, coluna 3? 2</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Comando</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">O que devolve</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No mapa</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa[linha, coluna]</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">o valor de uma casa</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa[1, 3]</code> é 2 (zumbi)</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa.GetLength(0)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">quantidade de linhas</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">4</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa.GetLength(1)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">quantidade de colunas</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">5</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa.Length</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">total de casas</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">20</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>new int[4, 5]</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">matriz vazia (tudo 0)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">4 linhas, 5 colunas</td></tr>
+</tbody></table></div>
+<p>A ordem é sempre <strong>linha primeiro, coluna depois</strong>. Pense em "andar para baixo, depois para o lado". E, como no array comum, os índices começam em 0.</p>
+
+<h2>Lendo e mudando uma casa</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int[,] mapa = new int[3, 3];   // tudo começa em 0 (chão)
+
+mapa[0, 2] = 2;   // zumbi no canto de cima, à direita
+mapa[1, 1] = 1;   // parede no meio
+
+if (mapa[0, 2] == 2)
+    Console.WriteLine("Cuidado: zumbi na sala do canto!");
+
+mapa[0, 2] = 0;   // zumbi derrotado
+Console.WriteLine($"Agora a casa [0, 2] vale {mapa[0, 2]}.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Cuidado: zumbi na sala do canto!
+Agora a casa [0, 2] vale 0.</code></pre>
+
+<h2>Percorrendo com for aninhado</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/matrizes-em-csharp/cena-2.jpg" alt="Mascote correndo pelo mapa ao lado de um for aninhado" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Para passar por todas as casas, use um <code>for</code> para as linhas e, dentro dele, outro para as colunas. Assim dá para desenhar o mapa inteiro:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int[,] mapa =
+{
+    { 1, 1, 1, 1, 1 },
+    { 1, 0, 0, 2, 1 },
+    { 1, 0, 1, 0, 1 },
+    { 1, 1, 1, 1, 1 }
+};
+int jogadorLinha = 2, jogadorColuna = 1;
+
+for (int l = 0; l &lt; mapa.GetLength(0); l++)
+{
+    for (int c = 0; c &lt; mapa.GetLength(1); c++)
+    {
+        if (l == jogadorLinha &amp;&amp; c == jogadorColuna)
+            Console.Write("@");
+        else if (mapa[l, c] == 1)
+            Console.Write("#");
+        else if (mapa[l, c] == 2)
+            Console.Write("Z");
+        else
+            Console.Write(".");
+    }
+    Console.WriteLine();   // fim da linha do mapa
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>#####
+#..Z#
+#@#.#
+#####</code></pre>
+<p>O <code>for</code> de fora roda uma vez por linha; o de dentro roda todas as colunas daquela linha. O <code>Console.Write</code> desenha na mesma linha e o <code>Console.WriteLine()</code> no fim pula para a próxima.</p>
+
+<h2>Contando coisas no mapa</h2>
+<p>O mesmo par de laços serve para procurar e contar. Com <code>foreach</code> fica ainda mais curto, porque ele passa por todas as casas em ordem:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int[,] mapa =
+{
+    { 2, 0, 0, 2 },
+    { 0, 1, 1, 0 },
+    { 2, 0, 0, 2 }
+};
+
+int zumbis = 0;
+foreach (int casa in mapa)
+{
+    if (casa == 2) zumbis++;
+}
+Console.WriteLine($"Zumbis no andar: {zumbis}");
+
+for (int l = 0; l &lt; mapa.GetLength(0); l++)
+    for (int c = 0; c &lt; mapa.GetLength(1); c++)
+        if (mapa[l, c] == 2)
+            Console.WriteLine($"Zumbi em [{l}, {c}]");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Zumbis no andar: 4
+Zumbi em [0, 0]
+Zumbi em [0, 3]
+Zumbi em [2, 0]
+Zumbi em [2, 3]</code></pre>
+<p>Use <code>foreach</code> quando só importa o valor, e o <code>for</code> duplo quando você precisa saber a posição.</p>
+
+<h2>Movendo o jogador sem atravessar parede</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int[,] mapa =
+{
+    { 1, 1, 1, 1 },
+    { 1, 0, 0, 1 },
+    { 1, 1, 0, 1 },
+    { 1, 1, 1, 1 }
+};
+int linha = 1, coluna = 1;
+
+Mover(0, 1);    // direita
+Mover(1, 0);    // baixo
+Mover(0, -1);   // esquerda: parede!
+
+void Mover(int dl, int dc)
+{
+    int novaLinha = linha + dl, novaColuna = coluna + dc;
+    if (mapa[novaLinha, novaColuna] == 1)
+    {
+        Console.WriteLine($"Parede em [{novaLinha}, {novaColuna}]. Você fica parado.");
+        return;
+    }
+    linha = novaLinha;
+    coluna = novaColuna;
+    Console.WriteLine($"Você foi para [{linha}, {coluna}].");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Você foi para [1, 2].
+Você foi para [2, 2].
+Parede em [2, 1]. Você fica parado.</code></pre>
+<p>Antes de mover, o código olha a casa de destino. Esse "olhar antes de pisar" é a base da colisão em jogos de grade.</p>
+
+<h2>Matriz ou array de arrays?</h2>
+<p>O C# tem outro formato parecido, o <strong>array de arrays</strong> (<em>jagged array</em>), escrito <code>int[][]</code>. Nele, cada linha é um array separado e pode ter tamanho diferente:</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Comparação</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Matriz <code>int[,]</code></th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Array de arrays <code>int[][]</code></th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Formato</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">retângulo, todas as linhas iguais</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">cada linha com seu tamanho</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Acesso</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>mapa[1, 3]</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>andares[1][3]</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Tamanho</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>GetLength(0)</code> e <code>GetLength(1)</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>andares.Length</code> e <code>andares[i].Length</code></td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Bom para</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">mapas, tabuleiros, grades</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">listas de tamanhos diferentes, como inimigos por andar</td></tr>
+</tbody></table></div>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Trocar linha e coluna.</strong> <code>mapa[coluna, linha]</code> lê a casa errada ou sai da matriz. Padronize: sempre <code>[linha, coluna]</code>.</p>
+<p><strong>2. Usar <code>Length</code> no laço.</strong> <code>mapa.Length</code> é o total de casas (20), não o número de linhas. Use <code>GetLength(0)</code> e <code>GetLength(1)</code>.</p>
+<p><strong>3. Sair da borda.</strong> <code>mapa[4, 0]</code> num mapa de 4 linhas dá <code>IndexOutOfRangeException</code>. Por isso o mapa do exemplo tem paredes em volta: o jogador nunca chega à borda.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie uma matriz <code>int</code> com 2 linhas e 3 colunas, toda zerada, e coloque o valor 5 no canto de baixo, à direita.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>int[,] m = new int[2, 3]; m[1, 2] = 5;</code></p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Num mapa <code>new int[6, 8]</code>, quanto valem <code>GetLength(0)</code>, <code>GetLength(1)</code> e <code>Length</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>6, 8 e 48.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva o laço que conta quantas paredes (valor 1) existem no mapa.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>int paredes = 0; foreach (int casa in mapa) if (casa == 1) paredes++;</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com uma matriz e dois laços você já tem a estrutura de um jogo de grade: mapa, paredes, inimigos e um jogador que anda sem atravessar nada. O mesmo formato serve para tabuleiros, planilhas e imagens.</p>
+<p>Quando o número de itens muda o tempo todo, arrays de tamanho fixo começam a atrapalhar. Aí entram as coleções.</p>
+<p>📖 Continue: <a href="https://devsnapratica.blogspot.com/2025/06/list-dictionary-e-hashset-em-c-guia.html" target="_blank" rel="noopener">List, Dictionary e HashSet em C#</a>.</p>

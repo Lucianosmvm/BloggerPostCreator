@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*const, readonly* e enum em C#","pose":"placa","placa":"CONST","alt":"Mascote do Devs na Prática segurando a placa CONST ao lado do título const, readonly e enum em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Que número é esse?","codigo":["if (vida < 35)","    vida += ervas * 25;","// 35? 25? por quê?"],"subtitulo":"Números mágicos","pose":"desconfiado","alt":"Mascote desconfiado diante de números mágicos no código"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Fixo ou na criação?","codigo":["const int VidaMaxima = 100;","","public readonly int Max;","// definido no construtor"],"subtitulo":"const × readonly","pose":"pensando","alt":"Mascote pensando na diferença entre const e readonly"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Dificuldade","codigo":["enum Dificuldade","{","    Facil,","    Normal,","    Pesadelo","}"],"subtitulo":"Opções com nome","pose":"confiante","alt":"Mascote confiante ao lado do enum Dificuldade"}]}

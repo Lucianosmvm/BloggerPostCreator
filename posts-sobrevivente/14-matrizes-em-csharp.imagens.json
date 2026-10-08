@@ -1,0 +1,4 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"*Matrizes* em C#: o mapa do seu jogo","pose":"apontando","alt":"Mascote do Devs na Prática apontando para o título Matrizes em C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"O mapa","codigo":["#####","#..Z#","#@#.#","#####","","mapa[1, 3] // zumbi"],"subtitulo":"[linha, coluna], começando em 0","pose":"explicando","alt":"Mascote explicando o mapa em grade com linhas e colunas"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Casa por casa","codigo":["for (l = 0; l < linhas; l++)","    for (c = 0; c < colunas; c++)","        Desenhar(mapa[l, c]);"],"subtitulo":"Um for dentro do outro","pose":"correndo","alt":"Mascote correndo pelo mapa ao lado de um for aninhado"}]}

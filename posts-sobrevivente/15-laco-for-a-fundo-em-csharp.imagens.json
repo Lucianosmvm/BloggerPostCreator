@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# NA PRÁTICA","titulo":"Laço *for* em C# a fundo","pose":"pulando","alt":"Mascote do Devs na Prática pulando ao lado do título Laço for em C# a fundo"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Três partes","codigo":["for (int bala = 1;  // início","     bala <= 3;     // condição","     bala++)        // passo","    Atirar();"],"subtitulo":"início → condição → corpo → passo","pose":"explicando","alt":"Mascote explicando as três partes do laço for"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"Bomba!","codigo":["for (int s = 5; s >= 1; s--)","    Console.WriteLine(s);","// 5 4 3 2 1 BOOM"],"subtitulo":"Contagem regressiva","pose":"correndo","alt":"Mascote correndo da contagem regressiva de uma bomba"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"Um a mais!","codigo":["for (int i = 0;","     i <= mochila.Length; i++)","// IndexOutOfRangeException"],"subtitulo":"Para arrays: i < Length","pose":"surpreso","alt":"Mascote surpreso com o erro de um a mais no laço for"}]}

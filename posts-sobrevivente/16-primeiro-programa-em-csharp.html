@@ -1,0 +1,126 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; vira o post de entrada da série, sem repetir variáveis e operadores, que têm posts próprios):
+  https://devsnapratica.blogspot.com/2024/10/introducao-sintaxe-basica-do-c.html
+Título: Primeiros passos no C#: instale, crie e rode seu primeiro programa
+Marcadores: C#, dicas, console (pode tirar condicionais, entrada, saida e if: têm posts próprios)
+Descrição de pesquisa: Comece no C# do zero: instale o .NET, crie um projeto de console, entenda o Program.cs, ponto e vírgula, chaves e comentários, e rode o seu primeiro programa.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote acenando: o primeiro "Olá" no console.
+  2. Mascote digitando os comandos dotnet no terminal.
+  3. Mascote explicando ponto e vírgula, chaves e comentários.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/primeiro-programa-em-csharp/capa.jpg" alt="Mascote do Devs na Prática acenando ao lado do título Primeiros passos no C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Para programar em C# você precisa do .NET SDK (gratuito) e de um editor, como o VS Code ou o Visual Studio.</li><li><code>dotnet new console</code> cria um projeto e <code>dotnet run</code> executa.</li><li>O código fica no arquivo <code>Program.cs</code>.</li><li>Toda instrução termina com <code>;</code> e blocos de código ficam entre <code>{ }</code>.</li><li><code>//</code> e <code>/* */</code> são comentários: o computador ignora.</li><li>O C# diferencia maiúsculas de minúsculas: <code>Console</code> funciona, <code>console</code> não.</li></ul></div>
+
+<p>Todo sobrevivente precisa dar o primeiro passo para fora do abrigo. Na programação, esse passo é fazer o computador obedecer a uma ordem sua, nem que seja escrever uma frase na tela.</p>
+<p>Neste post você vai preparar o ambiente, criar o primeiro projeto em C#, entender cada pedaço do código e rodar o programa. É o ponto de partida de toda a série do Devs na Prática.</p>
+
+<h2>O que você precisa instalar</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Ferramenta</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Para que serve</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Onde baixar</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">.NET SDK</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">compila e roda programas em C#</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">site oficial da Microsoft: dotnet.microsoft.com</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Visual Studio Code</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">editor leve, roda em Windows, Linux e Mac</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">code.visualstudio.com, com a extensão C# Dev Kit</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Visual Studio Community (opcional)</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">editor completo, só para Windows</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">visualstudio.microsoft.com</td></tr>
+</tbody></table></div>
+<p>Instale o .NET SDK na versão mais recente (a que estiver marcada como recomendada). Para conferir se deu certo, abra o terminal (no Windows, o PowerShell ou o Prompt de Comando) e digite:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">Terminal</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>dotnet --version</code></pre>
+<p>Se aparecer um número de versão, como <code>10.0.100</code>, está tudo pronto.</p>
+
+<h2>Criando o primeiro projeto</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/primeiro-programa-em-csharp/cena-2.jpg" alt="Mascote digitando os comandos dotnet new console e dotnet run" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>No terminal, entre na pasta onde quer guardar seus projetos e rode:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">Terminal</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>dotnet new console -n Sobrevivencia
+cd Sobrevivencia
+dotnet run</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Comando</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">O que faz</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>dotnet new console -n Sobrevivencia</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">cria a pasta <code>Sobrevivencia</code> com um projeto de console</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>cd Sobrevivencia</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">entra na pasta do projeto</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>dotnet run</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">compila e executa o programa</td></tr>
+</tbody></table></div>
+<p>O projeto novo já vem com um programa pronto, que mostra <code>Hello, World!</code>. Abra a pasta no VS Code (<strong>Arquivo → Abrir Pasta</strong>) e procure o arquivo <code>Program.cs</code>. É nele que você vai escrever.</p>
+
+<h2>Seu primeiro programa</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/primeiro-programa-em-csharp/cena-1.jpg" alt="Mascote animado ao lado do primeiro Console.WriteLine" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Apague o conteúdo do <code>Program.cs</code>, escreva o código abaixo, salve e rode <code>dotnet run</code> de novo:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine("Você acorda num abrigo subterrâneo.");
+Console.WriteLine("O rádio chia: 'Alguém aí?'");
+Console.WriteLine("Sua aventura em C# começa agora.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Você acorda num abrigo subterrâneo.
+O rádio chia: 'Alguém aí?'
+Sua aventura em C# começa agora.</code></pre>
+<p><code>Console.WriteLine</code> escreve um texto na tela e pula para a próxima linha. O texto vai entre aspas duplas. Cada linha do código vira uma linha na tela, na mesma ordem: o computador lê o programa de cima para baixo.</p>
+
+<h2>As regras básicas da escrita</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/primeiro-programa-em-csharp/cena-3.jpg" alt="Mascote explicando ponto e vírgula, chaves e comentários em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Todo idioma tem gramática, e o C# também. Estas quatro regras aparecem em qualquer programa:</p>
+<p><strong>1. Ponto e vírgula no fim de cada instrução.</strong> Ele é o ponto final do C#. Esquecer é o erro número um de quem começa.</p>
+<p><strong>2. Chaves agrupam blocos.</strong> Tudo que está entre <code>{</code> e <code>}</code> pertence ao mesmo bloco, como o corpo de um if ou de um método.</p>
+<p><strong>3. Maiúsculas importam.</strong> <code>Console</code> e <code>console</code> são coisas diferentes. Só a primeira existe.</p>
+<p><strong>4. Comentários são ignorados.</strong> Servem para explicar o código para quem lê.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>// Comentário de uma linha: o computador ignora tudo depois das barras
+Console.WriteLine("Checando suprimentos...");
+
+/*
+   Comentário de várias linhas.
+   Útil para explicar um trecho maior.
+*/
+Console.WriteLine("Água: ok");   // também dá para comentar no fim da linha
+
+if (true)
+{
+    Console.WriteLine("Tudo entre as chaves é um bloco.");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Checando suprimentos...
+Água: ok
+Tudo entre as chaves é um bloco.</code></pre>
+
+<h2>E o tal do class Program?</h2>
+<p>Em tutoriais mais antigos (e em muitos códigos de empresa), o mesmo programa aparece assim:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>using System;
+
+namespace Sobrevivencia
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Você acorda num abrigo subterrâneo.");
+        }
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Você acorda num abrigo subterrâneo.</code></pre>
+<p>Os dois jeitos fazem a mesma coisa. Desde o .NET 6, o C# aceita escrever o código "solto" no <code>Program.cs</code> (os <strong>top-level statements</strong>) e monta essa estrutura por baixo dos panos. O <code>Main</code> é o ponto de entrada: é por ele que o programa começa. Nos posts da série usamos o formato curto, e o formato completo quando ele for necessário.</p>
+
+<h2>Lendo mensagens de erro</h2>
+<p>Errar faz parte. O importante é saber ler o que o compilador diz. Se você esquecer um ponto e vírgula:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine("Sem ponto e vírgula")</code></pre>
+<p>o <code>dotnet run</code> mostra algo como <code>Program.cs(1,41): error CS1002: ; expected</code>. Leia assim: arquivo <code>Program.cs</code>, linha 1, coluna 41, erro: "esperava um ;". O número da linha leva você direto ao problema.</p>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Mensagem (em inglês)</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">O que costuma ser</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>; expected</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">faltou ponto e vírgula</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>} expected</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">uma chave foi aberta e não foi fechada</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>The name 'console' does not exist</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">maiúscula/minúscula errada, ou nome digitado errado</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>Newline in constant</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">faltou fechar as aspas do texto</td></tr>
+</tbody></table></div>
+
+<h2>Próximos passos na série</h2>
+<p>Agora que o seu ambiente funciona, siga a trilha na ordem:</p>
+<ol>
+<li><a href="https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html" target="_blank" rel="noopener">Variáveis em C#</a>: guardar vida, munição e nome.</li>
+<li><a href="https://devsnapratica.blogspot.com/2024/10/entrada-e-saida-em-c.html" target="_blank" rel="noopener">Console.WriteLine e Console.ReadLine</a>: conversar com o jogador.</li>
+<li><a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if</a>: tomar decisões.</li>
+<li><a href="https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html" target="_blank" rel="noopener">Laços de repetição</a>: repetir ações.</li>
+<li><a href="https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html" target="_blank" rel="noopener">Arrays</a>: o inventário.</li>
+<li><a href="https://devsnapratica.blogspot.com/2024/10/funcoes-em-c-sintaxe-e-criacao-de.html" target="_blank" rel="noopener">Métodos</a> e <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">classes</a>: organizar o jogo.</li>
+</ol>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um programa que mostre o nome do seu personagem numa linha e "Pronto para sair do abrigo" na linha de baixo.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>Console.WriteLine("Leon");</code> e <code>Console.WriteLine("Pronto para sair do abrigo");</code>. Cada <code>WriteLine</code> vira uma linha.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">O que está errado em <code>console.WriteLine("Oi");</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>O <code>c</code> minúsculo. O certo é <code>Console</code>, com C maiúsculo.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Qual comando cria um projeto de console chamado <code>Abrigo</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>dotnet new console -n Abrigo</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Você instalou o .NET, criou um projeto, escreveu e rodou o primeiro programa, e já sabe ler um erro do compilador. Parece pouco, mas é a porta de saída do abrigo: daqui para frente, cada post da série adiciona uma ferramenta nova ao seu kit.</p>
+<p>📖 Continue a série: <a href="https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html" target="_blank" rel="noopener">Variáveis em C#</a>.</p>

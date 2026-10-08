@@ -1,0 +1,159 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; aprofunda constantes sem repetir o básico do post de variáveis):
+  https://devsnapratica.blogspot.com/2026/10/constantes-em-c-guia-completo-para.html
+Título: const, readonly e enum em C#: valores que não mudam no seu jogo
+Marcadores: manter os atuais (boas práticas, C#, constantes, dicas, programação)
+Descrição de pesquisa: Entenda a diferença entre const, readonly, static readonly e enum em C# com um jogo de sobrevivência, e acabe com os números mágicos do seu código. Com desafio.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote desconfiado diante de números mágicos no código.
+  2. Mascote comparando const e readonly.
+  3. Mascote com placa "ENUM" e a lista de dificuldades.
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/const-readonly-enum-em-csharp/capa.jpg" alt="Mascote do Devs na Prática segurando a placa CONST ao lado do título const, readonly e enum em C#" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>Número mágico é um valor solto no código sem explicação, como <code>if (vida &gt; 37)</code>.</li><li><code>const</code> é um valor fixo, conhecido ao compilar: números, textos e bool.</li><li><code>readonly</code> é um campo que só pode ser definido na criação do objeto (na declaração ou no construtor).</li><li><code>static readonly</code> é um valor único para a classe, calculado quando o programa roda.</li><li><code>enum</code> dá nome a um conjunto fechado de opções, como as dificuldades do jogo.</li></ul></div>
+
+<p>No post de <a href="https://devsnapratica.blogspot.com/2024/10/tudo-sobre-variaveis-em-c.html" target="_blank" rel="noopener">variáveis em C#</a> você viu o básico do <code>const</code>. Aqui vamos mais fundo: quando usar <code>const</code>, quando usar <code>readonly</code>, o que muda com <code>static</code> e como o <code>enum</code> organiza opções fixas.</p>
+
+<h2>O problema dos números mágicos</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/const-readonly-enum-em-csharp/cena-1.jpg" alt="Mascote desconfiado diante de números mágicos no código" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int vida = 30;
+int ervas = 2;
+
+if (vida &lt; 35)
+    Console.WriteLine("Use uma erva!");
+
+vida = Math.Min(vida + ervas * 25, 100);
+Console.WriteLine($"Vida: {vida}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Use uma erva!
+Vida: 80</code></pre>
+<p>O que é 35? E 25? E se 100 aparecer em dez arquivos e a vida máxima mudar para 120? Esses valores soltos são os <strong>números mágicos</strong>: funcionam, mas ninguém sabe o que significam e mudar um deles é caça ao tesouro.</p>
+
+<h2>const: o valor fixo para sempre</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>const int VidaMaxima = 100;
+const int VidaCritica = 35;
+const int CuraPorErva = 25;
+const string NomeDoJogo = "Cidade Abandonada";
+
+int vida = 30;
+int ervas = 2;
+
+Console.WriteLine($"== {NomeDoJogo} ==");
+if (vida &lt; VidaCritica)
+    Console.WriteLine("Use uma erva!");
+
+vida = Math.Min(vida + ervas * CuraPorErva, VidaMaxima);
+Console.WriteLine($"Vida: {vida}");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>== Cidade Abandonada ==
+Use uma erva!
+Vida: 80</code></pre>
+<p>O resultado é igual, mas agora o código explica a regra. E a vida máxima muda em um lugar só.</p>
+<p>O <code>const</code> tem limites: o valor precisa ser conhecido <strong>na hora de compilar</strong>, e só funciona com tipos simples, como números, <code>bool</code>, <code>char</code> e <code>string</code>. O compilador copia o valor para cada lugar onde a constante é usada.</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>const DateTime Inicio = DateTime.Now;        // erro: só se sabe ao rodar
+const int[] Andares = { 1, 2, 3 };           // erro: array não pode ser const</code></pre>
+
+<h2>readonly: definido na criação, depois trancado</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/const-readonly-enum-em-csharp/cena-2.jpg" alt="Mascote pensando na diferença entre const e readonly" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>E quando o valor só é conhecido quando o objeto nasce? Cada personagem tem uma vida máxima diferente, escolhida na criação, que depois não deve mudar. É o caso do <code>readonly</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Personagem tanque = new Personagem("Brutus", 150);
+Personagem batedor = new Personagem("Ada", 80);
+
+tanque.Curar(500);
+batedor.Curar(500);
+
+class Personagem
+{
+    public readonly string Nome;
+    public readonly int VidaMaxima;
+    public int Vida;
+
+    public Personagem(string nome, int vidaMaxima)
+    {
+        Nome = nome;
+        VidaMaxima = vidaMaxima;   // só aqui (ou na declaração) pode atribuir
+        Vida = vidaMaxima / 2;
+    }
+
+    public void Curar(int quantidade)
+    {
+        Vida = Math.Min(Vida + quantidade, VidaMaxima);
+        // VidaMaxima = 999;   // erro: readonly fora do construtor
+        Console.WriteLine($"{Nome}: {Vida}/{VidaMaxima}");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Brutus: 150/150
+Ada: 80/80</code></pre>
+<p>Cada objeto tem o seu próprio valor de <code>VidaMaxima</code>, mas depois do construtor ninguém consegue mudá-lo, nem a própria classe.</p>
+
+<h2>static readonly: um valor para todos, calculado ao rodar</h2>
+<p>Quando o valor é o mesmo para todo mundo, mas não dá para ser <code>const</code> (porque é um array, um objeto ou depende de algo calculado), use <code>static readonly</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.WriteLine($"Itens iniciais: {string.Join(", ", Regras.KitInicial)}");
+Console.WriteLine($"Servidor ligado em: {Regras.Inicio:yyyy}");
+
+static class Regras
+{
+    public static readonly string[] KitInicial = { "faca", "lanterna", "erva" };
+    public static readonly DateTime Inicio = new DateTime(2026, 10, 31);
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Itens iniciais: faca, lanterna, erva
+Servidor ligado em: 2026</code></pre>
+<div style="border-left:4px solid #f5c518;background:rgba(245,197,24,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 6px;font-weight:bold;">💡 readonly não congela o array</p><p style="margin:0;"><code>static readonly string[] KitInicial</code> impede trocar o array inteiro (<code>KitInicial = ...</code>), mas ainda deixa mudar um item (<code>KitInicial[0] = "pistola"</code>). Para uma lista que ninguém altera, use <code>IReadOnlyList&lt;string&gt;</code> ou um <code>ImmutableArray</code>.</p></div>
+
+<h2>const ou readonly?</h2>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Comparação</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);"><code>const</code></th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);"><code>readonly</code></th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);"><code>static readonly</code></th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Quando o valor é definido</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">ao compilar</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">ao criar o objeto</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">ao rodar, uma vez</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Um valor por</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">programa</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">objeto</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">classe</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Tipos aceitos</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">número, bool, char, string, enum</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">qualquer tipo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">qualquer tipo</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">Exemplo no jogo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>VidaMaxima = 100</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">vida máxima de cada personagem</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">kit inicial, data do evento</td></tr>
+</tbody></table></div>
+<p>Regra prática: se o valor é uma verdade universal e simples (vida máxima, tamanho do pente), <code>const</code>. Se depende do objeto, <code>readonly</code>. Se é um objeto ou lista compartilhada, <code>static readonly</code>.</p>
+
+<h2>enum: um conjunto fechado de opções</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/const-readonly-enum-em-csharp/cena-3.jpg" alt="Mascote confiante ao lado do enum Dificuldade" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Dificuldade do jogo com <code>int</code> vira confusão: 0 é fácil? 2 é difícil? E se alguém passar 7? O <code>enum</code> cria um tipo com opções nomeadas:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Dificuldade escolhida = Dificuldade.Pesadelo;
+
+Console.WriteLine($"Dificuldade: {escolhida}");
+Console.WriteLine($"Zumbis por sala: {ZumbisPorSala(escolhida)}");
+
+foreach (Dificuldade d in Enum.GetValues&lt;Dificuldade&gt;())
+    Console.WriteLine($"  {(int)d} = {d}");
+
+static int ZumbisPorSala(Dificuldade d) =&gt; d switch
+{
+    Dificuldade.Facil =&gt; 1,
+    Dificuldade.Normal =&gt; 3,
+    Dificuldade.Pesadelo =&gt; 6,
+    _ =&gt; 3
+};
+
+enum Dificuldade
+{
+    Facil,
+    Normal,
+    Pesadelo
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Dificuldade: Pesadelo
+Zumbis por sala: 6
+  0 = Facil
+  1 = Normal
+  2 = Pesadelo</code></pre>
+<p>Por baixo, cada opção é um número (0, 1, 2...), mas no código você escreve <code>Dificuldade.Pesadelo</code>. O compilador não deixa passar um texto qualquer onde se espera uma <code>Dificuldade</code>, e o editor sugere as opções enquanto você digita.</p>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Tudo vira <code>const</code>.</strong> Valores que mudam por fase ou por personagem não são constantes. Use <code>readonly</code> ou uma configuração.</p>
+<p><strong>2. <code>const</code> público em biblioteca.</strong> Como o valor é copiado ao compilar, quem usa a sua DLL continua com o valor antigo até recompilar. Em bibliotecas, prefira <code>static readonly</code> para valores que podem mudar entre versões.</p>
+<p><strong>3. Enum convertido de qualquer número.</strong> <code>(Dificuldade)7</code> compila e cria um valor que não existe na lista. Ao converter números vindos de fora, confira com <code>Enum.IsDefined</code>.</p>
+<p><strong>4. Nome que não explica.</strong> <code>const int Cem = 100;</code> não resolve nada. O nome deve dizer o significado: <code>VidaMaxima</code>.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;"><code>const int[] Saidas = { 1, 4 };</code> compila? Se não, como resolver?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>Não: array não pode ser <code>const</code>. Use <code>static readonly int[] Saidas = { 1, 4 };</code>.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Cada arma tem um dano base escolhido na criação que nunca muda. <code>const</code> ou <code>readonly</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>readonly</code>, porque o valor muda de uma arma para outra e é definido no construtor.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Crie um enum <code>Clima</code> com <code>Sol</code>, <code>Chuva</code> e <code>Neblina</code> e uma expressão <code>switch</code> que devolve a visibilidade em metros (100, 60 e 20).</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>enum Clima { Sol, Chuva, Neblina }</code> e <code>int Visibilidade(Clima c) =&gt; c switch { Clima.Sol =&gt; 100, Clima.Chuva =&gt; 60, _ =&gt; 20 };</code></p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Trocar números mágicos por <code>const</code>, guardar o que nasce com o objeto em <code>readonly</code> e organizar opções com <code>enum</code> deixa o código do jogo mais fácil de ler e muito mais difícil de quebrar sem querer.</p>
+<p>📖 Continue estudando: <a href="https://devsnapratica.blogspot.com/2024/10/classes-e-objetos-em-c-definicao-e.html" target="_blank" rel="noopener">Classes e objetos em C#</a>.</p>

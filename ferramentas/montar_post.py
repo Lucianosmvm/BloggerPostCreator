@@ -12,6 +12,7 @@ Tags da fonte (o resto é HTML normal, passa direto):
   <codigo>C# cru</codigo>              bloco de código (o script escapa < > &)
   <codigo entrada="Ana|25">            stdin para Console.ReadLine (| = nova linha)
   <codigo nao-roda>                    trecho que não compila sozinho / mostra erro
+  <codigo terminal>                    comandos de terminal (rótulo "Terminal", não roda)
   <saida>texto</saida>                 "Saída esperada" do <codigo> anterior
   <tabela>A | B\n1 | 2</tabela>        tabela, primeira linha = cabeçalho (` vira <code>)
   <desafio><q>pergunta</q><r>resposta</r>...</desafio>   card DESAFIO
@@ -87,7 +88,8 @@ def montar(fonte):
         attrs = atributos(m.group(1))
         cod = limpar(m.group(2))
         blocos.append({"codigo": cod, "attrs": attrs, "saida": None})
-        return ('<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p>'
+        rotulo = "Terminal" if attrs.get("terminal") else "C#"
+        return (f'<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">{rotulo}</p>'
                 f'<pre style="{COD}"><code>{html.escape(cod, quote=False)}</code></pre>')
 
     def f_saida(m):
@@ -107,11 +109,16 @@ def montar(fonte):
     return t, blocos
 
 
+def sem_espaco_final(texto):
+    # espaço no fim da linha não aparece na tela: não conta na comparação
+    return [l.rstrip() for l in texto.split("\n")]
+
+
 def verificar(blocos):
     erros = 0
     pasta = tempfile.mkdtemp(prefix="post-cs-")
     for i, b in enumerate(blocos, 1):
-        if b["attrs"].get("nao-roda"):
+        if b["attrs"].get("nao-roda") or b["attrs"].get("terminal"):
             continue
         arq = os.path.join(pasta, f"bloco{i}.cs")
         open(arq, "w", encoding="utf8").write(b["codigo"] + "\n")
@@ -129,7 +136,7 @@ def verificar(blocos):
         if r.returncode != 0 and not real:
             print(f"✗ bloco {i}: não compilou\n{r.stdout}{r.stderr}\n--- código:\n{b['codigo']}\n")
             erros += 1
-        elif b["saida"] is not None and real != esperado:
+        elif b["saida"] is not None and sem_espaco_final(real) != sem_espaco_final(esperado):
             print(f"✗ bloco {i}: saída diferente\n--- no post:\n{b['saida']}\n--- real:\n{real}\n")
             erros += 1
         else:

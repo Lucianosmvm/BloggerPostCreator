@@ -1,0 +1,207 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; vira um post específico de matrizes para não competir com o post completo de arrays):
+  https://devsnapratica.blogspot.com/2024/10/introducao-arrays-e-colecoes-em-c.html
+Título: Matrizes em C#: montando o mapa do jogo com arrays de duas dimensões
+Marcadores: manter "array" e "C#"; pode tirar "dictionary", "list" e "coleção" (já têm post próprio)
+Descrição de pesquisa: Aprenda matrizes (arrays bidimensionais) em C# montando o mapa de um jogo de sobrevivência: criar, acessar linha e coluna, percorrer com for aninhado e GetLength.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote ao lado do mapa em grade com linhas e colunas.
+  2. Mascote andando pelo mapa com for aninhado.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Matriz é um array com duas dimensões: linhas e colunas, como um tabuleiro.
+Cria com `int[,] mapa = new int[3, 4];` (3 linhas, 4 colunas).
+Acessa com dois índices: `mapa[linha, coluna]`, ambos começando em 0.
+`GetLength(0)` dá o número de linhas e `GetLength(1)` o de colunas.
+Para percorrer, use um `for` dentro de outro.
+</resumo>
+
+<p>Um array comum é uma fila de compartimentos, como a maleta do post <a href="https://devsnapratica.blogspot.com/2025/06/arrays-em-c-guia-facil-e-pratico.html" target="_blank" rel="noopener">Arrays em C#</a>. Mas o mapa de um jogo não é uma fila: é uma grade, com linhas e colunas. Para isso o C# tem as <strong>matrizes</strong>, ou arrays bidimensionais.</p>
+<p>Neste post você vai montar o mapa de um prédio abandonado, posicionar o jogador e os zumbis e desenhar tudo no console.</p>
+
+<h2>Criando a matriz</h2>
+<!-- CENA 1 -->
+<p>A vírgula dentro dos colchetes indica as duas dimensões. Você pode criar vazia, informando o tamanho, ou já com os valores:</p>
+<codigo>
+// 0 = chão, 1 = parede, 2 = zumbi
+int[,] mapa =
+{
+    { 1, 1, 1, 1, 1 },
+    { 1, 0, 0, 2, 1 },
+    { 1, 0, 1, 0, 1 },
+    { 1, 1, 1, 1, 1 }
+};
+
+Console.WriteLine($"Linhas: {mapa.GetLength(0)}");
+Console.WriteLine($"Colunas: {mapa.GetLength(1)}");
+Console.WriteLine($"Total de casas: {mapa.Length}");
+Console.WriteLine($"O que tem na linha 1, coluna 3? {mapa[1, 3]}");
+</codigo>
+<saida>
+Linhas: 4
+Colunas: 5
+Total de casas: 20
+O que tem na linha 1, coluna 3? 2
+</saida>
+<tabela>
+Comando | O que devolve | No mapa
+`mapa[linha, coluna]` | o valor de uma casa | `mapa[1, 3]` é 2 (zumbi)
+`mapa.GetLength(0)` | quantidade de linhas | 4
+`mapa.GetLength(1)` | quantidade de colunas | 5
+`mapa.Length` | total de casas | 20
+`new int[4, 5]` | matriz vazia (tudo 0) | 4 linhas, 5 colunas
+</tabela>
+<p>A ordem é sempre <strong>linha primeiro, coluna depois</strong>. Pense em "andar para baixo, depois para o lado". E, como no array comum, os índices começam em 0.</p>
+
+<h2>Lendo e mudando uma casa</h2>
+<codigo>
+int[,] mapa = new int[3, 3];   // tudo começa em 0 (chão)
+
+mapa[0, 2] = 2;   // zumbi no canto de cima, à direita
+mapa[1, 1] = 1;   // parede no meio
+
+if (mapa[0, 2] == 2)
+    Console.WriteLine("Cuidado: zumbi na sala do canto!");
+
+mapa[0, 2] = 0;   // zumbi derrotado
+Console.WriteLine($"Agora a casa [0, 2] vale {mapa[0, 2]}.");
+</codigo>
+<saida>
+Cuidado: zumbi na sala do canto!
+Agora a casa [0, 2] vale 0.
+</saida>
+
+<h2>Percorrendo com for aninhado</h2>
+<!-- CENA 2 -->
+<p>Para passar por todas as casas, use um <code>for</code> para as linhas e, dentro dele, outro para as colunas. Assim dá para desenhar o mapa inteiro:</p>
+<codigo>
+int[,] mapa =
+{
+    { 1, 1, 1, 1, 1 },
+    { 1, 0, 0, 2, 1 },
+    { 1, 0, 1, 0, 1 },
+    { 1, 1, 1, 1, 1 }
+};
+int jogadorLinha = 2, jogadorColuna = 1;
+
+for (int l = 0; l < mapa.GetLength(0); l++)
+{
+    for (int c = 0; c < mapa.GetLength(1); c++)
+    {
+        if (l == jogadorLinha && c == jogadorColuna)
+            Console.Write("@");
+        else if (mapa[l, c] == 1)
+            Console.Write("#");
+        else if (mapa[l, c] == 2)
+            Console.Write("Z");
+        else
+            Console.Write(".");
+    }
+    Console.WriteLine();   // fim da linha do mapa
+}
+</codigo>
+<saida>
+#####
+#..Z#
+#@#.#
+#####
+</saida>
+<p>O <code>for</code> de fora roda uma vez por linha; o de dentro roda todas as colunas daquela linha. O <code>Console.Write</code> desenha na mesma linha e o <code>Console.WriteLine()</code> no fim pula para a próxima.</p>
+
+<h2>Contando coisas no mapa</h2>
+<p>O mesmo par de laços serve para procurar e contar. Com <code>foreach</code> fica ainda mais curto, porque ele passa por todas as casas em ordem:</p>
+<codigo>
+int[,] mapa =
+{
+    { 2, 0, 0, 2 },
+    { 0, 1, 1, 0 },
+    { 2, 0, 0, 2 }
+};
+
+int zumbis = 0;
+foreach (int casa in mapa)
+{
+    if (casa == 2) zumbis++;
+}
+Console.WriteLine($"Zumbis no andar: {zumbis}");
+
+for (int l = 0; l < mapa.GetLength(0); l++)
+    for (int c = 0; c < mapa.GetLength(1); c++)
+        if (mapa[l, c] == 2)
+            Console.WriteLine($"Zumbi em [{l}, {c}]");
+</codigo>
+<saida>
+Zumbis no andar: 4
+Zumbi em [0, 0]
+Zumbi em [0, 3]
+Zumbi em [2, 0]
+Zumbi em [2, 3]
+</saida>
+<p>Use <code>foreach</code> quando só importa o valor, e o <code>for</code> duplo quando você precisa saber a posição.</p>
+
+<h2>Movendo o jogador sem atravessar parede</h2>
+<codigo>
+int[,] mapa =
+{
+    { 1, 1, 1, 1 },
+    { 1, 0, 0, 1 },
+    { 1, 1, 0, 1 },
+    { 1, 1, 1, 1 }
+};
+int linha = 1, coluna = 1;
+
+Mover(0, 1);    // direita
+Mover(1, 0);    // baixo
+Mover(0, -1);   // esquerda: parede!
+
+void Mover(int dl, int dc)
+{
+    int novaLinha = linha + dl, novaColuna = coluna + dc;
+    if (mapa[novaLinha, novaColuna] == 1)
+    {
+        Console.WriteLine($"Parede em [{novaLinha}, {novaColuna}]. Você fica parado.");
+        return;
+    }
+    linha = novaLinha;
+    coluna = novaColuna;
+    Console.WriteLine($"Você foi para [{linha}, {coluna}].");
+}
+</codigo>
+<saida>
+Você foi para [1, 2].
+Você foi para [2, 2].
+Parede em [2, 1]. Você fica parado.
+</saida>
+<p>Antes de mover, o código olha a casa de destino. Esse "olhar antes de pisar" é a base da colisão em jogos de grade.</p>
+
+<h2>Matriz ou array de arrays?</h2>
+<p>O C# tem outro formato parecido, o <strong>array de arrays</strong> (<em>jagged array</em>), escrito <code>int[][]</code>. Nele, cada linha é um array separado e pode ter tamanho diferente:</p>
+<tabela>
+Comparação | Matriz `int[,]` | Array de arrays `int[][]`
+Formato | retângulo, todas as linhas iguais | cada linha com seu tamanho
+Acesso | `mapa[1, 3]` | `andares[1][3]`
+Tamanho | `GetLength(0)` e `GetLength(1)` | `andares.Length` e `andares[i].Length`
+Bom para | mapas, tabuleiros, grades | listas de tamanhos diferentes, como inimigos por andar
+</tabela>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Trocar linha e coluna.</strong> <code>mapa[coluna, linha]</code> lê a casa errada ou sai da matriz. Padronize: sempre <code>[linha, coluna]</code>.</p>
+<p><strong>2. Usar <code>Length</code> no laço.</strong> <code>mapa.Length</code> é o total de casas (20), não o número de linhas. Use <code>GetLength(0)</code> e <code>GetLength(1)</code>.</p>
+<p><strong>3. Sair da borda.</strong> <code>mapa[4, 0]</code> num mapa de 4 linhas dá <code>IndexOutOfRangeException</code>. Por isso o mapa do exemplo tem paredes em volta: o jogador nunca chega à borda.</p>
+
+<desafio>
+<q>Crie uma matriz `int` com 2 linhas e 3 colunas, toda zerada, e coloque o valor 5 no canto de baixo, à direita.</q>
+<r>`int[,] m = new int[2, 3]; m[1, 2] = 5;`</r>
+<q>Num mapa `new int[6, 8]`, quanto valem `GetLength(0)`, `GetLength(1)` e `Length`?</q>
+<r>6, 8 e 48.</r>
+<q>Escreva o laço que conta quantas paredes (valor 1) existem no mapa.</q>
+<r>`int paredes = 0; foreach (int casa in mapa) if (casa == 1) paredes++;`</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Com uma matriz e dois laços você já tem a estrutura de um jogo de grade: mapa, paredes, inimigos e um jogador que anda sem atravessar nada. O mesmo formato serve para tabuleiros, planilhas e imagens.</p>
+<p>Quando o número de itens muda o tempo todo, arrays de tamanho fixo começam a atrapalhar. Aí entram as coleções.</p>
+<p>📖 Continue: <a href="https://devsnapratica.blogspot.com/2025/06/list-dictionary-e-hashset-em-c-guia.html" target="_blank" rel="noopener">List, Dictionary e HashSet em C#</a>.</p>

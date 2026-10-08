@@ -1,0 +1,147 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; vira um post só do for, mais a fundo, para não competir com o post completo de laços):
+  https://devsnapratica.blogspot.com/2024/10/entendendo-o-laco-for-no-c.html
+Título: Laço for em C# a fundo: contagem regressiva, passos e for aninhado
+Marcadores: manter os atuais (C#, for, laço, lista)
+Descrição de pesquisa: Domine o for em C# com um jogo de sobrevivência: as 3 partes do for, contagem regressiva, passo diferente de 1, percorrer de trás para frente, for aninhado e erros de off-by-one.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote explicando as três partes do for.
+  2. Mascote correndo da contagem regressiva da bomba.
+  3. Mascote surpreso com o erro de um a mais (off-by-one).
+-->
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/laco-for-a-fundo-em-csharp/capa.jpg" alt="Mascote do Devs na Prática pulando ao lado do título Laço for em C# a fundo" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<!-- VIDEO -->
+
+<div style="border-left:4px solid #a78bfa;background:rgba(167,139,250,.08);padding:14px 18px;margin:24px 0;border-radius:6px;"><p style="margin:0 0 8px;font-weight:bold;">Resumo rápido</p><ul><li>O <code>for</code> tem três partes: início, condição e passo, separadas por <code>;</code>.</li><li>O passo não precisa ser <code>i++</code>: pode ser <code>i--</code>, <code>i += 2</code> ou o que você quiser.</li><li>Contagem regressiva: comece alto, use <code>i &gt;= 0</code> e <code>i--</code>.</li><li>Para percorrer um array do fim para o começo, comece em <code>Length - 1</code>.</li><li>Um for dentro de outro passa por todas as combinações.</li><li>O erro mais comum é o "um a mais": <code>&lt;=</code> onde deveria ser <code>&lt;</code>.</li></ul></div>
+
+<p>No post <a href="https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html" target="_blank" rel="noopener">Laços de repetição em C#</a> você viu while, do while, for e foreach lado a lado. Aqui o foco é só o <code>for</code>, o laço que você mais vai usar quando sabe quantas vezes repetir, e os truques que ele permite.</p>
+
+<h2>As três partes do for</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/laco-for-a-fundo-em-csharp/cena-1.jpg" alt="Mascote explicando as três partes do laço for" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>for (int bala = 1; bala &lt;= 3; bala++)
+{
+    Console.WriteLine($"Disparo {bala}");
+}
+Console.WriteLine("Pente vazio.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Disparo 1
+Disparo 2
+Disparo 3
+Pente vazio.</code></pre>
+<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;min-width:420px;"><thead><tr><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Parte</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">No exemplo</th><th style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);text-align:left;background:rgba(167,139,250,.12);">Quando roda</th></tr></thead><tbody>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">início</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>int bala = 1</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">uma vez, antes de tudo</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">condição</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>bala &lt;= 3</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">antes de cada volta; se for <code>false</code>, o laço acaba</td></tr>
+<tr><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">passo</td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);"><code>bala++</code></td><td style="padding:10px 12px;border:1px solid rgba(167,139,250,.25);">depois de cada volta</td></tr>
+</tbody></table></div>
+<p>A ordem real é: início → condição → corpo → passo → condição → corpo → passo... até a condição dar <code>false</code>. Na quarta checagem, <code>bala</code> vale 4, a condição falha e o programa segue para "Pente vazio".</p>
+
+<h2>Contagem regressiva</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/laco-for-a-fundo-em-csharp/cena-2.jpg" alt="Mascote correndo da contagem regressiva de uma bomba" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p>Para contar para trás, inverta tudo: comece no maior número, mantenha o laço enquanto for maior ou igual ao menor, e use <code>--</code>:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>for (int segundos = 5; segundos &gt;= 1; segundos--)
+{
+    Console.WriteLine($"Bomba em {segundos}...");
+}
+Console.WriteLine("BOOM! Ainda bem que você correu.");</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Bomba em 5...
+Bomba em 4...
+Bomba em 3...
+Bomba em 2...
+Bomba em 1...
+BOOM! Ainda bem que você correu.</code></pre>
+
+<h2>Passos diferentes de 1</h2>
+<p>O passo pode ser qualquer conta. Com <code>+= 2</code> você pula de dois em dois; com <code>*= 2</code>, dobra a cada volta:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Console.Write("Patrulha nas salas pares: ");
+for (int sala = 0; sala &lt;= 8; sala += 2)
+{
+    Console.Write($"{sala} ");
+}
+Console.WriteLine();
+
+Console.Write("Zumbis a cada noite: ");
+for (int zumbis = 1; zumbis &lt;= 32; zumbis *= 2)
+{
+    Console.Write($"{zumbis} ");
+}
+Console.WriteLine();</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Patrulha nas salas pares: 0 2 4 6 8
+Zumbis a cada noite: 1 2 4 8 16 32</code></pre>
+
+<h2>Percorrendo um array de trás para frente</h2>
+<p>O último índice de um array é <code>Length - 1</code>. Começando dali e descendo até 0, você lê a mochila do fim para o começo, como uma pilha:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] mochila = { "lanterna", "erva", "pistola", "mapa" };
+
+for (int i = mochila.Length - 1; i &gt;= 0; i--)
+{
+    Console.WriteLine($"[{i}] {mochila[i]}");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>[3] mapa
+[2] pistola
+[1] erva
+[0] lanterna</code></pre>
+<p>Esse é um dos motivos para escolher <code>for</code> em vez de <code>foreach</code>: o <code>foreach</code> só anda para frente, e o <code>for</code> te dá o índice e a direção.</p>
+
+<h2>for aninhado: todas as combinações</h2>
+<p>Um <code>for</code> dentro de outro roda o de dentro inteiro para cada volta do de fora. Serve para grades, tabelas e combinações:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] armas = { "Faca", "Pistola" };
+string[] alvos = { "Zumbi", "Cão" };
+
+for (int a = 0; a &lt; armas.Length; a++)
+{
+    for (int b = 0; b &lt; alvos.Length; b++)
+    {
+        Console.WriteLine($"{armas[a]} contra {alvos[b]}");
+    }
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Faca contra Zumbi
+Faca contra Cão
+Pistola contra Zumbi
+Pistola contra Cão</code></pre>
+<p>São 2 armas × 2 alvos = 4 linhas. Cuidado com o tamanho: 1.000 × 1.000 já dá um milhão de voltas. Para desenhar mapas em grade, veja o post de <a href="https://devsnapratica.blogspot.com/2024/10/introducao-arrays-e-colecoes-em-c.html" target="_blank" rel="noopener">matrizes em C#</a>.</p>
+
+<h2>break e continue dentro do for</h2>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>int[] portas = { 0, 0, 2, 0, 1, 0 };   // 0 = vazia, 2 = zumbi, 1 = saída
+
+for (int i = 0; i &lt; portas.Length; i++)
+{
+    if (portas[i] == 2)
+    {
+        Console.WriteLine($"Porta {i}: zumbi! Pulando esta.");
+        continue;   // vai direto para a próxima volta
+    }
+    if (portas[i] == 1)
+    {
+        Console.WriteLine($"Porta {i}: SAÍDA encontrada!");
+        break;      // encerra o laço
+    }
+    Console.WriteLine($"Porta {i}: vazia.");
+}</code></pre>
+<p style="margin:0 0 4px;font-size:13px;opacity:.75;">Saída esperada</p><pre style="background:rgba(128,128,128,.12);border:1px dashed rgba(128,128,128,.45);padding:12px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>Porta 0: vazia.
+Porta 1: vazia.
+Porta 2: zumbi! Pulando esta.
+Porta 3: vazia.
+Porta 4: SAÍDA encontrada!</code></pre>
+<p>A porta 5 nem é visitada: o <code>break</code> acabou com o laço ao achar a saída.</p>
+
+<h2>Erros comuns</h2>
+<div class="separator" style="clear:both;text-align:center;margin:24px 0;"><img src="https://lucianosmvm.github.io/BloggerPostCreator/img/posts/laco-for-a-fundo-em-csharp/cena-3.jpg" alt="Mascote surpreso com o erro de um a mais no laço for" width="1200" style="max-width:100%;height:auto;border-radius:10px;" loading="lazy"/></div>
+<p><strong>1. O erro do "um a mais" (off-by-one).</strong> É o bug mais famoso do <code>for</code>. Com <code>&lt;=</code>, o laço tenta acessar um índice que não existe:</p>
+<p style="margin:16px 0 4px;font-size:13px;opacity:.75;">C#</p><pre style="background:#1e1f22;color:#f1f1f1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:14px;line-height:1.5;margin:0 0 20px;white-space:pre;"><code>string[] mochila = { "lanterna", "erva", "pistola" };
+for (int i = 0; i &lt;= mochila.Length; i++)   // i chega a 3
+    Console.WriteLine(mochila[i]);           // IndexOutOfRangeException</code></pre>
+<p>Para arrays, a regra é sempre <code>i = 0</code> e <code>i &lt; Length</code>.</p>
+<p><strong>2. Laço infinito.</strong> <code>for (int i = 10; i &gt; 0; i++)</code> nunca termina: o <code>i</code> sobe, e a condição continua verdadeira. O passo precisa andar na direção que faz a condição ficar falsa.</p>
+<p><strong>3. Ponto e vírgula depois do for.</strong> <code>for (int i = 0; i &lt; 3; i++);</code> com <code>;</code> no fim roda um laço vazio, e o bloco abaixo executa uma vez só.</p>
+<p><strong>4. Mudar o contador dentro do corpo.</strong> Mexer em <code>i</code> dentro do laço deixa o comportamento difícil de prever. Se precisa disso, um <code>while</code> costuma ser mais claro.</p>
+
+<div style="background:#1f2420;color:#eef0ea;border:3px solid #111;border-radius:10px;padding:18px 20px;margin:32px 0;"><p style="margin:0 0 4px;font:900 30px/1.1 system-ui,sans-serif;letter-spacing:2px;color:#f5c518;">DESAFIO</p><p style="margin:0 0 14px;opacity:.85;">Tente resolver antes de abrir a resposta. Sobreviveu? Vá para o próximo.</p><ol>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Escreva um for que mostre 10, 20, 30, 40 e 50.</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>for (int i = 10; i &lt;= 50; i += 10) Console.WriteLine(i);</code></p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Quantas vezes roda o corpo de <code>for (int i = 0; i &lt; 12; i += 3)</code>?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>4 vezes: com <code>i</code> valendo 0, 3, 6 e 9. No 12 a condição falha.</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Num for aninhado com 3 voltas no de fora e 5 no de dentro, quantas vezes roda o corpo de dentro?</p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p>15 vezes (3 × 5).</p></div></details></li>
+<li style="margin-bottom:14px;"><p style="margin:0 0 6px;">Corrija: <code>for (int i = 1; i &lt;= mochila.Length; i++) Console.WriteLine(mochila[i]);</code></p><details><summary style="cursor:pointer;font-weight:bold;color:#f5c518;">Ver resposta</summary><div style="margin-top:8px;"><p><code>for (int i = 0; i &lt; mochila.Length; i++)</code>. Começa em 0 e para antes do <code>Length</code>, senão pula o primeiro item e estoura no último.</p></div></details></li>
+</ol></div>
+
+<h2>Conclusão</h2>
+<p>Com as três partes do <code>for</code> sob controle, você conta para frente, para trás, de dois em dois, percorre arrays do fim para o começo e combina listas com laços aninhados. E sabendo do "um a mais", já escapa do bug que derruba muito iniciante.</p>
+<p>📖 Volte ao panorama: <a href="https://devsnapratica.blogspot.com/2024/10/lacos-de-repeticao-em-c.html" target="_blank" rel="noopener">Laços de repetição em C#: while, do while, for e foreach</a>.</p>

@@ -1,0 +1,187 @@
+<!--
+REESCREVER O POST EXISTENTE (mantém o endereço; vira um post específico para não competir com o post completo de if/else):
+  https://devsnapratica.blogspot.com/2026/10/dominando-o-if-no-c-guia-completo-para.html
+Título: If mais limpo em C#: ternário, retorno antecipado e pattern matching
+Marcadores: manter os atuais (C#, clean code, condicionais, dicas, if, lógica)
+Descrição de pesquisa: Deixe seus if em C# mais limpos: operador ternário, retorno antecipado, condições com nome, pattern matching com is e switch e o operador ??. Com desafio.
+VÍDEO: quando o vídeo sair, troque o comentário VIDEO pelo código de incorporação do YouTube.
+CENAS:
+  1. Mascote tapando os olhos diante de uma escada de if aninhados.
+  2. Mascote com uma ideia: o retorno antecipado.
+  3. Mascote confiante com o pattern matching.
+-->
+<!-- VIDEO -->
+
+<resumo>
+Este post é para quem já sabe usar if, else e else if e quer escrever condições mais fáceis de ler.
+Ternário (`? :`) escolhe entre dois valores numa linha.
+Retorno antecipado acaba com a escada de if dentro de if.
+Condições longas ficam melhores com um nome: uma variável `bool` ou um método.
+`is` e a expressão `switch` com padrões testam faixas e tipos sem repetir a variável.
+`??` dá um valor padrão quando algo é `null`.
+</resumo>
+
+<p>Se você ainda está aprendendo o básico, comece pelo post <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a>. Aqui o assunto é outro: o seu if já funciona, mas está difícil de ler. Vamos ver cinco técnicas para deixar as decisões do jogo mais limpas.</p>
+
+<h2>O problema: a escada de if</h2>
+<!-- CENA 1 -->
+<p>Abrir a porta do laboratório exige estar vivo, ter o cartão e ter energia no prédio. Escrito de qualquer jeito, vira isto:</p>
+<codigo>
+Console.WriteLine(TentarAbrir(80, true, false));
+
+static string TentarAbrir(int vida, bool temCartao, bool temEnergia)
+{
+    if (vida > 0)
+    {
+        if (temCartao)
+        {
+            if (temEnergia)
+            {
+                return "Porta aberta.";
+            }
+            else
+            {
+                return "Sem energia no prédio.";
+            }
+        }
+        else
+        {
+            return "Você precisa do cartão.";
+        }
+    }
+    else
+    {
+        return "Você está morto.";
+    }
+}
+</codigo>
+<saida>
+Sem energia no prédio.
+</saida>
+<p>Funciona, mas para achar qual mensagem pertence a qual if você precisa contar chaves. Cada nova regra empurra o código mais para a direita.</p>
+
+<h2>1. Retorno antecipado</h2>
+<!-- CENA 2 -->
+<p>Inverta as condições e saia do método assim que algo der errado. O caminho feliz fica no fim, sem nenhuma chave em volta:</p>
+<codigo>
+Console.WriteLine(TentarAbrir(80, true, false));
+Console.WriteLine(TentarAbrir(80, true, true));
+
+static string TentarAbrir(int vida, bool temCartao, bool temEnergia)
+{
+    if (vida <= 0) return "Você está morto.";
+    if (!temCartao) return "Você precisa do cartão.";
+    if (!temEnergia) return "Sem energia no prédio.";
+
+    return "Porta aberta.";
+}
+</codigo>
+<saida>
+Sem energia no prédio.
+Porta aberta.
+</saida>
+<p>Mesmo comportamento, metade das linhas e nenhuma escada. Cada regra é uma linha que se lê sozinha. Essas primeiras verificações têm até nome: <strong>guard clauses</strong> (cláusulas de guarda).</p>
+
+<h2>2. Ternário para escolher um valor</h2>
+<p>Quando o if só serve para escolher entre dois valores, o operador ternário faz isso numa linha: <code>condição ? valorSeVerdadeiro : valorSeFalso</code>.</p>
+<codigo>
+int vida = 35;
+
+string estado = vida < 50 ? "ferido" : "bem";
+int velocidade = vida < 50 ? 3 : 5;
+
+Console.WriteLine($"Você está {estado} e anda a {velocidade} m/s.");
+</codigo>
+<saida>
+Você está ferido e anda a 3 m/s.
+</saida>
+<p>Use o ternário para <strong>valores</strong>, nunca para ações. E evite ternário dentro de ternário: com três ou mais opções, um <code>switch</code> fica mais claro.</p>
+
+<h2>3. Dê nome às condições</h2>
+<p>Uma condição grande no if obriga quem lê a decifrar a regra. Guarde o resultado numa variável <code>bool</code> com nome:</p>
+<codigo>
+int vida = 60, balas = 0, inimigosPerto = 3;
+bool temFaca = true, ehNoite = true;
+
+bool podeLutar = vida > 30 && (balas > 0 || temFaca);
+bool situacaoPerigosa = inimigosPerto > 2 && ehNoite;
+
+if (podeLutar && !situacaoPerigosa)
+    Console.WriteLine("Lute!");
+else
+    Console.WriteLine("Melhor se esconder.");
+</codigo>
+<saida>
+Melhor se esconder.
+</saida>
+<p>Compare com <code>if (vida &gt; 30 &amp;&amp; (balas &gt; 0 || temFaca) &amp;&amp; !(inimigosPerto &gt; 2 &amp;&amp; ehNoite))</code>. A regra é a mesma, mas os nomes explicam o porquê. Se a condição for usada em vários lugares, transforme-a num método, como <code>PodeLutar()</code>.</p>
+
+<h2>4. Pattern matching: faixas sem repetir a variável</h2>
+<!-- CENA 3 -->
+<p>O C# moderno deixa testar faixas de valores com <code>is</code> e com a expressão <code>switch</code>, sem escrever o nome da variável a cada comparação:</p>
+<codigo>
+foreach (int vida in new[] { 100, 65, 20, 0 })
+{
+    string estado = vida switch
+    {
+        0 => "morto",
+        < 30 => "crítico",
+        < 70 => "ferido",
+        _ => "saudável"
+    };
+    Console.WriteLine($"{vida,3}: {estado}");
+}
+
+int municao = 7;
+if (municao is > 0 and < 10)
+    Console.WriteLine("Pouca munição, economize.");
+</codigo>
+<saida>
+100: saudável
+ 65: ferido
+ 20: crítico
+  0: morto
+Pouca munição, economize.
+</saida>
+<p>No <code>switch</code>, cada linha é testada em ordem e o <code>_</code> é o "qualquer outro valor". Com <code>is</code> você pode juntar padrões com <code>and</code>, <code>or</code> e <code>not</code>: <code>municao is &gt; 0 and &lt; 10</code> lê quase como português. O <code>{vida,3}</code> só alinha o número em 3 casas.</p>
+
+<h2>5. ?? para valores que podem faltar</h2>
+<p>Quando um texto pode ser <code>null</code>, o if de "se estiver vazio, use o padrão" vira um operador só, o <code>??</code>:</p>
+<codigo>
+string? nomeDigitado = null;
+
+string nome = nomeDigitado ?? "Sobrevivente";
+Console.WriteLine($"Bem-vindo, {nome}.");
+</codigo>
+<saida>
+Bem-vindo, Sobrevivente.
+</saida>
+<p>Leia <code>a ?? b</code> como "use <code>a</code>; se for nulo, use <code>b</code>". Existe também o <code>??=</code>: <code>nome ??= "Sobrevivente";</code> só preenche se estiver nulo.</p>
+
+<h2>Qual técnica usar</h2>
+<tabela>
+Situação | Técnica
+if dentro de if dentro de if | retorno antecipado
+if só para escolher entre dois valores | ternário `? :`
+condição longa e difícil de ler | variável `bool` ou método com nome
+várias faixas de um mesmo valor | expressão `switch` com padrões
+"se for nulo, use este padrão" | `??` ou `??=`
+</tabela>
+
+<h2>Erros comuns</h2>
+<p><strong>1. Comparar bool com true.</strong> <code>if (temCartao == true)</code> funciona, mas <code>if (temCartao)</code> diz o mesmo com menos ruído. Para o contrário, use <code>!temCartao</code>.</p>
+<p><strong>2. if que só devolve true ou false.</strong> <code>if (vida &gt; 0) return true; else return false;</code> é só <code>return vida &gt; 0;</code>.</p>
+<p><strong>3. Ordem errada no switch.</strong> Se <code>&lt; 70</code> vier antes de <code>&lt; 30</code>, a vida 20 cai em "ferido", porque a primeira regra que combina vence. Vá do caso mais específico para o mais geral.</p>
+
+<desafio>
+<q>Reescreva com ternário: `string arma; if (balas > 0) arma = "pistola"; else arma = "faca";`</q>
+<r>`string arma = balas > 0 ? "pistola" : "faca";`</r>
+<q>Simplifique: `static bool EstaVivo(int vida) { if (vida > 0) { return true; } else { return false; } }`</q>
+<r>`static bool EstaVivo(int vida) => vida > 0;`</r>
+<q>Escreva uma expressão `switch` que transforma o número de zumbis em "livre" (0), "cuidado" (1 a 3) e "fuja" (4 ou mais).</q>
+<r>`string alerta = zumbis switch { 0 => "livre", <= 3 => "cuidado", _ => "fuja" };`</r>
+</desafio>
+
+<h2>Conclusão</h2>
+<p>Código que só funciona é o mínimo. Código que se lê de primeira é o que você (e o seu eu do futuro) agradece. Retorno antecipado, nomes nas condições e pattern matching resolvem a maior parte dos if confusos.</p>
+<p>📖 Revise a base: <a href="https://devsnapratica.blogspot.com/2024/10/estruturas-condicionais-if-else-if-e.html" target="_blank" rel="noopener">If, else e else if em C#</a> e <a href="https://devsnapratica.blogspot.com/2024/10/compreendendo-o-uso-de-switch-em-c.html" target="_blank" rel="noopener">Switch em C#</a>.</p>

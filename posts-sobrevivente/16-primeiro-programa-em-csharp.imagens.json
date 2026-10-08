@@ -1,0 +1,5 @@
+{"imagens":[
+{"arquivo":"capa.jpg","tipo":"capa","subtitulo":"C# DO ZERO","titulo":"*Primeiros passos* no C#: seu primeiro programa","pose":"acenando","alt":"Mascote do Devs na Prática acenando ao lado do título Primeiros passos no C#"},
+{"arquivo":"cena-1.jpg","tipo":"cena","cena":1,"titulo":"Olá, abrigo!","codigo":["Console.WriteLine(","    \"Você acorda num abrigo.\");"],"subtitulo":"O primeiro programa","pose":"animado","alt":"Mascote animado ao lado do primeiro Console.WriteLine"},
+{"arquivo":"cena-2.jpg","tipo":"cena","cena":2,"lado":"esq","titulo":"No terminal","codigo":["dotnet new console -n Abrigo","cd Abrigo","dotnet run"],"subtitulo":"Criar e rodar o projeto","pose":"digitando","alt":"Mascote digitando os comandos dotnet new console e dotnet run"},
+{"arquivo":"cena-3.jpg","tipo":"cena","cena":3,"titulo":"A gramática","itens":["; termina a instrução","{ } agrupam blocos","// é comentário","Console ≠ console"],"pose":"explicando","alt":"Mascote explicando ponto e vírgula, chaves e comentários em C#"}]}
